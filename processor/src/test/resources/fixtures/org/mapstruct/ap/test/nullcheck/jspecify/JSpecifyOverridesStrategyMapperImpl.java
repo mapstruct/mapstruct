@@ -9,8 +9,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-03-15T07:45:45+0100",
-    comments = "version: , compiler: javac, environment: Java 25 (Eclipse Adoptium)"
+    date = "2026-06-05T14:55:04+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class JSpecifyOverridesStrategyMapperImpl implements JSpecifyOverridesStrategyMapper {
 
@@ -23,14 +23,17 @@ public class JSpecifyOverridesStrategyMapperImpl implements JSpecifyOverridesStr
         TargetBean targetBean = new TargetBean();
 
         targetBean.setNonNullTarget( source.getNonNullValue() );
-        if ( source.getNullableValue() != null ) {
-            targetBean.setNullableTarget( source.getNullableValue() );
+        String nullableValue = source.getNullableValue();
+        if ( nullableValue != null ) {
+            targetBean.setNullableTarget( nullableValue );
         }
-        if ( source.getUnannotatedValue() != null ) {
-            targetBean.setUnannotatedTarget( source.getUnannotatedValue() );
+        String unannotatedValue = source.getUnannotatedValue();
+        if ( unannotatedValue != null ) {
+            targetBean.setUnannotatedTarget( unannotatedValue );
         }
-        if ( source.getNullableValue() != null ) {
-            targetBean.setNonNullTargetFromNullable( source.getNullableValue() );
+        String nullableValue1 = source.getNullableValue();
+        if ( nullableValue1 != null ) {
+            targetBean.setNonNullTargetFromNullable( nullableValue1 );
         }
 
         return targetBean;

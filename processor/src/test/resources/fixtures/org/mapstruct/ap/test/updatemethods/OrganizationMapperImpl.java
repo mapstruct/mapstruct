@@ -22,11 +22,12 @@ public class OrganizationMapperImpl implements OrganizationMapper {
             return;
         }
 
-        if ( dto.getCompany() != null ) {
+        CompanyDto company = dto.getCompany();
+        if ( company != null ) {
             if ( entity.getCompany() == null ) {
                 entity.setCompany( new CompanyEntity() );
             }
-            toCompanyEntity( dto.getCompany(), entity.getCompany() );
+            toCompanyEntity( company, entity.getCompany() );
         }
         else {
             entity.setCompany( null );

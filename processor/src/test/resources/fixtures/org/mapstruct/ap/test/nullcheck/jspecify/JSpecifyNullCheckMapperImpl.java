@@ -9,8 +9,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-03-14T18:40:10+0100",
-    comments = "version: , compiler: javac, environment: Java 25 (Eclipse Adoptium)"
+    date = "2026-06-05T14:54:55+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class JSpecifyNullCheckMapperImpl implements JSpecifyNullCheckMapper {
 
@@ -25,8 +25,9 @@ public class JSpecifyNullCheckMapperImpl implements JSpecifyNullCheckMapper {
         targetBean.setNonNullTarget( source.getNonNullValue() );
         targetBean.setNullableTarget( source.getNullableValue() );
         targetBean.setUnannotatedTarget( source.getUnannotatedValue() );
-        if ( source.getNullableValue() != null ) {
-            targetBean.setNonNullTargetFromNullable( source.getNullableValue() );
+        String nullableValue1 = source.getNullableValue();
+        if ( nullableValue1 != null ) {
+            targetBean.setNonNullTargetFromNullable( nullableValue1 );
         }
 
         return targetBean;

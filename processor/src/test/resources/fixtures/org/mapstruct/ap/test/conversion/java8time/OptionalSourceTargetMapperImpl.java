@@ -23,8 +23,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-24T16:06:24+0100",
-    comments = "version: , compiler: javac, environment: Java 21.0.3 (Eclipse Adoptium)"
+    date = "2026-06-05T14:56:13+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMapper {
 
@@ -41,46 +41,60 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
 
         Target target = new Target();
 
-        if ( source.getZonedDateTime().isPresent() ) {
+        Optional<ZonedDateTime> zonedDateTime = source.getZonedDateTime();
+        if ( zonedDateTime.isPresent() ) {
             target.setZonedDateTime( dateTimeFormatter_dd_MM_yyyy_HH_mm_z_01894582668.format( source.getZonedDateTime().get() ) );
         }
-        if ( source.getLocalDateTime().isPresent() ) {
+        Optional<LocalDateTime> localDateTime = source.getLocalDateTime();
+        if ( localDateTime.isPresent() ) {
             target.setLocalDateTime( dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242.format( source.getLocalDateTime().get() ) );
         }
-        if ( source.getLocalDate().isPresent() ) {
+        Optional<LocalDate> localDate = source.getLocalDate();
+        if ( localDate.isPresent() ) {
             target.setLocalDate( dateTimeFormatter_dd_MM_yyyy_11900521056.format( source.getLocalDate().get() ) );
         }
-        if ( source.getLocalTime().isPresent() ) {
+        Optional<LocalTime> localTime = source.getLocalTime();
+        if ( localTime.isPresent() ) {
             target.setLocalTime( dateTimeFormatter_HH_mm_168697690.format( source.getLocalTime().get() ) );
         }
-        if ( source.getForCalendarConversion().isPresent() ) {
-            target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion().get() ) );
+        Optional<ZonedDateTime> forCalendarConversion = source.getForCalendarConversion();
+        if ( forCalendarConversion.isPresent() ) {
+            target.setForCalendarConversion( zonedDateTimeToCalendar( forCalendarConversion.get() ) );
         }
-        if ( source.getForDateConversionWithZonedDateTime().isPresent() ) {
+        Optional<ZonedDateTime> forDateConversionWithZonedDateTime = source.getForDateConversionWithZonedDateTime();
+        if ( forDateConversionWithZonedDateTime.isPresent() ) {
             target.setForDateConversionWithZonedDateTime( Date.from( source.getForDateConversionWithZonedDateTime().get().toInstant() ) );
         }
-        if ( source.getForDateConversionWithLocalDateTime().isPresent() ) {
+        Optional<LocalDateTime> forDateConversionWithLocalDateTime = source.getForDateConversionWithLocalDateTime();
+        if ( forDateConversionWithLocalDateTime.isPresent() ) {
             target.setForDateConversionWithLocalDateTime( Date.from( source.getForDateConversionWithLocalDateTime().get().toInstant( ZoneOffset.UTC ) ) );
         }
-        if ( source.getForDateConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forDateConversionWithLocalDate = source.getForDateConversionWithLocalDate();
+        if ( forDateConversionWithLocalDate.isPresent() ) {
             target.setForDateConversionWithLocalDate( Date.from( source.getForDateConversionWithLocalDate().get().atStartOfDay( ZoneOffset.UTC ).toInstant() ) );
         }
-        if ( source.getForSqlDateConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forSqlDateConversionWithLocalDate = source.getForSqlDateConversionWithLocalDate();
+        if ( forSqlDateConversionWithLocalDate.isPresent() ) {
             target.setForSqlDateConversionWithLocalDate( new java.sql.Date( source.getForSqlDateConversionWithLocalDate().get().atStartOfDay( ZoneOffset.UTC ).toInstant().toEpochMilli() ) );
         }
-        if ( source.getForDateConversionWithInstant().isPresent() ) {
+        Optional<Instant> forDateConversionWithInstant = source.getForDateConversionWithInstant();
+        if ( forDateConversionWithInstant.isPresent() ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant().get() ) );
         }
-        if ( source.getForLocalDateTimeConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forLocalDateTimeConversionWithLocalDate = source.getForLocalDateTimeConversionWithLocalDate();
+        if ( forLocalDateTimeConversionWithLocalDate.isPresent() ) {
             target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().get().atStartOfDay() );
         }
-        if ( source.getForInstantConversionWithString().isPresent() ) {
+        Optional<Instant> forInstantConversionWithString = source.getForInstantConversionWithString();
+        if ( forInstantConversionWithString.isPresent() ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().get().toString() );
         }
-        if ( source.getForPeriodConversionWithString().isPresent() ) {
+        Optional<Period> forPeriodConversionWithString = source.getForPeriodConversionWithString();
+        if ( forPeriodConversionWithString.isPresent() ) {
             target.setForPeriodConversionWithString( source.getForPeriodConversionWithString().get().toString() );
         }
-        if ( source.getForDurationConversionWithString().isPresent() ) {
+        Optional<Duration> forDurationConversionWithString = source.getForDurationConversionWithString();
+        if ( forDurationConversionWithString.isPresent() ) {
             target.setForDurationConversionWithString( source.getForDurationConversionWithString().get().toString() );
         }
 
@@ -95,46 +109,60 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
 
         Target target = new Target();
 
-        if ( source.getZonedDateTime().isPresent() ) {
+        Optional<ZonedDateTime> zonedDateTime = source.getZonedDateTime();
+        if ( zonedDateTime.isPresent() ) {
             target.setZonedDateTime( dateTimeFormatter_dd_MM_yyyy_HH_mm_z_01894582668.format( source.getZonedDateTime().get() ) );
         }
-        if ( source.getLocalDateTime().isPresent() ) {
+        Optional<LocalDateTime> localDateTime = source.getLocalDateTime();
+        if ( localDateTime.isPresent() ) {
             target.setLocalDateTime( dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242.format( source.getLocalDateTime().get() ) );
         }
-        if ( source.getLocalDate().isPresent() ) {
+        Optional<LocalDate> localDate = source.getLocalDate();
+        if ( localDate.isPresent() ) {
             target.setLocalDate( dateTimeFormatter_dd_MM_yyyy_11900521056.format( source.getLocalDate().get() ) );
         }
-        if ( source.getLocalTime().isPresent() ) {
+        Optional<LocalTime> localTime = source.getLocalTime();
+        if ( localTime.isPresent() ) {
             target.setLocalTime( dateTimeFormatter_HH_mm_168697690.format( source.getLocalTime().get() ) );
         }
-        if ( source.getForCalendarConversion().isPresent() ) {
-            target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion().get() ) );
+        Optional<ZonedDateTime> forCalendarConversion = source.getForCalendarConversion();
+        if ( forCalendarConversion.isPresent() ) {
+            target.setForCalendarConversion( zonedDateTimeToCalendar( forCalendarConversion.get() ) );
         }
-        if ( source.getForDateConversionWithZonedDateTime().isPresent() ) {
+        Optional<ZonedDateTime> forDateConversionWithZonedDateTime = source.getForDateConversionWithZonedDateTime();
+        if ( forDateConversionWithZonedDateTime.isPresent() ) {
             target.setForDateConversionWithZonedDateTime( Date.from( source.getForDateConversionWithZonedDateTime().get().toInstant() ) );
         }
-        if ( source.getForDateConversionWithLocalDateTime().isPresent() ) {
+        Optional<LocalDateTime> forDateConversionWithLocalDateTime = source.getForDateConversionWithLocalDateTime();
+        if ( forDateConversionWithLocalDateTime.isPresent() ) {
             target.setForDateConversionWithLocalDateTime( Date.from( source.getForDateConversionWithLocalDateTime().get().toInstant( ZoneOffset.UTC ) ) );
         }
-        if ( source.getForDateConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forDateConversionWithLocalDate = source.getForDateConversionWithLocalDate();
+        if ( forDateConversionWithLocalDate.isPresent() ) {
             target.setForDateConversionWithLocalDate( Date.from( source.getForDateConversionWithLocalDate().get().atStartOfDay( ZoneOffset.UTC ).toInstant() ) );
         }
-        if ( source.getForSqlDateConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forSqlDateConversionWithLocalDate = source.getForSqlDateConversionWithLocalDate();
+        if ( forSqlDateConversionWithLocalDate.isPresent() ) {
             target.setForSqlDateConversionWithLocalDate( new java.sql.Date( source.getForSqlDateConversionWithLocalDate().get().atStartOfDay( ZoneOffset.UTC ).toInstant().toEpochMilli() ) );
         }
-        if ( source.getForDateConversionWithInstant().isPresent() ) {
+        Optional<Instant> forDateConversionWithInstant = source.getForDateConversionWithInstant();
+        if ( forDateConversionWithInstant.isPresent() ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant().get() ) );
         }
-        if ( source.getForLocalDateTimeConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forLocalDateTimeConversionWithLocalDate = source.getForLocalDateTimeConversionWithLocalDate();
+        if ( forLocalDateTimeConversionWithLocalDate.isPresent() ) {
             target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().get().atStartOfDay() );
         }
-        if ( source.getForInstantConversionWithString().isPresent() ) {
+        Optional<Instant> forInstantConversionWithString = source.getForInstantConversionWithString();
+        if ( forInstantConversionWithString.isPresent() ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().get().toString() );
         }
-        if ( source.getForPeriodConversionWithString().isPresent() ) {
+        Optional<Period> forPeriodConversionWithString = source.getForPeriodConversionWithString();
+        if ( forPeriodConversionWithString.isPresent() ) {
             target.setForPeriodConversionWithString( source.getForPeriodConversionWithString().get().toString() );
         }
-        if ( source.getForDurationConversionWithString().isPresent() ) {
+        Optional<Duration> forDurationConversionWithString = source.getForDurationConversionWithString();
+        if ( forDurationConversionWithString.isPresent() ) {
             target.setForDurationConversionWithString( source.getForDurationConversionWithString().get().toString() );
         }
 
@@ -149,46 +177,60 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
 
         Target target = new Target();
 
-        if ( source.getZonedDateTime().isPresent() ) {
+        Optional<ZonedDateTime> zonedDateTime = source.getZonedDateTime();
+        if ( zonedDateTime.isPresent() ) {
             target.setZonedDateTime( dateTimeFormatter_dd_MM_yyyy_HH_mm_z_01894582668.format( source.getZonedDateTime().get() ) );
         }
-        if ( source.getLocalDateTime().isPresent() ) {
+        Optional<LocalDateTime> localDateTime = source.getLocalDateTime();
+        if ( localDateTime.isPresent() ) {
             target.setLocalDateTime( DateTimeFormatter.ISO_LOCAL_DATE_TIME.format( source.getLocalDateTime().get() ) );
         }
-        if ( source.getLocalDate().isPresent() ) {
+        Optional<LocalDate> localDate = source.getLocalDate();
+        if ( localDate.isPresent() ) {
             target.setLocalDate( DateTimeFormatter.ISO_LOCAL_DATE.format( source.getLocalDate().get() ) );
         }
-        if ( source.getLocalTime().isPresent() ) {
+        Optional<LocalTime> localTime = source.getLocalTime();
+        if ( localTime.isPresent() ) {
             target.setLocalTime( DateTimeFormatter.ISO_LOCAL_TIME.format( source.getLocalTime().get() ) );
         }
-        if ( source.getForCalendarConversion().isPresent() ) {
-            target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion().get() ) );
+        Optional<ZonedDateTime> forCalendarConversion = source.getForCalendarConversion();
+        if ( forCalendarConversion.isPresent() ) {
+            target.setForCalendarConversion( zonedDateTimeToCalendar( forCalendarConversion.get() ) );
         }
-        if ( source.getForDateConversionWithZonedDateTime().isPresent() ) {
+        Optional<ZonedDateTime> forDateConversionWithZonedDateTime = source.getForDateConversionWithZonedDateTime();
+        if ( forDateConversionWithZonedDateTime.isPresent() ) {
             target.setForDateConversionWithZonedDateTime( Date.from( source.getForDateConversionWithZonedDateTime().get().toInstant() ) );
         }
-        if ( source.getForDateConversionWithLocalDateTime().isPresent() ) {
+        Optional<LocalDateTime> forDateConversionWithLocalDateTime = source.getForDateConversionWithLocalDateTime();
+        if ( forDateConversionWithLocalDateTime.isPresent() ) {
             target.setForDateConversionWithLocalDateTime( Date.from( source.getForDateConversionWithLocalDateTime().get().toInstant( ZoneOffset.UTC ) ) );
         }
-        if ( source.getForDateConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forDateConversionWithLocalDate = source.getForDateConversionWithLocalDate();
+        if ( forDateConversionWithLocalDate.isPresent() ) {
             target.setForDateConversionWithLocalDate( Date.from( source.getForDateConversionWithLocalDate().get().atStartOfDay( ZoneOffset.UTC ).toInstant() ) );
         }
-        if ( source.getForSqlDateConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forSqlDateConversionWithLocalDate = source.getForSqlDateConversionWithLocalDate();
+        if ( forSqlDateConversionWithLocalDate.isPresent() ) {
             target.setForSqlDateConversionWithLocalDate( new java.sql.Date( source.getForSqlDateConversionWithLocalDate().get().atStartOfDay( ZoneOffset.UTC ).toInstant().toEpochMilli() ) );
         }
-        if ( source.getForDateConversionWithInstant().isPresent() ) {
+        Optional<Instant> forDateConversionWithInstant = source.getForDateConversionWithInstant();
+        if ( forDateConversionWithInstant.isPresent() ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant().get() ) );
         }
-        if ( source.getForLocalDateTimeConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forLocalDateTimeConversionWithLocalDate = source.getForLocalDateTimeConversionWithLocalDate();
+        if ( forLocalDateTimeConversionWithLocalDate.isPresent() ) {
             target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().get().atStartOfDay() );
         }
-        if ( source.getForInstantConversionWithString().isPresent() ) {
+        Optional<Instant> forInstantConversionWithString = source.getForInstantConversionWithString();
+        if ( forInstantConversionWithString.isPresent() ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().get().toString() );
         }
-        if ( source.getForPeriodConversionWithString().isPresent() ) {
+        Optional<Period> forPeriodConversionWithString = source.getForPeriodConversionWithString();
+        if ( forPeriodConversionWithString.isPresent() ) {
             target.setForPeriodConversionWithString( source.getForPeriodConversionWithString().get().toString() );
         }
-        if ( source.getForDurationConversionWithString().isPresent() ) {
+        Optional<Duration> forDurationConversionWithString = source.getForDurationConversionWithString();
+        if ( forDurationConversionWithString.isPresent() ) {
             target.setForDurationConversionWithString( source.getForDurationConversionWithString().get().toString() );
         }
 
@@ -203,46 +245,60 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
 
         Target target = new Target();
 
-        if ( source.getLocalDateTime().isPresent() ) {
+        Optional<LocalDateTime> localDateTime = source.getLocalDateTime();
+        if ( localDateTime.isPresent() ) {
             target.setLocalDateTime( dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242.format( source.getLocalDateTime().get() ) );
         }
-        if ( source.getZonedDateTime().isPresent() ) {
+        Optional<ZonedDateTime> zonedDateTime = source.getZonedDateTime();
+        if ( zonedDateTime.isPresent() ) {
             target.setZonedDateTime( DateTimeFormatter.ISO_DATE_TIME.format( source.getZonedDateTime().get() ) );
         }
-        if ( source.getLocalDate().isPresent() ) {
+        Optional<LocalDate> localDate = source.getLocalDate();
+        if ( localDate.isPresent() ) {
             target.setLocalDate( DateTimeFormatter.ISO_LOCAL_DATE.format( source.getLocalDate().get() ) );
         }
-        if ( source.getLocalTime().isPresent() ) {
+        Optional<LocalTime> localTime = source.getLocalTime();
+        if ( localTime.isPresent() ) {
             target.setLocalTime( DateTimeFormatter.ISO_LOCAL_TIME.format( source.getLocalTime().get() ) );
         }
-        if ( source.getForCalendarConversion().isPresent() ) {
-            target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion().get() ) );
+        Optional<ZonedDateTime> forCalendarConversion = source.getForCalendarConversion();
+        if ( forCalendarConversion.isPresent() ) {
+            target.setForCalendarConversion( zonedDateTimeToCalendar( forCalendarConversion.get() ) );
         }
-        if ( source.getForDateConversionWithZonedDateTime().isPresent() ) {
+        Optional<ZonedDateTime> forDateConversionWithZonedDateTime = source.getForDateConversionWithZonedDateTime();
+        if ( forDateConversionWithZonedDateTime.isPresent() ) {
             target.setForDateConversionWithZonedDateTime( Date.from( source.getForDateConversionWithZonedDateTime().get().toInstant() ) );
         }
-        if ( source.getForDateConversionWithLocalDateTime().isPresent() ) {
+        Optional<LocalDateTime> forDateConversionWithLocalDateTime = source.getForDateConversionWithLocalDateTime();
+        if ( forDateConversionWithLocalDateTime.isPresent() ) {
             target.setForDateConversionWithLocalDateTime( Date.from( source.getForDateConversionWithLocalDateTime().get().toInstant( ZoneOffset.UTC ) ) );
         }
-        if ( source.getForDateConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forDateConversionWithLocalDate = source.getForDateConversionWithLocalDate();
+        if ( forDateConversionWithLocalDate.isPresent() ) {
             target.setForDateConversionWithLocalDate( Date.from( source.getForDateConversionWithLocalDate().get().atStartOfDay( ZoneOffset.UTC ).toInstant() ) );
         }
-        if ( source.getForSqlDateConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forSqlDateConversionWithLocalDate = source.getForSqlDateConversionWithLocalDate();
+        if ( forSqlDateConversionWithLocalDate.isPresent() ) {
             target.setForSqlDateConversionWithLocalDate( new java.sql.Date( source.getForSqlDateConversionWithLocalDate().get().atStartOfDay( ZoneOffset.UTC ).toInstant().toEpochMilli() ) );
         }
-        if ( source.getForDateConversionWithInstant().isPresent() ) {
+        Optional<Instant> forDateConversionWithInstant = source.getForDateConversionWithInstant();
+        if ( forDateConversionWithInstant.isPresent() ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant().get() ) );
         }
-        if ( source.getForLocalDateTimeConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forLocalDateTimeConversionWithLocalDate = source.getForLocalDateTimeConversionWithLocalDate();
+        if ( forLocalDateTimeConversionWithLocalDate.isPresent() ) {
             target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().get().atStartOfDay() );
         }
-        if ( source.getForInstantConversionWithString().isPresent() ) {
+        Optional<Instant> forInstantConversionWithString = source.getForInstantConversionWithString();
+        if ( forInstantConversionWithString.isPresent() ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().get().toString() );
         }
-        if ( source.getForPeriodConversionWithString().isPresent() ) {
+        Optional<Period> forPeriodConversionWithString = source.getForPeriodConversionWithString();
+        if ( forPeriodConversionWithString.isPresent() ) {
             target.setForPeriodConversionWithString( source.getForPeriodConversionWithString().get().toString() );
         }
-        if ( source.getForDurationConversionWithString().isPresent() ) {
+        Optional<Duration> forDurationConversionWithString = source.getForDurationConversionWithString();
+        if ( forDurationConversionWithString.isPresent() ) {
             target.setForDurationConversionWithString( source.getForDurationConversionWithString().get().toString() );
         }
 
@@ -257,46 +313,60 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
 
         Target target = new Target();
 
-        if ( source.getLocalDate().isPresent() ) {
+        Optional<LocalDate> localDate = source.getLocalDate();
+        if ( localDate.isPresent() ) {
             target.setLocalDate( dateTimeFormatter_dd_MM_yyyy_11900521056.format( source.getLocalDate().get() ) );
         }
-        if ( source.getZonedDateTime().isPresent() ) {
+        Optional<ZonedDateTime> zonedDateTime = source.getZonedDateTime();
+        if ( zonedDateTime.isPresent() ) {
             target.setZonedDateTime( DateTimeFormatter.ISO_DATE_TIME.format( source.getZonedDateTime().get() ) );
         }
-        if ( source.getLocalDateTime().isPresent() ) {
+        Optional<LocalDateTime> localDateTime = source.getLocalDateTime();
+        if ( localDateTime.isPresent() ) {
             target.setLocalDateTime( DateTimeFormatter.ISO_LOCAL_DATE_TIME.format( source.getLocalDateTime().get() ) );
         }
-        if ( source.getLocalTime().isPresent() ) {
+        Optional<LocalTime> localTime = source.getLocalTime();
+        if ( localTime.isPresent() ) {
             target.setLocalTime( DateTimeFormatter.ISO_LOCAL_TIME.format( source.getLocalTime().get() ) );
         }
-        if ( source.getForCalendarConversion().isPresent() ) {
-            target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion().get() ) );
+        Optional<ZonedDateTime> forCalendarConversion = source.getForCalendarConversion();
+        if ( forCalendarConversion.isPresent() ) {
+            target.setForCalendarConversion( zonedDateTimeToCalendar( forCalendarConversion.get() ) );
         }
-        if ( source.getForDateConversionWithZonedDateTime().isPresent() ) {
+        Optional<ZonedDateTime> forDateConversionWithZonedDateTime = source.getForDateConversionWithZonedDateTime();
+        if ( forDateConversionWithZonedDateTime.isPresent() ) {
             target.setForDateConversionWithZonedDateTime( Date.from( source.getForDateConversionWithZonedDateTime().get().toInstant() ) );
         }
-        if ( source.getForDateConversionWithLocalDateTime().isPresent() ) {
+        Optional<LocalDateTime> forDateConversionWithLocalDateTime = source.getForDateConversionWithLocalDateTime();
+        if ( forDateConversionWithLocalDateTime.isPresent() ) {
             target.setForDateConversionWithLocalDateTime( Date.from( source.getForDateConversionWithLocalDateTime().get().toInstant( ZoneOffset.UTC ) ) );
         }
-        if ( source.getForDateConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forDateConversionWithLocalDate = source.getForDateConversionWithLocalDate();
+        if ( forDateConversionWithLocalDate.isPresent() ) {
             target.setForDateConversionWithLocalDate( Date.from( source.getForDateConversionWithLocalDate().get().atStartOfDay( ZoneOffset.UTC ).toInstant() ) );
         }
-        if ( source.getForSqlDateConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forSqlDateConversionWithLocalDate = source.getForSqlDateConversionWithLocalDate();
+        if ( forSqlDateConversionWithLocalDate.isPresent() ) {
             target.setForSqlDateConversionWithLocalDate( new java.sql.Date( source.getForSqlDateConversionWithLocalDate().get().atStartOfDay( ZoneOffset.UTC ).toInstant().toEpochMilli() ) );
         }
-        if ( source.getForDateConversionWithInstant().isPresent() ) {
+        Optional<Instant> forDateConversionWithInstant = source.getForDateConversionWithInstant();
+        if ( forDateConversionWithInstant.isPresent() ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant().get() ) );
         }
-        if ( source.getForLocalDateTimeConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forLocalDateTimeConversionWithLocalDate = source.getForLocalDateTimeConversionWithLocalDate();
+        if ( forLocalDateTimeConversionWithLocalDate.isPresent() ) {
             target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().get().atStartOfDay() );
         }
-        if ( source.getForInstantConversionWithString().isPresent() ) {
+        Optional<Instant> forInstantConversionWithString = source.getForInstantConversionWithString();
+        if ( forInstantConversionWithString.isPresent() ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().get().toString() );
         }
-        if ( source.getForPeriodConversionWithString().isPresent() ) {
+        Optional<Period> forPeriodConversionWithString = source.getForPeriodConversionWithString();
+        if ( forPeriodConversionWithString.isPresent() ) {
             target.setForPeriodConversionWithString( source.getForPeriodConversionWithString().get().toString() );
         }
-        if ( source.getForDurationConversionWithString().isPresent() ) {
+        Optional<Duration> forDurationConversionWithString = source.getForDurationConversionWithString();
+        if ( forDurationConversionWithString.isPresent() ) {
             target.setForDurationConversionWithString( source.getForDurationConversionWithString().get().toString() );
         }
 
@@ -311,46 +381,60 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
 
         Target target = new Target();
 
-        if ( source.getLocalTime().isPresent() ) {
+        Optional<LocalTime> localTime = source.getLocalTime();
+        if ( localTime.isPresent() ) {
             target.setLocalTime( dateTimeFormatter_HH_mm_168697690.format( source.getLocalTime().get() ) );
         }
-        if ( source.getZonedDateTime().isPresent() ) {
+        Optional<ZonedDateTime> zonedDateTime = source.getZonedDateTime();
+        if ( zonedDateTime.isPresent() ) {
             target.setZonedDateTime( DateTimeFormatter.ISO_DATE_TIME.format( source.getZonedDateTime().get() ) );
         }
-        if ( source.getLocalDateTime().isPresent() ) {
+        Optional<LocalDateTime> localDateTime = source.getLocalDateTime();
+        if ( localDateTime.isPresent() ) {
             target.setLocalDateTime( DateTimeFormatter.ISO_LOCAL_DATE_TIME.format( source.getLocalDateTime().get() ) );
         }
-        if ( source.getLocalDate().isPresent() ) {
+        Optional<LocalDate> localDate = source.getLocalDate();
+        if ( localDate.isPresent() ) {
             target.setLocalDate( DateTimeFormatter.ISO_LOCAL_DATE.format( source.getLocalDate().get() ) );
         }
-        if ( source.getForCalendarConversion().isPresent() ) {
-            target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion().get() ) );
+        Optional<ZonedDateTime> forCalendarConversion = source.getForCalendarConversion();
+        if ( forCalendarConversion.isPresent() ) {
+            target.setForCalendarConversion( zonedDateTimeToCalendar( forCalendarConversion.get() ) );
         }
-        if ( source.getForDateConversionWithZonedDateTime().isPresent() ) {
+        Optional<ZonedDateTime> forDateConversionWithZonedDateTime = source.getForDateConversionWithZonedDateTime();
+        if ( forDateConversionWithZonedDateTime.isPresent() ) {
             target.setForDateConversionWithZonedDateTime( Date.from( source.getForDateConversionWithZonedDateTime().get().toInstant() ) );
         }
-        if ( source.getForDateConversionWithLocalDateTime().isPresent() ) {
+        Optional<LocalDateTime> forDateConversionWithLocalDateTime = source.getForDateConversionWithLocalDateTime();
+        if ( forDateConversionWithLocalDateTime.isPresent() ) {
             target.setForDateConversionWithLocalDateTime( Date.from( source.getForDateConversionWithLocalDateTime().get().toInstant( ZoneOffset.UTC ) ) );
         }
-        if ( source.getForDateConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forDateConversionWithLocalDate = source.getForDateConversionWithLocalDate();
+        if ( forDateConversionWithLocalDate.isPresent() ) {
             target.setForDateConversionWithLocalDate( Date.from( source.getForDateConversionWithLocalDate().get().atStartOfDay( ZoneOffset.UTC ).toInstant() ) );
         }
-        if ( source.getForSqlDateConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forSqlDateConversionWithLocalDate = source.getForSqlDateConversionWithLocalDate();
+        if ( forSqlDateConversionWithLocalDate.isPresent() ) {
             target.setForSqlDateConversionWithLocalDate( new java.sql.Date( source.getForSqlDateConversionWithLocalDate().get().atStartOfDay( ZoneOffset.UTC ).toInstant().toEpochMilli() ) );
         }
-        if ( source.getForDateConversionWithInstant().isPresent() ) {
+        Optional<Instant> forDateConversionWithInstant = source.getForDateConversionWithInstant();
+        if ( forDateConversionWithInstant.isPresent() ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant().get() ) );
         }
-        if ( source.getForLocalDateTimeConversionWithLocalDate().isPresent() ) {
+        Optional<LocalDate> forLocalDateTimeConversionWithLocalDate = source.getForLocalDateTimeConversionWithLocalDate();
+        if ( forLocalDateTimeConversionWithLocalDate.isPresent() ) {
             target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().get().atStartOfDay() );
         }
-        if ( source.getForInstantConversionWithString().isPresent() ) {
+        Optional<Instant> forInstantConversionWithString = source.getForInstantConversionWithString();
+        if ( forInstantConversionWithString.isPresent() ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().get().toString() );
         }
-        if ( source.getForPeriodConversionWithString().isPresent() ) {
+        Optional<Period> forPeriodConversionWithString = source.getForPeriodConversionWithString();
+        if ( forPeriodConversionWithString.isPresent() ) {
             target.setForPeriodConversionWithString( source.getForPeriodConversionWithString().get().toString() );
         }
-        if ( source.getForDurationConversionWithString().isPresent() ) {
+        Optional<Duration> forDurationConversionWithString = source.getForDurationConversionWithString();
+        if ( forDurationConversionWithString.isPresent() ) {
             target.setForDurationConversionWithString( source.getForDurationConversionWithString().get().toString() );
         }
 
@@ -365,47 +449,61 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
 
         OptionalSource optionalSource = new OptionalSource();
 
-        if ( target.getZonedDateTime() != null ) {
-            optionalSource.setZonedDateTime( Optional.of( ZonedDateTime.parse( target.getZonedDateTime(), dateTimeFormatter_dd_MM_yyyy_HH_mm_z_01894582668 ) ) );
+        String zonedDateTime = target.getZonedDateTime();
+        if ( zonedDateTime != null ) {
+            optionalSource.setZonedDateTime( Optional.of( ZonedDateTime.parse( zonedDateTime, dateTimeFormatter_dd_MM_yyyy_HH_mm_z_01894582668 ) ) );
         }
-        if ( target.getLocalDateTime() != null ) {
-            optionalSource.setLocalDateTime( Optional.of( LocalDateTime.parse( target.getLocalDateTime(), dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242 ) ) );
+        String localDateTime = target.getLocalDateTime();
+        if ( localDateTime != null ) {
+            optionalSource.setLocalDateTime( Optional.of( LocalDateTime.parse( localDateTime, dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242 ) ) );
         }
-        if ( target.getLocalDate() != null ) {
-            optionalSource.setLocalDate( Optional.of( LocalDate.parse( target.getLocalDate(), dateTimeFormatter_dd_MM_yyyy_11900521056 ) ) );
+        String localDate = target.getLocalDate();
+        if ( localDate != null ) {
+            optionalSource.setLocalDate( Optional.of( LocalDate.parse( localDate, dateTimeFormatter_dd_MM_yyyy_11900521056 ) ) );
         }
-        if ( target.getLocalTime() != null ) {
-            optionalSource.setLocalTime( Optional.of( LocalTime.parse( target.getLocalTime(), dateTimeFormatter_HH_mm_168697690 ) ) );
+        String localTime = target.getLocalTime();
+        if ( localTime != null ) {
+            optionalSource.setLocalTime( Optional.of( LocalTime.parse( localTime, dateTimeFormatter_HH_mm_168697690 ) ) );
         }
-        if ( target.getForCalendarConversion() != null ) {
-            optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( target.getForCalendarConversion() ) ) );
+        Calendar forCalendarConversion = target.getForCalendarConversion();
+        if ( forCalendarConversion != null ) {
+            optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( forCalendarConversion ) ) );
         }
-        if ( target.getForDateConversionWithZonedDateTime() != null ) {
-            optionalSource.setForDateConversionWithZonedDateTime( Optional.of( ZonedDateTime.ofInstant( target.getForDateConversionWithZonedDateTime().toInstant(), ZoneId.systemDefault() ) ) );
+        Date forDateConversionWithZonedDateTime = target.getForDateConversionWithZonedDateTime();
+        if ( forDateConversionWithZonedDateTime != null ) {
+            optionalSource.setForDateConversionWithZonedDateTime( Optional.of( ZonedDateTime.ofInstant( forDateConversionWithZonedDateTime.toInstant(), ZoneId.systemDefault() ) ) );
         }
-        if ( target.getForDateConversionWithLocalDateTime() != null ) {
-            optionalSource.setForDateConversionWithLocalDateTime( Optional.of( LocalDateTime.ofInstant( target.getForDateConversionWithLocalDateTime().toInstant(), ZoneId.of( "UTC" ) ) ) );
+        Date forDateConversionWithLocalDateTime = target.getForDateConversionWithLocalDateTime();
+        if ( forDateConversionWithLocalDateTime != null ) {
+            optionalSource.setForDateConversionWithLocalDateTime( Optional.of( LocalDateTime.ofInstant( forDateConversionWithLocalDateTime.toInstant(), ZoneId.of( "UTC" ) ) ) );
         }
-        if ( target.getForDateConversionWithLocalDate() != null ) {
-            optionalSource.setForDateConversionWithLocalDate( Optional.of( LocalDateTime.ofInstant( target.getForDateConversionWithLocalDate().toInstant(), ZoneOffset.UTC ).toLocalDate() ) );
+        Date forDateConversionWithLocalDate = target.getForDateConversionWithLocalDate();
+        if ( forDateConversionWithLocalDate != null ) {
+            optionalSource.setForDateConversionWithLocalDate( Optional.of( LocalDateTime.ofInstant( forDateConversionWithLocalDate.toInstant(), ZoneOffset.UTC ).toLocalDate() ) );
         }
-        if ( target.getForSqlDateConversionWithLocalDate() != null ) {
-            optionalSource.setForSqlDateConversionWithLocalDate( Optional.of( target.getForSqlDateConversionWithLocalDate().toLocalDate() ) );
+        java.sql.Date forSqlDateConversionWithLocalDate = target.getForSqlDateConversionWithLocalDate();
+        if ( forSqlDateConversionWithLocalDate != null ) {
+            optionalSource.setForSqlDateConversionWithLocalDate( Optional.of( forSqlDateConversionWithLocalDate.toLocalDate() ) );
         }
-        if ( target.getForDateConversionWithInstant() != null ) {
-            optionalSource.setForDateConversionWithInstant( Optional.of( target.getForDateConversionWithInstant().toInstant() ) );
+        Date forDateConversionWithInstant = target.getForDateConversionWithInstant();
+        if ( forDateConversionWithInstant != null ) {
+            optionalSource.setForDateConversionWithInstant( Optional.of( forDateConversionWithInstant.toInstant() ) );
         }
-        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
-            optionalSource.setForLocalDateTimeConversionWithLocalDate( Optional.of( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() ) );
+        LocalDateTime forLocalDateTimeConversionWithLocalDate = target.getForLocalDateTimeConversionWithLocalDate();
+        if ( forLocalDateTimeConversionWithLocalDate != null ) {
+            optionalSource.setForLocalDateTimeConversionWithLocalDate( Optional.of( forLocalDateTimeConversionWithLocalDate.toLocalDate() ) );
         }
-        if ( target.getForInstantConversionWithString() != null ) {
-            optionalSource.setForInstantConversionWithString( Optional.of( Instant.parse( target.getForInstantConversionWithString() ) ) );
+        String forInstantConversionWithString = target.getForInstantConversionWithString();
+        if ( forInstantConversionWithString != null ) {
+            optionalSource.setForInstantConversionWithString( Optional.of( Instant.parse( forInstantConversionWithString ) ) );
         }
-        if ( target.getForPeriodConversionWithString() != null ) {
-            optionalSource.setForPeriodConversionWithString( Optional.of( Period.parse( target.getForPeriodConversionWithString() ) ) );
+        String forPeriodConversionWithString = target.getForPeriodConversionWithString();
+        if ( forPeriodConversionWithString != null ) {
+            optionalSource.setForPeriodConversionWithString( Optional.of( Period.parse( forPeriodConversionWithString ) ) );
         }
-        if ( target.getForDurationConversionWithString() != null ) {
-            optionalSource.setForDurationConversionWithString( Optional.of( Duration.parse( target.getForDurationConversionWithString() ) ) );
+        String forDurationConversionWithString = target.getForDurationConversionWithString();
+        if ( forDurationConversionWithString != null ) {
+            optionalSource.setForDurationConversionWithString( Optional.of( Duration.parse( forDurationConversionWithString ) ) );
         }
 
         return optionalSource;
@@ -419,47 +517,61 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
 
         OptionalSource optionalSource = new OptionalSource();
 
-        if ( target.getZonedDateTime() != null ) {
-            optionalSource.setZonedDateTime( Optional.of( ZonedDateTime.parse( target.getZonedDateTime(), dateTimeFormatter_dd_MM_yyyy_HH_mm_z_01894582668 ) ) );
+        String zonedDateTime = target.getZonedDateTime();
+        if ( zonedDateTime != null ) {
+            optionalSource.setZonedDateTime( Optional.of( ZonedDateTime.parse( zonedDateTime, dateTimeFormatter_dd_MM_yyyy_HH_mm_z_01894582668 ) ) );
         }
-        if ( target.getLocalDateTime() != null ) {
-            optionalSource.setLocalDateTime( Optional.of( LocalDateTime.parse( target.getLocalDateTime() ) ) );
+        String localDateTime = target.getLocalDateTime();
+        if ( localDateTime != null ) {
+            optionalSource.setLocalDateTime( Optional.of( LocalDateTime.parse( localDateTime ) ) );
         }
-        if ( target.getLocalDate() != null ) {
-            optionalSource.setLocalDate( Optional.of( LocalDate.parse( target.getLocalDate() ) ) );
+        String localDate = target.getLocalDate();
+        if ( localDate != null ) {
+            optionalSource.setLocalDate( Optional.of( LocalDate.parse( localDate ) ) );
         }
-        if ( target.getLocalTime() != null ) {
-            optionalSource.setLocalTime( Optional.of( LocalTime.parse( target.getLocalTime() ) ) );
+        String localTime = target.getLocalTime();
+        if ( localTime != null ) {
+            optionalSource.setLocalTime( Optional.of( LocalTime.parse( localTime ) ) );
         }
-        if ( target.getForCalendarConversion() != null ) {
-            optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( target.getForCalendarConversion() ) ) );
+        Calendar forCalendarConversion = target.getForCalendarConversion();
+        if ( forCalendarConversion != null ) {
+            optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( forCalendarConversion ) ) );
         }
-        if ( target.getForDateConversionWithZonedDateTime() != null ) {
-            optionalSource.setForDateConversionWithZonedDateTime( Optional.of( ZonedDateTime.ofInstant( target.getForDateConversionWithZonedDateTime().toInstant(), ZoneId.systemDefault() ) ) );
+        Date forDateConversionWithZonedDateTime = target.getForDateConversionWithZonedDateTime();
+        if ( forDateConversionWithZonedDateTime != null ) {
+            optionalSource.setForDateConversionWithZonedDateTime( Optional.of( ZonedDateTime.ofInstant( forDateConversionWithZonedDateTime.toInstant(), ZoneId.systemDefault() ) ) );
         }
-        if ( target.getForDateConversionWithLocalDateTime() != null ) {
-            optionalSource.setForDateConversionWithLocalDateTime( Optional.of( LocalDateTime.ofInstant( target.getForDateConversionWithLocalDateTime().toInstant(), ZoneId.of( "UTC" ) ) ) );
+        Date forDateConversionWithLocalDateTime = target.getForDateConversionWithLocalDateTime();
+        if ( forDateConversionWithLocalDateTime != null ) {
+            optionalSource.setForDateConversionWithLocalDateTime( Optional.of( LocalDateTime.ofInstant( forDateConversionWithLocalDateTime.toInstant(), ZoneId.of( "UTC" ) ) ) );
         }
-        if ( target.getForDateConversionWithLocalDate() != null ) {
-            optionalSource.setForDateConversionWithLocalDate( Optional.of( LocalDateTime.ofInstant( target.getForDateConversionWithLocalDate().toInstant(), ZoneOffset.UTC ).toLocalDate() ) );
+        Date forDateConversionWithLocalDate = target.getForDateConversionWithLocalDate();
+        if ( forDateConversionWithLocalDate != null ) {
+            optionalSource.setForDateConversionWithLocalDate( Optional.of( LocalDateTime.ofInstant( forDateConversionWithLocalDate.toInstant(), ZoneOffset.UTC ).toLocalDate() ) );
         }
-        if ( target.getForSqlDateConversionWithLocalDate() != null ) {
-            optionalSource.setForSqlDateConversionWithLocalDate( Optional.of( target.getForSqlDateConversionWithLocalDate().toLocalDate() ) );
+        java.sql.Date forSqlDateConversionWithLocalDate = target.getForSqlDateConversionWithLocalDate();
+        if ( forSqlDateConversionWithLocalDate != null ) {
+            optionalSource.setForSqlDateConversionWithLocalDate( Optional.of( forSqlDateConversionWithLocalDate.toLocalDate() ) );
         }
-        if ( target.getForDateConversionWithInstant() != null ) {
-            optionalSource.setForDateConversionWithInstant( Optional.of( target.getForDateConversionWithInstant().toInstant() ) );
+        Date forDateConversionWithInstant = target.getForDateConversionWithInstant();
+        if ( forDateConversionWithInstant != null ) {
+            optionalSource.setForDateConversionWithInstant( Optional.of( forDateConversionWithInstant.toInstant() ) );
         }
-        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
-            optionalSource.setForLocalDateTimeConversionWithLocalDate( Optional.of( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() ) );
+        LocalDateTime forLocalDateTimeConversionWithLocalDate = target.getForLocalDateTimeConversionWithLocalDate();
+        if ( forLocalDateTimeConversionWithLocalDate != null ) {
+            optionalSource.setForLocalDateTimeConversionWithLocalDate( Optional.of( forLocalDateTimeConversionWithLocalDate.toLocalDate() ) );
         }
-        if ( target.getForInstantConversionWithString() != null ) {
-            optionalSource.setForInstantConversionWithString( Optional.of( Instant.parse( target.getForInstantConversionWithString() ) ) );
+        String forInstantConversionWithString = target.getForInstantConversionWithString();
+        if ( forInstantConversionWithString != null ) {
+            optionalSource.setForInstantConversionWithString( Optional.of( Instant.parse( forInstantConversionWithString ) ) );
         }
-        if ( target.getForPeriodConversionWithString() != null ) {
-            optionalSource.setForPeriodConversionWithString( Optional.of( Period.parse( target.getForPeriodConversionWithString() ) ) );
+        String forPeriodConversionWithString = target.getForPeriodConversionWithString();
+        if ( forPeriodConversionWithString != null ) {
+            optionalSource.setForPeriodConversionWithString( Optional.of( Period.parse( forPeriodConversionWithString ) ) );
         }
-        if ( target.getForDurationConversionWithString() != null ) {
-            optionalSource.setForDurationConversionWithString( Optional.of( Duration.parse( target.getForDurationConversionWithString() ) ) );
+        String forDurationConversionWithString = target.getForDurationConversionWithString();
+        if ( forDurationConversionWithString != null ) {
+            optionalSource.setForDurationConversionWithString( Optional.of( Duration.parse( forDurationConversionWithString ) ) );
         }
 
         return optionalSource;
@@ -473,47 +585,61 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
 
         OptionalSource optionalSource = new OptionalSource();
 
-        if ( target.getLocalDateTime() != null ) {
-            optionalSource.setLocalDateTime( Optional.of( LocalDateTime.parse( target.getLocalDateTime(), dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242 ) ) );
+        String localDateTime = target.getLocalDateTime();
+        if ( localDateTime != null ) {
+            optionalSource.setLocalDateTime( Optional.of( LocalDateTime.parse( localDateTime, dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242 ) ) );
         }
-        if ( target.getZonedDateTime() != null ) {
-            optionalSource.setZonedDateTime( Optional.of( ZonedDateTime.parse( target.getZonedDateTime() ) ) );
+        String zonedDateTime = target.getZonedDateTime();
+        if ( zonedDateTime != null ) {
+            optionalSource.setZonedDateTime( Optional.of( ZonedDateTime.parse( zonedDateTime ) ) );
         }
-        if ( target.getLocalDate() != null ) {
-            optionalSource.setLocalDate( Optional.of( LocalDate.parse( target.getLocalDate() ) ) );
+        String localDate = target.getLocalDate();
+        if ( localDate != null ) {
+            optionalSource.setLocalDate( Optional.of( LocalDate.parse( localDate ) ) );
         }
-        if ( target.getLocalTime() != null ) {
-            optionalSource.setLocalTime( Optional.of( LocalTime.parse( target.getLocalTime() ) ) );
+        String localTime = target.getLocalTime();
+        if ( localTime != null ) {
+            optionalSource.setLocalTime( Optional.of( LocalTime.parse( localTime ) ) );
         }
-        if ( target.getForCalendarConversion() != null ) {
-            optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( target.getForCalendarConversion() ) ) );
+        Calendar forCalendarConversion = target.getForCalendarConversion();
+        if ( forCalendarConversion != null ) {
+            optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( forCalendarConversion ) ) );
         }
-        if ( target.getForDateConversionWithZonedDateTime() != null ) {
-            optionalSource.setForDateConversionWithZonedDateTime( Optional.of( ZonedDateTime.ofInstant( target.getForDateConversionWithZonedDateTime().toInstant(), ZoneId.systemDefault() ) ) );
+        Date forDateConversionWithZonedDateTime = target.getForDateConversionWithZonedDateTime();
+        if ( forDateConversionWithZonedDateTime != null ) {
+            optionalSource.setForDateConversionWithZonedDateTime( Optional.of( ZonedDateTime.ofInstant( forDateConversionWithZonedDateTime.toInstant(), ZoneId.systemDefault() ) ) );
         }
-        if ( target.getForDateConversionWithLocalDateTime() != null ) {
-            optionalSource.setForDateConversionWithLocalDateTime( Optional.of( LocalDateTime.ofInstant( target.getForDateConversionWithLocalDateTime().toInstant(), ZoneId.of( "UTC" ) ) ) );
+        Date forDateConversionWithLocalDateTime = target.getForDateConversionWithLocalDateTime();
+        if ( forDateConversionWithLocalDateTime != null ) {
+            optionalSource.setForDateConversionWithLocalDateTime( Optional.of( LocalDateTime.ofInstant( forDateConversionWithLocalDateTime.toInstant(), ZoneId.of( "UTC" ) ) ) );
         }
-        if ( target.getForDateConversionWithLocalDate() != null ) {
-            optionalSource.setForDateConversionWithLocalDate( Optional.of( LocalDateTime.ofInstant( target.getForDateConversionWithLocalDate().toInstant(), ZoneOffset.UTC ).toLocalDate() ) );
+        Date forDateConversionWithLocalDate = target.getForDateConversionWithLocalDate();
+        if ( forDateConversionWithLocalDate != null ) {
+            optionalSource.setForDateConversionWithLocalDate( Optional.of( LocalDateTime.ofInstant( forDateConversionWithLocalDate.toInstant(), ZoneOffset.UTC ).toLocalDate() ) );
         }
-        if ( target.getForSqlDateConversionWithLocalDate() != null ) {
-            optionalSource.setForSqlDateConversionWithLocalDate( Optional.of( target.getForSqlDateConversionWithLocalDate().toLocalDate() ) );
+        java.sql.Date forSqlDateConversionWithLocalDate = target.getForSqlDateConversionWithLocalDate();
+        if ( forSqlDateConversionWithLocalDate != null ) {
+            optionalSource.setForSqlDateConversionWithLocalDate( Optional.of( forSqlDateConversionWithLocalDate.toLocalDate() ) );
         }
-        if ( target.getForDateConversionWithInstant() != null ) {
-            optionalSource.setForDateConversionWithInstant( Optional.of( target.getForDateConversionWithInstant().toInstant() ) );
+        Date forDateConversionWithInstant = target.getForDateConversionWithInstant();
+        if ( forDateConversionWithInstant != null ) {
+            optionalSource.setForDateConversionWithInstant( Optional.of( forDateConversionWithInstant.toInstant() ) );
         }
-        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
-            optionalSource.setForLocalDateTimeConversionWithLocalDate( Optional.of( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() ) );
+        LocalDateTime forLocalDateTimeConversionWithLocalDate = target.getForLocalDateTimeConversionWithLocalDate();
+        if ( forLocalDateTimeConversionWithLocalDate != null ) {
+            optionalSource.setForLocalDateTimeConversionWithLocalDate( Optional.of( forLocalDateTimeConversionWithLocalDate.toLocalDate() ) );
         }
-        if ( target.getForInstantConversionWithString() != null ) {
-            optionalSource.setForInstantConversionWithString( Optional.of( Instant.parse( target.getForInstantConversionWithString() ) ) );
+        String forInstantConversionWithString = target.getForInstantConversionWithString();
+        if ( forInstantConversionWithString != null ) {
+            optionalSource.setForInstantConversionWithString( Optional.of( Instant.parse( forInstantConversionWithString ) ) );
         }
-        if ( target.getForPeriodConversionWithString() != null ) {
-            optionalSource.setForPeriodConversionWithString( Optional.of( Period.parse( target.getForPeriodConversionWithString() ) ) );
+        String forPeriodConversionWithString = target.getForPeriodConversionWithString();
+        if ( forPeriodConversionWithString != null ) {
+            optionalSource.setForPeriodConversionWithString( Optional.of( Period.parse( forPeriodConversionWithString ) ) );
         }
-        if ( target.getForDurationConversionWithString() != null ) {
-            optionalSource.setForDurationConversionWithString( Optional.of( Duration.parse( target.getForDurationConversionWithString() ) ) );
+        String forDurationConversionWithString = target.getForDurationConversionWithString();
+        if ( forDurationConversionWithString != null ) {
+            optionalSource.setForDurationConversionWithString( Optional.of( Duration.parse( forDurationConversionWithString ) ) );
         }
 
         return optionalSource;
@@ -527,47 +653,61 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
 
         OptionalSource optionalSource = new OptionalSource();
 
-        if ( target.getLocalDate() != null ) {
-            optionalSource.setLocalDate( Optional.of( LocalDate.parse( target.getLocalDate(), dateTimeFormatter_dd_MM_yyyy_11900521056 ) ) );
+        String localDate = target.getLocalDate();
+        if ( localDate != null ) {
+            optionalSource.setLocalDate( Optional.of( LocalDate.parse( localDate, dateTimeFormatter_dd_MM_yyyy_11900521056 ) ) );
         }
-        if ( target.getZonedDateTime() != null ) {
-            optionalSource.setZonedDateTime( Optional.of( ZonedDateTime.parse( target.getZonedDateTime() ) ) );
+        String zonedDateTime = target.getZonedDateTime();
+        if ( zonedDateTime != null ) {
+            optionalSource.setZonedDateTime( Optional.of( ZonedDateTime.parse( zonedDateTime ) ) );
         }
-        if ( target.getLocalDateTime() != null ) {
-            optionalSource.setLocalDateTime( Optional.of( LocalDateTime.parse( target.getLocalDateTime() ) ) );
+        String localDateTime = target.getLocalDateTime();
+        if ( localDateTime != null ) {
+            optionalSource.setLocalDateTime( Optional.of( LocalDateTime.parse( localDateTime ) ) );
         }
-        if ( target.getLocalTime() != null ) {
-            optionalSource.setLocalTime( Optional.of( LocalTime.parse( target.getLocalTime() ) ) );
+        String localTime = target.getLocalTime();
+        if ( localTime != null ) {
+            optionalSource.setLocalTime( Optional.of( LocalTime.parse( localTime ) ) );
         }
-        if ( target.getForCalendarConversion() != null ) {
-            optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( target.getForCalendarConversion() ) ) );
+        Calendar forCalendarConversion = target.getForCalendarConversion();
+        if ( forCalendarConversion != null ) {
+            optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( forCalendarConversion ) ) );
         }
-        if ( target.getForDateConversionWithZonedDateTime() != null ) {
-            optionalSource.setForDateConversionWithZonedDateTime( Optional.of( ZonedDateTime.ofInstant( target.getForDateConversionWithZonedDateTime().toInstant(), ZoneId.systemDefault() ) ) );
+        Date forDateConversionWithZonedDateTime = target.getForDateConversionWithZonedDateTime();
+        if ( forDateConversionWithZonedDateTime != null ) {
+            optionalSource.setForDateConversionWithZonedDateTime( Optional.of( ZonedDateTime.ofInstant( forDateConversionWithZonedDateTime.toInstant(), ZoneId.systemDefault() ) ) );
         }
-        if ( target.getForDateConversionWithLocalDateTime() != null ) {
-            optionalSource.setForDateConversionWithLocalDateTime( Optional.of( LocalDateTime.ofInstant( target.getForDateConversionWithLocalDateTime().toInstant(), ZoneId.of( "UTC" ) ) ) );
+        Date forDateConversionWithLocalDateTime = target.getForDateConversionWithLocalDateTime();
+        if ( forDateConversionWithLocalDateTime != null ) {
+            optionalSource.setForDateConversionWithLocalDateTime( Optional.of( LocalDateTime.ofInstant( forDateConversionWithLocalDateTime.toInstant(), ZoneId.of( "UTC" ) ) ) );
         }
-        if ( target.getForDateConversionWithLocalDate() != null ) {
-            optionalSource.setForDateConversionWithLocalDate( Optional.of( LocalDateTime.ofInstant( target.getForDateConversionWithLocalDate().toInstant(), ZoneOffset.UTC ).toLocalDate() ) );
+        Date forDateConversionWithLocalDate = target.getForDateConversionWithLocalDate();
+        if ( forDateConversionWithLocalDate != null ) {
+            optionalSource.setForDateConversionWithLocalDate( Optional.of( LocalDateTime.ofInstant( forDateConversionWithLocalDate.toInstant(), ZoneOffset.UTC ).toLocalDate() ) );
         }
-        if ( target.getForSqlDateConversionWithLocalDate() != null ) {
-            optionalSource.setForSqlDateConversionWithLocalDate( Optional.of( target.getForSqlDateConversionWithLocalDate().toLocalDate() ) );
+        java.sql.Date forSqlDateConversionWithLocalDate = target.getForSqlDateConversionWithLocalDate();
+        if ( forSqlDateConversionWithLocalDate != null ) {
+            optionalSource.setForSqlDateConversionWithLocalDate( Optional.of( forSqlDateConversionWithLocalDate.toLocalDate() ) );
         }
-        if ( target.getForDateConversionWithInstant() != null ) {
-            optionalSource.setForDateConversionWithInstant( Optional.of( target.getForDateConversionWithInstant().toInstant() ) );
+        Date forDateConversionWithInstant = target.getForDateConversionWithInstant();
+        if ( forDateConversionWithInstant != null ) {
+            optionalSource.setForDateConversionWithInstant( Optional.of( forDateConversionWithInstant.toInstant() ) );
         }
-        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
-            optionalSource.setForLocalDateTimeConversionWithLocalDate( Optional.of( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() ) );
+        LocalDateTime forLocalDateTimeConversionWithLocalDate = target.getForLocalDateTimeConversionWithLocalDate();
+        if ( forLocalDateTimeConversionWithLocalDate != null ) {
+            optionalSource.setForLocalDateTimeConversionWithLocalDate( Optional.of( forLocalDateTimeConversionWithLocalDate.toLocalDate() ) );
         }
-        if ( target.getForInstantConversionWithString() != null ) {
-            optionalSource.setForInstantConversionWithString( Optional.of( Instant.parse( target.getForInstantConversionWithString() ) ) );
+        String forInstantConversionWithString = target.getForInstantConversionWithString();
+        if ( forInstantConversionWithString != null ) {
+            optionalSource.setForInstantConversionWithString( Optional.of( Instant.parse( forInstantConversionWithString ) ) );
         }
-        if ( target.getForPeriodConversionWithString() != null ) {
-            optionalSource.setForPeriodConversionWithString( Optional.of( Period.parse( target.getForPeriodConversionWithString() ) ) );
+        String forPeriodConversionWithString = target.getForPeriodConversionWithString();
+        if ( forPeriodConversionWithString != null ) {
+            optionalSource.setForPeriodConversionWithString( Optional.of( Period.parse( forPeriodConversionWithString ) ) );
         }
-        if ( target.getForDurationConversionWithString() != null ) {
-            optionalSource.setForDurationConversionWithString( Optional.of( Duration.parse( target.getForDurationConversionWithString() ) ) );
+        String forDurationConversionWithString = target.getForDurationConversionWithString();
+        if ( forDurationConversionWithString != null ) {
+            optionalSource.setForDurationConversionWithString( Optional.of( Duration.parse( forDurationConversionWithString ) ) );
         }
 
         return optionalSource;
@@ -581,47 +721,61 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
 
         OptionalSource optionalSource = new OptionalSource();
 
-        if ( target.getLocalTime() != null ) {
-            optionalSource.setLocalTime( Optional.of( LocalTime.parse( target.getLocalTime(), dateTimeFormatter_HH_mm_168697690 ) ) );
+        String localTime = target.getLocalTime();
+        if ( localTime != null ) {
+            optionalSource.setLocalTime( Optional.of( LocalTime.parse( localTime, dateTimeFormatter_HH_mm_168697690 ) ) );
         }
-        if ( target.getZonedDateTime() != null ) {
-            optionalSource.setZonedDateTime( Optional.of( ZonedDateTime.parse( target.getZonedDateTime() ) ) );
+        String zonedDateTime = target.getZonedDateTime();
+        if ( zonedDateTime != null ) {
+            optionalSource.setZonedDateTime( Optional.of( ZonedDateTime.parse( zonedDateTime ) ) );
         }
-        if ( target.getLocalDateTime() != null ) {
-            optionalSource.setLocalDateTime( Optional.of( LocalDateTime.parse( target.getLocalDateTime() ) ) );
+        String localDateTime = target.getLocalDateTime();
+        if ( localDateTime != null ) {
+            optionalSource.setLocalDateTime( Optional.of( LocalDateTime.parse( localDateTime ) ) );
         }
-        if ( target.getLocalDate() != null ) {
-            optionalSource.setLocalDate( Optional.of( LocalDate.parse( target.getLocalDate() ) ) );
+        String localDate = target.getLocalDate();
+        if ( localDate != null ) {
+            optionalSource.setLocalDate( Optional.of( LocalDate.parse( localDate ) ) );
         }
-        if ( target.getForCalendarConversion() != null ) {
-            optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( target.getForCalendarConversion() ) ) );
+        Calendar forCalendarConversion = target.getForCalendarConversion();
+        if ( forCalendarConversion != null ) {
+            optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( forCalendarConversion ) ) );
         }
-        if ( target.getForDateConversionWithZonedDateTime() != null ) {
-            optionalSource.setForDateConversionWithZonedDateTime( Optional.of( ZonedDateTime.ofInstant( target.getForDateConversionWithZonedDateTime().toInstant(), ZoneId.systemDefault() ) ) );
+        Date forDateConversionWithZonedDateTime = target.getForDateConversionWithZonedDateTime();
+        if ( forDateConversionWithZonedDateTime != null ) {
+            optionalSource.setForDateConversionWithZonedDateTime( Optional.of( ZonedDateTime.ofInstant( forDateConversionWithZonedDateTime.toInstant(), ZoneId.systemDefault() ) ) );
         }
-        if ( target.getForDateConversionWithLocalDateTime() != null ) {
-            optionalSource.setForDateConversionWithLocalDateTime( Optional.of( LocalDateTime.ofInstant( target.getForDateConversionWithLocalDateTime().toInstant(), ZoneId.of( "UTC" ) ) ) );
+        Date forDateConversionWithLocalDateTime = target.getForDateConversionWithLocalDateTime();
+        if ( forDateConversionWithLocalDateTime != null ) {
+            optionalSource.setForDateConversionWithLocalDateTime( Optional.of( LocalDateTime.ofInstant( forDateConversionWithLocalDateTime.toInstant(), ZoneId.of( "UTC" ) ) ) );
         }
-        if ( target.getForDateConversionWithLocalDate() != null ) {
-            optionalSource.setForDateConversionWithLocalDate( Optional.of( LocalDateTime.ofInstant( target.getForDateConversionWithLocalDate().toInstant(), ZoneOffset.UTC ).toLocalDate() ) );
+        Date forDateConversionWithLocalDate = target.getForDateConversionWithLocalDate();
+        if ( forDateConversionWithLocalDate != null ) {
+            optionalSource.setForDateConversionWithLocalDate( Optional.of( LocalDateTime.ofInstant( forDateConversionWithLocalDate.toInstant(), ZoneOffset.UTC ).toLocalDate() ) );
         }
-        if ( target.getForSqlDateConversionWithLocalDate() != null ) {
-            optionalSource.setForSqlDateConversionWithLocalDate( Optional.of( target.getForSqlDateConversionWithLocalDate().toLocalDate() ) );
+        java.sql.Date forSqlDateConversionWithLocalDate = target.getForSqlDateConversionWithLocalDate();
+        if ( forSqlDateConversionWithLocalDate != null ) {
+            optionalSource.setForSqlDateConversionWithLocalDate( Optional.of( forSqlDateConversionWithLocalDate.toLocalDate() ) );
         }
-        if ( target.getForDateConversionWithInstant() != null ) {
-            optionalSource.setForDateConversionWithInstant( Optional.of( target.getForDateConversionWithInstant().toInstant() ) );
+        Date forDateConversionWithInstant = target.getForDateConversionWithInstant();
+        if ( forDateConversionWithInstant != null ) {
+            optionalSource.setForDateConversionWithInstant( Optional.of( forDateConversionWithInstant.toInstant() ) );
         }
-        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
-            optionalSource.setForLocalDateTimeConversionWithLocalDate( Optional.of( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() ) );
+        LocalDateTime forLocalDateTimeConversionWithLocalDate = target.getForLocalDateTimeConversionWithLocalDate();
+        if ( forLocalDateTimeConversionWithLocalDate != null ) {
+            optionalSource.setForLocalDateTimeConversionWithLocalDate( Optional.of( forLocalDateTimeConversionWithLocalDate.toLocalDate() ) );
         }
-        if ( target.getForInstantConversionWithString() != null ) {
-            optionalSource.setForInstantConversionWithString( Optional.of( Instant.parse( target.getForInstantConversionWithString() ) ) );
+        String forInstantConversionWithString = target.getForInstantConversionWithString();
+        if ( forInstantConversionWithString != null ) {
+            optionalSource.setForInstantConversionWithString( Optional.of( Instant.parse( forInstantConversionWithString ) ) );
         }
-        if ( target.getForPeriodConversionWithString() != null ) {
-            optionalSource.setForPeriodConversionWithString( Optional.of( Period.parse( target.getForPeriodConversionWithString() ) ) );
+        String forPeriodConversionWithString = target.getForPeriodConversionWithString();
+        if ( forPeriodConversionWithString != null ) {
+            optionalSource.setForPeriodConversionWithString( Optional.of( Period.parse( forPeriodConversionWithString ) ) );
         }
-        if ( target.getForDurationConversionWithString() != null ) {
-            optionalSource.setForDurationConversionWithString( Optional.of( Duration.parse( target.getForDurationConversionWithString() ) ) );
+        String forDurationConversionWithString = target.getForDurationConversionWithString();
+        if ( forDurationConversionWithString != null ) {
+            optionalSource.setForDurationConversionWithString( Optional.of( Duration.parse( forDurationConversionWithString ) ) );
         }
 
         return optionalSource;
@@ -635,47 +789,61 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
 
         OptionalSource optionalSource = new OptionalSource();
 
-        if ( target.getZonedDateTime() != null ) {
-            optionalSource.setZonedDateTime( Optional.of( ZonedDateTime.parse( target.getZonedDateTime(), dateTimeFormatter_dd_MM_yyyy_HH_mm_z_01894582668 ) ) );
+        String zonedDateTime = target.getZonedDateTime();
+        if ( zonedDateTime != null ) {
+            optionalSource.setZonedDateTime( Optional.of( ZonedDateTime.parse( zonedDateTime, dateTimeFormatter_dd_MM_yyyy_HH_mm_z_01894582668 ) ) );
         }
-        if ( target.getLocalDateTime() != null ) {
-            optionalSource.setLocalDateTime( Optional.of( LocalDateTime.parse( target.getLocalDateTime(), dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242 ) ) );
+        String localDateTime = target.getLocalDateTime();
+        if ( localDateTime != null ) {
+            optionalSource.setLocalDateTime( Optional.of( LocalDateTime.parse( localDateTime, dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242 ) ) );
         }
-        if ( target.getLocalDate() != null ) {
-            optionalSource.setLocalDate( Optional.of( LocalDate.parse( target.getLocalDate(), dateTimeFormatter_dd_MM_yyyy_11900521056 ) ) );
+        String localDate = target.getLocalDate();
+        if ( localDate != null ) {
+            optionalSource.setLocalDate( Optional.of( LocalDate.parse( localDate, dateTimeFormatter_dd_MM_yyyy_11900521056 ) ) );
         }
-        if ( target.getLocalTime() != null ) {
-            optionalSource.setLocalTime( Optional.of( LocalTime.parse( target.getLocalTime(), dateTimeFormatter_HH_mm_168697690 ) ) );
+        String localTime = target.getLocalTime();
+        if ( localTime != null ) {
+            optionalSource.setLocalTime( Optional.of( LocalTime.parse( localTime, dateTimeFormatter_HH_mm_168697690 ) ) );
         }
-        if ( target.getForCalendarConversion() != null ) {
-            optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( target.getForCalendarConversion() ) ) );
+        Calendar forCalendarConversion = target.getForCalendarConversion();
+        if ( forCalendarConversion != null ) {
+            optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( forCalendarConversion ) ) );
         }
-        if ( target.getForDateConversionWithZonedDateTime() != null ) {
-            optionalSource.setForDateConversionWithZonedDateTime( Optional.of( ZonedDateTime.ofInstant( target.getForDateConversionWithZonedDateTime().toInstant(), ZoneId.systemDefault() ) ) );
+        Date forDateConversionWithZonedDateTime = target.getForDateConversionWithZonedDateTime();
+        if ( forDateConversionWithZonedDateTime != null ) {
+            optionalSource.setForDateConversionWithZonedDateTime( Optional.of( ZonedDateTime.ofInstant( forDateConversionWithZonedDateTime.toInstant(), ZoneId.systemDefault() ) ) );
         }
-        if ( target.getForDateConversionWithLocalDateTime() != null ) {
-            optionalSource.setForDateConversionWithLocalDateTime( Optional.of( LocalDateTime.ofInstant( target.getForDateConversionWithLocalDateTime().toInstant(), ZoneId.of( "UTC" ) ) ) );
+        Date forDateConversionWithLocalDateTime = target.getForDateConversionWithLocalDateTime();
+        if ( forDateConversionWithLocalDateTime != null ) {
+            optionalSource.setForDateConversionWithLocalDateTime( Optional.of( LocalDateTime.ofInstant( forDateConversionWithLocalDateTime.toInstant(), ZoneId.of( "UTC" ) ) ) );
         }
-        if ( target.getForDateConversionWithLocalDate() != null ) {
-            optionalSource.setForDateConversionWithLocalDate( Optional.of( LocalDateTime.ofInstant( target.getForDateConversionWithLocalDate().toInstant(), ZoneOffset.UTC ).toLocalDate() ) );
+        Date forDateConversionWithLocalDate = target.getForDateConversionWithLocalDate();
+        if ( forDateConversionWithLocalDate != null ) {
+            optionalSource.setForDateConversionWithLocalDate( Optional.of( LocalDateTime.ofInstant( forDateConversionWithLocalDate.toInstant(), ZoneOffset.UTC ).toLocalDate() ) );
         }
-        if ( target.getForSqlDateConversionWithLocalDate() != null ) {
-            optionalSource.setForSqlDateConversionWithLocalDate( Optional.of( target.getForSqlDateConversionWithLocalDate().toLocalDate() ) );
+        java.sql.Date forSqlDateConversionWithLocalDate = target.getForSqlDateConversionWithLocalDate();
+        if ( forSqlDateConversionWithLocalDate != null ) {
+            optionalSource.setForSqlDateConversionWithLocalDate( Optional.of( forSqlDateConversionWithLocalDate.toLocalDate() ) );
         }
-        if ( target.getForDateConversionWithInstant() != null ) {
-            optionalSource.setForDateConversionWithInstant( Optional.of( target.getForDateConversionWithInstant().toInstant() ) );
+        Date forDateConversionWithInstant = target.getForDateConversionWithInstant();
+        if ( forDateConversionWithInstant != null ) {
+            optionalSource.setForDateConversionWithInstant( Optional.of( forDateConversionWithInstant.toInstant() ) );
         }
-        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
-            optionalSource.setForLocalDateTimeConversionWithLocalDate( Optional.of( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() ) );
+        LocalDateTime forLocalDateTimeConversionWithLocalDate = target.getForLocalDateTimeConversionWithLocalDate();
+        if ( forLocalDateTimeConversionWithLocalDate != null ) {
+            optionalSource.setForLocalDateTimeConversionWithLocalDate( Optional.of( forLocalDateTimeConversionWithLocalDate.toLocalDate() ) );
         }
-        if ( target.getForInstantConversionWithString() != null ) {
-            optionalSource.setForInstantConversionWithString( Optional.of( Instant.parse( target.getForInstantConversionWithString() ) ) );
+        String forInstantConversionWithString = target.getForInstantConversionWithString();
+        if ( forInstantConversionWithString != null ) {
+            optionalSource.setForInstantConversionWithString( Optional.of( Instant.parse( forInstantConversionWithString ) ) );
         }
-        if ( target.getForPeriodConversionWithString() != null ) {
-            optionalSource.setForPeriodConversionWithString( Optional.of( Period.parse( target.getForPeriodConversionWithString() ) ) );
+        String forPeriodConversionWithString = target.getForPeriodConversionWithString();
+        if ( forPeriodConversionWithString != null ) {
+            optionalSource.setForPeriodConversionWithString( Optional.of( Period.parse( forPeriodConversionWithString ) ) );
         }
-        if ( target.getForDurationConversionWithString() != null ) {
-            optionalSource.setForDurationConversionWithString( Optional.of( Duration.parse( target.getForDurationConversionWithString() ) ) );
+        String forDurationConversionWithString = target.getForDurationConversionWithString();
+        if ( forDurationConversionWithString != null ) {
+            optionalSource.setForDurationConversionWithString( Optional.of( Duration.parse( forDurationConversionWithString ) ) );
         }
 
         return optionalSource;

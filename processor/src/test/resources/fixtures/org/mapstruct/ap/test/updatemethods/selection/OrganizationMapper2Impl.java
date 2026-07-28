@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.updatemethods.selection;
 import javax.annotation.Generated;
 import org.mapstruct.ap.test.updatemethods.CompanyDto;
 import org.mapstruct.ap.test.updatemethods.CompanyEntity;
+import org.mapstruct.ap.test.updatemethods.DepartmentDto;
 import org.mapstruct.ap.test.updatemethods.DepartmentEntityFactory;
 
 @Generated(
@@ -27,11 +28,12 @@ public class OrganizationMapper2Impl implements OrganizationMapper2 {
         }
 
         entity.setName( dto.getName() );
-        if ( dto.getDepartment() != null ) {
+        DepartmentDto department = dto.getDepartment();
+        if ( department != null ) {
             if ( entity.getDepartment() == null ) {
                 entity.setDepartment( departmentEntityFactory.createDepartmentEntity() );
             }
-            externalHandWrittenMapper.toDepartmentEntity( dto.getDepartment(), entity.getDepartment() );
+            externalHandWrittenMapper.toDepartmentEntity( department, entity.getDepartment() );
         }
         else {
             entity.setDepartment( null );

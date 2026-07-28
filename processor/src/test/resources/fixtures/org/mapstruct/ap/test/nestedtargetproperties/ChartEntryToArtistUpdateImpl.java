@@ -6,7 +6,7 @@
 package org.mapstruct.ap.test.nestedtargetproperties;
 
 import java.util.List;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import org.mapstruct.ap.test.nestedsourceproperties._target.ChartEntry;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Artist;
 import org.mapstruct.ap.test.nestedsourceproperties.source.Chart;
@@ -16,8 +16,8 @@ import org.mapstruct.ap.test.nestedsourceproperties.source.Studio;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2017-02-07T21:05:06+0100",
-    comments = "version: , compiler: javac, environment: Java 1.8.0_112 (Oracle Corporation)"
+    date = "2026-06-05T14:56:17+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class ChartEntryToArtistUpdateImpl extends ChartEntryToArtistUpdate {
 
@@ -31,8 +31,9 @@ public class ChartEntryToArtistUpdateImpl extends ChartEntryToArtistUpdate {
             chart.setSong( new Song() );
         }
         chartEntryToSong( chartEntry, chart.getSong() );
-        if ( chartEntry.getChartName() != null ) {
-            chart.setName( chartEntry.getChartName() );
+        String chartName = chartEntry.getChartName();
+        if ( chartName != null ) {
+            chart.setName( chartName );
         }
     }
 
@@ -41,11 +42,13 @@ public class ChartEntryToArtistUpdateImpl extends ChartEntryToArtistUpdate {
             return;
         }
 
-        if ( chartEntry.getRecordedAt() != null ) {
-            mappingTarget.setName( chartEntry.getRecordedAt() );
+        String recordedAt = chartEntry.getRecordedAt();
+        if ( recordedAt != null ) {
+            mappingTarget.setName( recordedAt );
         }
-        if ( chartEntry.getCity() != null ) {
-            mappingTarget.setCity( chartEntry.getCity() );
+        String city = chartEntry.getCity();
+        if ( city != null ) {
+            mappingTarget.setCity( city );
         }
     }
 
@@ -69,8 +72,9 @@ public class ChartEntryToArtistUpdateImpl extends ChartEntryToArtistUpdate {
             mappingTarget.setLabel( new Label() );
         }
         chartEntryToLabel( chartEntry, mappingTarget.getLabel() );
-        if ( chartEntry.getArtistName() != null ) {
-            mappingTarget.setName( chartEntry.getArtistName() );
+        String artistName = chartEntry.getArtistName();
+        if ( artistName != null ) {
+            mappingTarget.setName( artistName );
         }
     }
 
@@ -83,8 +87,9 @@ public class ChartEntryToArtistUpdateImpl extends ChartEntryToArtistUpdate {
             mappingTarget.setArtist( new Artist() );
         }
         chartEntryToArtist( chartEntry, mappingTarget.getArtist() );
-        if ( chartEntry.getSongTitle() != null ) {
-            mappingTarget.setTitle( chartEntry.getSongTitle() );
+        String songTitle = chartEntry.getSongTitle();
+        if ( songTitle != null ) {
+            mappingTarget.setTitle( songTitle );
         }
         if ( mappingTarget.getPositions() != null ) {
             List<Integer> list = mapPosition( chartEntry.getPosition() );

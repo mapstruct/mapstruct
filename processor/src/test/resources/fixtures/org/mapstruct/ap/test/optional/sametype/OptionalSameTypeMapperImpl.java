@@ -10,8 +10,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-23T10:02:54+0100",
-    comments = "version: , compiler: javac, environment: Java 21.0.3 (Eclipse Adoptium)"
+    date = "2026-06-05T14:56:21+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class OptionalSameTypeMapperImpl implements OptionalSameTypeMapper {
 
@@ -26,28 +26,34 @@ public class OptionalSameTypeMapperImpl implements OptionalSameTypeMapper {
         Optional<String> constructorNonOptionalToOptional = Optional.empty();
 
         constructorOptionalToOptional = source.getConstructorOptionalToOptional();
-        if ( source.getConstructorOptionalToNonOptional().isPresent() ) {
-            constructorOptionalToNonOptional = source.getConstructorOptionalToNonOptional().get();
+        Optional<String> constructorOptionalToNonOptional1 = source.getConstructorOptionalToNonOptional();
+        if ( constructorOptionalToNonOptional1.isPresent() ) {
+            constructorOptionalToNonOptional = constructorOptionalToNonOptional1.get();
         }
-        if ( source.getConstructorNonOptionalToOptional() != null ) {
-            constructorNonOptionalToOptional = Optional.of( source.getConstructorNonOptionalToOptional() );
+        String constructorNonOptionalToOptional1 = source.getConstructorNonOptionalToOptional();
+        if ( constructorNonOptionalToOptional1 != null ) {
+            constructorNonOptionalToOptional = Optional.of( constructorNonOptionalToOptional1 );
         }
 
         Target target = new Target( constructorOptionalToOptional, constructorOptionalToNonOptional, constructorNonOptionalToOptional );
 
         target.setOptionalToOptional( source.getOptionalToOptional() );
-        if ( source.getOptionalToNonOptional().isPresent() ) {
-            target.setOptionalToNonOptional( source.getOptionalToNonOptional().get() );
+        Optional<String> optionalToNonOptional = source.getOptionalToNonOptional();
+        if ( optionalToNonOptional.isPresent() ) {
+            target.setOptionalToNonOptional( optionalToNonOptional.get() );
         }
-        if ( source.getNonOptionalToOptional() != null ) {
-            target.setNonOptionalToOptional( Optional.of( source.getNonOptionalToOptional() ) );
+        String nonOptionalToOptional = source.getNonOptionalToOptional();
+        if ( nonOptionalToOptional != null ) {
+            target.setNonOptionalToOptional( Optional.of( nonOptionalToOptional ) );
         }
         target.publicOptionalToOptional = source.publicOptionalToOptional;
-        if ( source.publicOptionalToNonOptional.isPresent() ) {
-            target.publicOptionalToNonOptional = source.publicOptionalToNonOptional.get();
+        Optional<String> publicOptionalToNonOptional = source.publicOptionalToNonOptional;
+        if ( publicOptionalToNonOptional.isPresent() ) {
+            target.publicOptionalToNonOptional = publicOptionalToNonOptional.get();
         }
-        if ( source.publicNonOptionalToOptional != null ) {
-            target.publicNonOptionalToOptional = Optional.of( source.publicNonOptionalToOptional );
+        String publicNonOptionalToOptional = source.publicNonOptionalToOptional;
+        if ( publicNonOptionalToOptional != null ) {
+            target.publicNonOptionalToOptional = Optional.of( publicNonOptionalToOptional );
         }
 
         return target;

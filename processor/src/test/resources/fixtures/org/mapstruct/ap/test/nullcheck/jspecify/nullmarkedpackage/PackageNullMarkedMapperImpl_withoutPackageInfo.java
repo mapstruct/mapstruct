@@ -9,8 +9,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-12T20:03:08+0200",
-    comments = "version: , compiler: javac, environment: Java 25 (Eclipse Adoptium)"
+    date = "2026-06-05T14:55:05+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class PackageNullMarkedMapperImpl implements PackageNullMarkedMapper {
 
@@ -22,8 +22,9 @@ public class PackageNullMarkedMapperImpl implements PackageNullMarkedMapper {
 
         PackageNullMarkedTargetBean packageNullMarkedTargetBean = new PackageNullMarkedTargetBean();
 
-        if ( source.getValue() != null ) {
-            packageNullMarkedTargetBean.setValue( source.getValue() );
+        String value = source.getValue();
+        if ( value != null ) {
+            packageNullMarkedTargetBean.setValue( value );
         }
 
         return packageNullMarkedTargetBean;

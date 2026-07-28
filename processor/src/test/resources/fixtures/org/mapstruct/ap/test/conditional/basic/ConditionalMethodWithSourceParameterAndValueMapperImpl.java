@@ -9,8 +9,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2021-04-19T21:10:38+0200",
-    comments = "version: , compiler: javac, environment: Java 11.0.9.1 (AdoptOpenJDK)"
+    date = "2026-06-05T14:55:45+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class ConditionalMethodWithSourceParameterAndValueMapperImpl implements ConditionalMethodWithSourceParameterAndValueMapper {
 
@@ -22,8 +22,9 @@ public class ConditionalMethodWithSourceParameterAndValueMapperImpl implements C
 
         BasicEmployee basicEmployee = new BasicEmployee();
 
-        if ( isPresent( employee, employee.getName() ) ) {
-            basicEmployee.setName( employee.getName() );
+        String name = employee.getName();
+        if ( isPresent( employee, name ) ) {
+            basicEmployee.setName( name );
         }
 
         return basicEmployee;

@@ -10,8 +10,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-11-20T22:01:31-0500",
-    comments = "version: , compiler: javac, environment: Java 11.0.19 (Homebrew)"
+    date = "2026-06-05T14:56:19+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class OptionalBeforeAfterMapperImpl implements OptionalBeforeAfterMapper {
 
@@ -32,11 +32,13 @@ public class OptionalBeforeAfterMapperImpl implements OptionalBeforeAfterMapper 
         deepOptionalToNonOptional = subTypeOptionalToSubType( source.getDeepOptionalToNonOptional() );
         deepNonOptionalToOptional = subTypeToSubTypeOptional( source.getDeepNonOptionalToOptional() );
         shallowOptionalToOptional = source.getShallowOptionalToOptional();
-        if ( source.getShallowOptionalToNonOptional().isPresent() ) {
-            shallowOptionalToNonOptional = source.getShallowOptionalToNonOptional().get();
+        Optional<String> shallowOptionalToNonOptional1 = source.getShallowOptionalToNonOptional();
+        if ( shallowOptionalToNonOptional1.isPresent() ) {
+            shallowOptionalToNonOptional = shallowOptionalToNonOptional1.get();
         }
-        if ( source.getShallowNonOptionalToOptional() != null ) {
-            shallowNonOptionalToOptional = Optional.of( source.getShallowNonOptionalToOptional() );
+        String shallowNonOptionalToOptional1 = source.getShallowNonOptionalToOptional();
+        if ( shallowNonOptionalToOptional1 != null ) {
+            shallowNonOptionalToOptional = Optional.of( shallowNonOptionalToOptional1 );
         }
 
         Target target = new Target( deepOptionalToOptional, deepOptionalToNonOptional, deepNonOptionalToOptional, shallowOptionalToOptional, shallowOptionalToNonOptional, shallowNonOptionalToOptional );

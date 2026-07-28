@@ -10,8 +10,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-01-23T09:56:12+0100",
-    comments = "version: , compiler: javac, environment: Java 21.0.3 (Eclipse Adoptium)"
+    date = "2026-06-05T14:56:21+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (IBM Corporation)"
 )
 public class OptionalNestedPresenceCheckFirstMapperImpl implements OptionalNestedPresenceCheckFirstMapper {
 
@@ -23,8 +23,9 @@ public class OptionalNestedPresenceCheckFirstMapperImpl implements OptionalNeste
 
         TargetAggregate targetAggregate = new TargetAggregate();
 
+        Optional<String> title = song.getTitle();
         if ( song.hasTitle() ) {
-            targetAggregate.setSongTitle( song.getTitle().get() );
+            targetAggregate.setSongTitle( title.get() );
         }
         String name = songArtistName( song );
         if ( song.hasArtist() && song.getArtist().isPresent() && song.getArtist().get().hasName() ) {

@@ -9,6 +9,7 @@ import javax.annotation.Generated;
 import org.mapstruct.ap.test.updatemethods.BossDto;
 import org.mapstruct.ap.test.updatemethods.BossEntity;
 import org.mapstruct.ap.test.updatemethods.ConstructableDepartmentEntity;
+import org.mapstruct.ap.test.updatemethods.DepartmentDto;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
@@ -26,11 +27,12 @@ public class OrganizationMapper3Impl implements OrganizationMapper3 {
         }
 
         entity.setName( dto.getName() );
-        if ( dto.getDepartment() != null ) {
+        DepartmentDto department = dto.getDepartment();
+        if ( department != null ) {
             if ( entity.getDepartment() == null ) {
                 entity.setDepartment( new ConstructableDepartmentEntity() );
             }
-            externalMapper.toDepartmentEntity( dto.getDepartment(), entity.getDepartment() );
+            externalMapper.toDepartmentEntity( department, entity.getDepartment() );
         }
         else {
             entity.setDepartment( null );

@@ -5,13 +5,17 @@
  */
 package org.mapstruct.ap.test.conversion.java8time.zonedoffsetdatetimetolocaldatetimeconversion;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-05-23T21:55:42+0900",
-    comments = "version: , compiler: javac, environment: Java 25.0.2 (Homebrew)"
+    date = "2026-06-05T15:54:14+0200",
+    comments = "version: , compiler: Eclipse JDT (Batch) 3.20.0.v20191203-2131, environment: Java 21.0.2 (Oracle Corporation)"
 )
 public class SourceTargetMapperImpl implements SourceTargetMapper {
 
@@ -23,17 +27,21 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
 
         Target target = new Target();
 
-        if ( source.getOffsetDateTime() != null ) {
-            target.setOffsetDateTime( source.getOffsetDateTime().toLocalDateTime() );
+        OffsetDateTime offsetDateTime = source.getOffsetDateTime();
+        if ( offsetDateTime != null ) {
+            target.setOffsetDateTime( offsetDateTime.toLocalDateTime() );
         }
-        if ( source.getZonedDateTime() != null ) {
-            target.setZonedDateTime( source.getZonedDateTime().toLocalDateTime() );
+        ZonedDateTime zonedDateTime = source.getZonedDateTime();
+        if ( zonedDateTime != null ) {
+            target.setZonedDateTime( zonedDateTime.toLocalDateTime() );
         }
-        if ( source.getZonedDateTimeAsInstant() != null ) {
-            target.setZonedDateTimeAsInstant( source.getZonedDateTimeAsInstant().toInstant() );
+        ZonedDateTime zonedDateTimeAsInstant = source.getZonedDateTimeAsInstant();
+        if ( zonedDateTimeAsInstant != null ) {
+            target.setZonedDateTimeAsInstant( zonedDateTimeAsInstant.toInstant() );
         }
-        if ( source.getOffsetDateTimeAsInstant() != null ) {
-            target.setOffsetDateTimeAsInstant( source.getOffsetDateTimeAsInstant().toInstant() );
+        OffsetDateTime offsetDateTimeAsInstant = source.getOffsetDateTimeAsInstant();
+        if ( offsetDateTimeAsInstant != null ) {
+            target.setOffsetDateTimeAsInstant( offsetDateTimeAsInstant.toInstant() );
         }
 
         return target;
@@ -47,17 +55,21 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
 
         Source source = new Source();
 
-        if ( target.getZonedDateTime() != null ) {
-            source.setZonedDateTime( target.getZonedDateTime().atZone( ZoneOffset.UTC ) );
+        LocalDateTime zonedDateTime = target.getZonedDateTime();
+        if ( zonedDateTime != null ) {
+            source.setZonedDateTime( zonedDateTime.atZone( ZoneOffset.UTC ) );
         }
-        if ( target.getOffsetDateTime() != null ) {
-            source.setOffsetDateTime( target.getOffsetDateTime().atOffset( ZoneOffset.UTC ) );
+        LocalDateTime offsetDateTime = target.getOffsetDateTime();
+        if ( offsetDateTime != null ) {
+            source.setOffsetDateTime( offsetDateTime.atOffset( ZoneOffset.UTC ) );
         }
-        if ( target.getZonedDateTimeAsInstant() != null ) {
-            source.setZonedDateTimeAsInstant( target.getZonedDateTimeAsInstant().atZone( ZoneOffset.UTC ) );
+        Instant zonedDateTimeAsInstant = target.getZonedDateTimeAsInstant();
+        if ( zonedDateTimeAsInstant != null ) {
+            source.setZonedDateTimeAsInstant( zonedDateTimeAsInstant.atZone( ZoneOffset.UTC ) );
         }
-        if ( target.getOffsetDateTimeAsInstant() != null ) {
-            source.setOffsetDateTimeAsInstant( target.getOffsetDateTimeAsInstant().atOffset( ZoneOffset.UTC ) );
+        Instant offsetDateTimeAsInstant = target.getOffsetDateTimeAsInstant();
+        if ( offsetDateTimeAsInstant != null ) {
+            source.setOffsetDateTimeAsInstant( offsetDateTimeAsInstant.atOffset( ZoneOffset.UTC ) );
         }
 
         return source;

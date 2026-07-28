@@ -59,56 +59,61 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
             return;
         }
 
+        List<String> strings = source.getStrings();
         if ( target.getStrings() != null ) {
             if ( source.hasStrings() ) {
                 target.getStrings().clear();
-                target.getStrings().addAll( source.getStrings() );
+                target.getStrings().addAll( strings );
             }
         }
         else {
             if ( source.hasStrings() ) {
-                List<String> list = source.getStrings();
+                List<String> list = strings;
                 target.setStrings( new LinkedHashSet<>( list ) );
             }
         }
+        List<String> strings1 = source.getStrings();
         if ( target.getLongs() != null ) {
             if ( source.hasStrings() ) {
                 target.getLongs().clear();
-                target.getLongs().addAll( stringListToLongSet( source.getStrings() ) );
+                target.getLongs().addAll( stringListToLongSet( strings1 ) );
             }
         }
         else {
             if ( source.hasStrings() ) {
-                target.setLongs( stringListToLongSet( source.getStrings() ) );
+                target.setLongs( stringListToLongSet( strings1 ) );
             }
         }
+        List<String> stringsInitialized = source.getStringsInitialized();
         if ( target.getStringsInitialized() != null ) {
             if ( source.hasStringsInitialized() ) {
                 target.getStringsInitialized().clear();
-                target.getStringsInitialized().addAll( source.getStringsInitialized() );
+                target.getStringsInitialized().addAll( stringsInitialized );
             }
         }
         else {
             if ( source.hasStringsInitialized() ) {
-                List<String> list1 = source.getStringsInitialized();
+                List<String> list1 = stringsInitialized;
                 target.setStringsInitialized( new LinkedHashSet<>( list1 ) );
             }
         }
+        List<String> stringsInitialized1 = source.getStringsInitialized();
         if ( target.getLongsInitialized() != null ) {
             if ( source.hasStringsInitialized() ) {
                 target.getLongsInitialized().clear();
-                target.getLongsInitialized().addAll( stringListToLongSet( source.getStringsInitialized() ) );
+                target.getLongsInitialized().addAll( stringListToLongSet( stringsInitialized1 ) );
             }
         }
         else {
             if ( source.hasStringsInitialized() ) {
-                target.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
+                target.setLongsInitialized( stringListToLongSet( stringsInitialized1 ) );
             }
         }
+        List<String> stringsWithDefault = source.getStringsWithDefault();
         if ( target.getStringsWithDefault() != null ) {
             if ( source.hasStringsWithDefault() ) {
                 target.getStringsWithDefault().clear();
-                target.getStringsWithDefault().addAll( source.getStringsWithDefault() );
+                target.getStringsWithDefault().addAll( stringsWithDefault );
             }
             else {
                 target.setStringsWithDefault( helper.toList( "3" ) );
@@ -116,7 +121,7 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         }
         else {
             if ( source.hasStringsWithDefault() ) {
-                List<String> list2 = source.getStringsWithDefault();
+                List<String> list2 = stringsWithDefault;
                 target.setStringsWithDefault( new ArrayList<>( list2 ) );
             }
             else {
@@ -131,56 +136,61 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
             return target;
         }
 
+        List<String> strings = source.getStrings();
         if ( target.getStrings() != null ) {
             if ( source.hasStrings() ) {
                 target.getStrings().clear();
-                target.getStrings().addAll( source.getStrings() );
+                target.getStrings().addAll( strings );
             }
         }
         else {
             if ( source.hasStrings() ) {
-                List<String> list = source.getStrings();
+                List<String> list = strings;
                 target.setStrings( new LinkedHashSet<>( list ) );
             }
         }
+        List<String> strings1 = source.getStrings();
         if ( target.getLongs() != null ) {
             if ( source.hasStrings() ) {
                 target.getLongs().clear();
-                target.getLongs().addAll( stringListToLongSet( source.getStrings() ) );
+                target.getLongs().addAll( stringListToLongSet( strings1 ) );
             }
         }
         else {
             if ( source.hasStrings() ) {
-                target.setLongs( stringListToLongSet( source.getStrings() ) );
+                target.setLongs( stringListToLongSet( strings1 ) );
             }
         }
+        List<String> stringsInitialized = source.getStringsInitialized();
         if ( target.getStringsInitialized() != null ) {
             if ( source.hasStringsInitialized() ) {
                 target.getStringsInitialized().clear();
-                target.getStringsInitialized().addAll( source.getStringsInitialized() );
+                target.getStringsInitialized().addAll( stringsInitialized );
             }
         }
         else {
             if ( source.hasStringsInitialized() ) {
-                List<String> list1 = source.getStringsInitialized();
+                List<String> list1 = stringsInitialized;
                 target.setStringsInitialized( new LinkedHashSet<>( list1 ) );
             }
         }
+        List<String> stringsInitialized1 = source.getStringsInitialized();
         if ( target.getLongsInitialized() != null ) {
             if ( source.hasStringsInitialized() ) {
                 target.getLongsInitialized().clear();
-                target.getLongsInitialized().addAll( stringListToLongSet( source.getStringsInitialized() ) );
+                target.getLongsInitialized().addAll( stringListToLongSet( stringsInitialized1 ) );
             }
         }
         else {
             if ( source.hasStringsInitialized() ) {
-                target.setLongsInitialized( stringListToLongSet( source.getStringsInitialized() ) );
+                target.setLongsInitialized( stringListToLongSet( stringsInitialized1 ) );
             }
         }
+        List<String> stringsWithDefault = source.getStringsWithDefault();
         if ( target.getStringsWithDefault() != null ) {
             if ( source.hasStringsWithDefault() ) {
                 target.getStringsWithDefault().clear();
-                target.getStringsWithDefault().addAll( source.getStringsWithDefault() );
+                target.getStringsWithDefault().addAll( stringsWithDefault );
             }
             else {
                 target.setStringsWithDefault( helper.toList( "3" ) );
@@ -188,7 +198,7 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
         }
         else {
             if ( source.hasStringsWithDefault() ) {
-                List<String> list2 = source.getStringsWithDefault();
+                List<String> list2 = stringsWithDefault;
                 target.setStringsWithDefault( new ArrayList<>( list2 ) );
             }
             else {

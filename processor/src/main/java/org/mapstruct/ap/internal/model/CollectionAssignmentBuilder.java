@@ -38,7 +38,7 @@ import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.
 
 /**
  * A builder that is used for creating an assignment to a collection.
- *
+ * <p>
  * The created assignments to the following null checks:
  * <ul>
  *     <li>source-null-check - For this the {@link SetterWrapperForCollectionsAndMapsWithNullCheck} is used when a
@@ -50,7 +50,7 @@ import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.
  *     <li>local-var-null-check - Done in {@link ExistingInstanceSetterWrapperForCollectionsAndMaps}, and
  *     {@link SetterWrapperForCollectionsAndMapsWithNullCheck}</li>
  * </ul>
- *
+ * <p>
  * A local-var-null-check is needed in the following cases:
  *
  * <ul>
@@ -108,7 +108,6 @@ public class CollectionAssignmentBuilder {
 
     /**
      * @param assignment the assignment that needs to be invoked
-     *
      * @return this builder for chaining
      */
     public CollectionAssignmentBuilder assignment(Assignment assignment) {
@@ -118,7 +117,6 @@ public class CollectionAssignmentBuilder {
 
     /**
      * @param sourceRHS the source right hand side for getting the property for mapping
-     *
      * @return this builder for chaining
      */
     public CollectionAssignmentBuilder rightHandSide(SourceRHS sourceRHS) {
@@ -126,12 +124,12 @@ public class CollectionAssignmentBuilder {
         return this;
     }
 
-    public CollectionAssignmentBuilder nullValueCheckStrategy( NullValueCheckStrategyGem nvcs ) {
+    public CollectionAssignmentBuilder nullValueCheckStrategy(NullValueCheckStrategyGem nvcs) {
         this.nvcs = nvcs;
         return this;
     }
 
-    public CollectionAssignmentBuilder nullValuePropertyMappingStrategy( NullValuePropertyMappingStrategyGem nvpms ) {
+    public CollectionAssignmentBuilder nullValuePropertyMappingStrategy(NullValuePropertyMappingStrategyGem nvpms) {
         this.nvpms = nvpms;
         return this;
     }
@@ -189,8 +187,12 @@ public class CollectionAssignmentBuilder {
                     ctx.getTypeFactory(),
                     targetAccessorType.isFieldAssignment()
                 );
+                if ( result.getSourceType().isPrimitive() ) {
+                    result.setSourceLocalVarName( null );
+                }
             }
-            else if ( method.isUpdateMethod() && nvpms == IGNORE ) {
+            else if ( method.isUpdateMethod() && nvpms == IGNORE
+                || setterWrapperNeedsSourceNullCheck( result ) && canBeMappedOrDirectlyAssigned( result ) ) {
 
                 result = new SetterWrapperForCollectionsAndMapsWithNullCheck(
                     result,
@@ -199,17 +201,7 @@ public class CollectionAssignmentBuilder {
                     ctx.getTypeFactory(),
                     targetAccessorType.isFieldAssignment()
                 );
-            }
-            else if ( setterWrapperNeedsSourceNullCheck( result )
-                && canBeMappedOrDirectlyAssigned( result ) ) {
-
-                result = new SetterWrapperForCollectionsAndMapsWithNullCheck(
-                    result,
-                    method.getThrownTypes(),
-                    targetType,
-                    ctx.getTypeFactory(),
-                    targetAccessorType.isFieldAssignment()
-                );
+                result.setSourceLocalVarName( null );
             }
             else if ( canBeMappedOrDirectlyAssigned( result ) ) {
                 //TODO init default value
@@ -221,6 +213,7 @@ public class CollectionAssignmentBuilder {
                     targetType,
                     targetAccessorType.isFieldAssignment()
                 );
+                result.setSourceLocalVarName( null );
             }
             else if ( hasNoArgsConstructor() ) {
                 result = new NewInstanceSetterWrapperForCollectionsAndMaps(
@@ -228,7 +221,9 @@ public class CollectionAssignmentBuilder {
                     method.getThrownTypes(),
                     targetType,
                     ctx.getTypeFactory(),
-                    targetAccessorType.isFieldAssignment() );
+                    targetAccessorType.isFieldAssignment()
+                );
+                result.setSourceLocalVarName( null );
             }
             else {
                 ctx.getMessager().printMessage(
@@ -255,6 +250,7 @@ public class CollectionAssignmentBuilder {
                 nvpms,
                 targetAccessorType.isFieldAssignment()
             );
+            result.setSourceLocalVarName( null );
         }
 
         return result;
@@ -262,8 +258,8 @@ public class CollectionAssignmentBuilder {
 
     private boolean canBeMappedOrDirectlyAssigned(Assignment result) {
         return result.getType() != AssignmentType.DIRECT
-                  || hasCopyConstructor()
-                  || targetType.isEnumSet();
+            || hasCopyConstructor()
+            || targetType.isEnumSet();
     }
 
     /**
@@ -313,8 +309,8 @@ public class CollectionAssignmentBuilder {
             }
             else {
                 Element sourceElement = targetType.getImplementationType() != null
-                                      ? targetType.getImplementationType().getTypeElement()
-                                      : targetType.getTypeElement();
+                    ? targetType.getImplementationType().getTypeElement()
+                    : targetType.getTypeElement();
                 if ( sourceElement != null ) {
                     for ( Element element : sourceElement.getEnclosedElements() ) {
                         if ( element.getKind() == ElementKind.CONSTRUCTOR

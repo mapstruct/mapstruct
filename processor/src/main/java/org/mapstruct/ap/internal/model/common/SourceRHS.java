@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.common;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -17,7 +18,7 @@ import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * SourceRHS Assignment. Right Hand Side (RHS), source part of the assignment.
- *
+ * <p>
  * This class contains all information on the source side of an assignment needed for common use in the mapping.
  *
  * @author Sjaak Derksen
@@ -35,12 +36,12 @@ public class SourceRHS extends ModelElement implements Assignment {
     private final String sourceParameterName;
 
     public SourceRHS(String sourceReference, Type sourceType, Set<String> existingVariableNames,
-        String sourceErrorMessagePart ) {
+                     String sourceErrorMessagePart) {
         this( sourceReference, sourceReference, null, sourceType, existingVariableNames, sourceErrorMessagePart );
     }
 
     public SourceRHS(String sourceParameterName, String sourceReference, PresenceCheck sourcePresenceCheckerReference,
-        Type sourceType, Set<String> existingVariableNames,  String sourceErrorMessagePart ) {
+                     Type sourceType, Set<String> existingVariableNames, String sourceErrorMessagePart) {
         this.sourceReference = sourceReference;
         this.sourceType = sourceType;
         this.existingVariableNames = existingVariableNames;
@@ -100,6 +101,14 @@ public class SourceRHS extends ModelElement implements Assignment {
 
     @Override
     public Set<Type> getImportTypes() {
+        if ( sourceLocalVarName != null ) {
+            Set<Type> imports = new HashSet<>();
+            imports.add( sourceType );
+            if ( sourcePresenceCheckerReference != null ) {
+                imports.addAll( sourcePresenceCheckerReference.getImportTypes() );
+            }
+            return imports;
+        }
         if ( sourcePresenceCheckerReference != null ) {
             return sourcePresenceCheckerReference.getImportTypes();
         }
@@ -113,7 +122,7 @@ public class SourceRHS extends ModelElement implements Assignment {
     }
 
     @Override
-    public void setAssignment( Assignment assignment ) {
+    public void setAssignment(Assignment assignment) {
         throw new UnsupportedOperationException( "Not supported." );
     }
 
