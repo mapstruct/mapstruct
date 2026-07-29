@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -2071,7 +2072,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 Type parameterType = sourceParameter.getType();
                 if ( parameterType.isMapType() ) {
                     // We are only going to output a warning for the source parameter if it was unused
-                    // i.e. the intention of the user was most likely to use it as a mapping from Bean to Map
+                    // i.e. the intention of the user was most likely to use it as a mapping from Bean to Map.
+                    // A parameter that is referenced from a Java expression is used, even though it does not
+                    // take part in the property mapping itself.
+                    if ( isReferencedFromJavaExpression( sourceParameter ) ) {
+                        continue;
+                    }
                     List<Type> typeParameters = parameterType.getTypeParameters();
                     if ( typeParameters.size() != 2 || !typeParameters.get( 0 ).isString() ) {
                         Message message = typeParameters.isEmpty() ?
@@ -2091,6 +2097,26 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     }
                 }
             }
+        }
+
+        private boolean isReferencedFromJavaExpression(Parameter sourceParameter) {
+            Pattern reference = Pattern.compile( "\\b" + Pattern.quote( sourceParameter.getName() ) + "\\b" );
+            for ( MappingOptions mapping : method.getOptions().getMappings() ) {
+                if ( isReferencedBy( reference, mapping.getJavaExpression() )
+                    || isReferencedBy( reference, mapping.getDefaultJavaExpression() )
+                    || isReferencedBy( reference, mapping.getConditionJavaExpression() ) ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private boolean isReferencedBy(Pattern reference, String javaExpression) {
+            // The parameter name is looked up in the raw expression text, so a name that occurs in a string
+            // literal or as a member name counts as a reference as well. That can only suppress the warning,
+            // never raise a new one, which is the safe direction for a heuristic hint like this one.
+            return javaExpression != null && reference.matcher( javaExpression ).find();
         }
     }
 

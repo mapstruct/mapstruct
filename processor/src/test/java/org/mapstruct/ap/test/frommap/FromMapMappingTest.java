@@ -370,6 +370,69 @@ class FromMapMappingTest {
     }
 
     @ProcessorTest
+    @IssueKey("3861")
+    @WithClasses({
+        MapToBeanNonStringMapUsedInExpressionMapper.class
+    })
+    void shouldNotWarnIfMapParameterIsUsedInExpression() {
+        Map<Integer, Integer> values = new HashMap<>();
+        values.put( 1, 10 );
+        values.put( 2, 20 );
+
+        MapToBeanNonStringMapUsedInExpressionMapper.Target target =
+            MapToBeanNonStringMapUsedInExpressionMapper.INSTANCE.toTarget( "test", values );
+
+        assertThat( target.getValue() ).isEqualTo( "test" );
+        assertThat( target.getSum() ).isEqualTo( 30 );
+    }
+
+    @ProcessorTest
+    @IssueKey("3861")
+    @WithClasses({
+        MapToBeanNonStringMapUsedInDefaultExpressionMapper.class
+    })
+    void shouldNotWarnIfMapParameterIsUsedInDefaultExpression() {
+        Map<Integer, Integer> values = new HashMap<>();
+        values.put( 1, 10 );
+        values.put( 2, 20 );
+
+        MapToBeanNonStringMapUsedInDefaultExpressionMapper.Target withoutSum =
+            MapToBeanNonStringMapUsedInDefaultExpressionMapper.INSTANCE
+                .toTarget( new MapToBeanNonStringMapUsedInDefaultExpressionMapper.Source( null ), values );
+
+        assertThat( withoutSum.getSum() ).isEqualTo( 30 );
+
+        MapToBeanNonStringMapUsedInDefaultExpressionMapper.Target withSum =
+            MapToBeanNonStringMapUsedInDefaultExpressionMapper.INSTANCE
+                .toTarget( new MapToBeanNonStringMapUsedInDefaultExpressionMapper.Source( 5 ), values );
+
+        assertThat( withSum.getSum() ).isEqualTo( 5 );
+    }
+
+    @ProcessorTest
+    @IssueKey("3861")
+    @WithClasses({
+        MapToBeanNonStringMapUsedInConditionExpressionMapper.class
+    })
+    void shouldNotWarnIfMapParameterIsUsedInConditionExpression() {
+        MapToBeanNonStringMapUsedInConditionExpressionMapper.Source source =
+            new MapToBeanNonStringMapUsedInConditionExpressionMapper.Source( 5 );
+
+        MapToBeanNonStringMapUsedInConditionExpressionMapper.Target notMapped =
+            MapToBeanNonStringMapUsedInConditionExpressionMapper.INSTANCE.toTarget( source, new HashMap<>() );
+
+        assertThat( notMapped.getSum() ).isNull();
+
+        Map<Integer, Integer> values = new HashMap<>();
+        values.put( 1, 10 );
+
+        MapToBeanNonStringMapUsedInConditionExpressionMapper.Target mapped =
+            MapToBeanNonStringMapUsedInConditionExpressionMapper.INSTANCE.toTarget( source, values );
+
+        assertThat( mapped.getSum() ).isEqualTo( 5 );
+    }
+
+    @ProcessorTest
     @WithClasses(MapToBeanImplicitUnmappedSourcePolicyMapper.class)
     void shouldNotReportUnmappedSourcePropertiesWithMap() {
         Map<String, String> sourceMap = new HashMap<>();
