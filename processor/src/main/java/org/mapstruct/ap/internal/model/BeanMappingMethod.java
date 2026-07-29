@@ -2113,6 +2113,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         }
 
         private boolean isReferencedBy(Pattern reference, String javaExpression) {
+            // The parameter name is looked up in the raw expression text, so a name that occurs in a string
+            // literal or as a member name counts as a reference as well. That can only suppress the warning,
+            // never raise a new one, which is the safe direction for a heuristic hint like this one.
             return javaExpression != null && reference.matcher( javaExpression ).find();
         }
     }
