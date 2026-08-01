@@ -760,6 +760,8 @@ public class PropertyMapping extends ModelElement {
                 .nullValueCheckStrategy( hasDefaultValueOrDefaultExpression() ? ALWAYS : nvcs )
                 .nullValuePropertyMappingStrategy( nvpms )
                 .sourceJSpecifyNullability( getSourceJSpecifyNullability() )
+                .targetJSpecifyNullability( ctx.getNullabilityResolver().getSetterNullability(
+                    targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked ) )
                 .build();
         }
 
