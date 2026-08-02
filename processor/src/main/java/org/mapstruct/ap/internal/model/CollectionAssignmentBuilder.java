@@ -75,6 +75,7 @@ public class CollectionAssignmentBuilder {
     private NullValueCheckStrategyGem nvcs;
     private NullValuePropertyMappingStrategyGem nvpms;
     private NullabilityResolver.Nullability sourceJSpecifyNullability = NullabilityResolver.Nullability.UNKNOWN;
+    private NullabilityResolver.Nullability targetJSpecifyNullability = NullabilityResolver.Nullability.UNKNOWN;
 
     public CollectionAssignmentBuilder mappingBuilderContext(MappingBuilderContext ctx) {
         this.ctx = ctx;
@@ -141,6 +142,23 @@ public class CollectionAssignmentBuilder {
     ) {
         this.sourceJSpecifyNullability = sourceJSpecifyNullability != null
             ? sourceJSpecifyNullability
+            : NullabilityResolver.Nullability.UNKNOWN;
+        return this;
+    }
+
+    /**
+     * @param targetJSpecifyNullability the JSpecify nullability of the target write accessor (setter parameter
+     *                                  or field); when the source is not {@code @NonNull}, a {@code @NonNull}
+     *                                  target can still require a null check (source nullability is checked
+     *                                  first by {@link NullabilityResolver#requiresNullCheck})
+     *
+     * @return this builder for chaining
+     */
+    public CollectionAssignmentBuilder targetJSpecifyNullability(
+        NullabilityResolver.Nullability targetJSpecifyNullability
+    ) {
+        this.targetJSpecifyNullability = targetJSpecifyNullability != null
+            ? targetJSpecifyNullability
             : NullabilityResolver.Nullability.UNKNOWN;
         return this;
     }
@@ -273,12 +291,21 @@ public class CollectionAssignmentBuilder {
      * @return whether to include a null / presence check or not
      */
     private boolean setterWrapperNeedsSourceNullCheck(Assignment rhs) {
-        // JSpecify: source @NonNull means the value is guaranteed non-null, skip the wrapper
-        if ( sourceJSpecifyNullability == NullabilityResolver.Nullability.NON_NULL ) {
+        // JSpecify: source @NonNull means the value is guaranteed non-null, skip the wrapper;
+        // target @NonNull (with a source that is not itself @NonNull) always requires the wrapper,
+        // mirroring PropertyMapping#setterWrapperNeedsSourceNullCheck for plain properties.
+        Boolean jspecifyDecision = ctx.getNullabilityResolver().requiresNullCheck(
+            sourceJSpecifyNullability, targetJSpecifyNullability );
+        if ( jspecifyDecision != null ) {
             ctx.getMessager().note( 2,
-                Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE,
-                targetPropertyName );
-            return false;
+                jspecifyDecision
+                    ? Message.PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK
+                    : Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK,
+                targetPropertyName,
+                sourceJSpecifyNullability,
+                targetJSpecifyNullability
+            );
+            return jspecifyDecision;
         }
 
         if ( rhs.getSourcePresenceCheckerReference() != null ) {
