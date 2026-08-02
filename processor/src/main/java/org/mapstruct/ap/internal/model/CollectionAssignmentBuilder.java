@@ -148,8 +148,9 @@ public class CollectionAssignmentBuilder {
 
     /**
      * @param targetJSpecifyNullability the JSpecify nullability of the target write accessor (setter parameter
-     *                                  or field), used to force a null check when the target requires
-     *                                  {@code @NonNull} regardless of the source's own nullability
+     *                                  or field); when the source is not {@code @NonNull}, a {@code @NonNull}
+     *                                  target can still require a null check (source nullability is checked
+     *                                  first by {@link NullabilityResolver#requiresNullCheck})
      *
      * @return this builder for chaining
      */
@@ -296,11 +297,14 @@ public class CollectionAssignmentBuilder {
         Boolean jspecifyDecision = ctx.getNullabilityResolver().requiresNullCheck(
             sourceJSpecifyNullability, targetJSpecifyNullability );
         if ( jspecifyDecision != null ) {
-            if ( !jspecifyDecision ) {
-                ctx.getMessager().note( 2,
-                    Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE,
-                    targetPropertyName );
-            }
+            ctx.getMessager().note( 2,
+                jspecifyDecision
+                    ? Message.PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK
+                    : Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK,
+                targetPropertyName,
+                sourceJSpecifyNullability,
+                targetJSpecifyNullability
+            );
             return jspecifyDecision;
         }
 
