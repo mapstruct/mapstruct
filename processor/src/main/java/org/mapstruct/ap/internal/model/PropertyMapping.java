@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -18,6 +19,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.model.assignment.AdderWrapper;
@@ -236,43 +238,35 @@ public class PropertyMapping extends ModelElement {
             // handle source
             this.rightHandSide = getSourceRHS( sourceReference );
 
+            // #4029 ADDER_PREFERRED is a preference, not a hard requirement. When the adder path is
+            // not applicable for this source (e.g. Map — not element-iterable for matching) and a
+            // setter exists, fall back to SETTER_PREFERRED so a direct collection mapping method
+            // can be selected instead of failing while trying to map into the adder parameter type.
+            if ( targetWriteAccessorType == AccessorType.ADDER
+                && !isSourceSuitableForAdderElementMatching( rightHandSide.getSourceType() ) ) {
+                Accessor setterFallback = findSetterFallbackWhenAdderNotApplicable();
+                if ( setterFallback != null ) {
+                    reconfigureTargetWriteAccessor( setterFallback );
+                }
+            }
+
             ctx.getMessager().note( 2, Message.PROPERTYMAPPING_MAPPING_NOTE, rightHandSide, targetWriteAccessor );
 
-            rightHandSide.setUseElementAsSourceTypeForMatching(
-                targetWriteAccessorType == AccessorType.ADDER );
+            Assignment assignment = resolveAssignment();
 
-            // all the tricky cases will be excluded for the time being.
-            boolean preferUpdateMethods;
-            if ( targetWriteAccessorType == AccessorType.ADDER ) {
-                preferUpdateMethods = false;
-            }
-            else {
-                preferUpdateMethods = method.getMappingTargetParameter() != null;
-            }
-
-            SelectionCriteria criteria = SelectionCriteria.forMappingMethods(
-                selectionParameters,
-                mappingControl,
-                targetPropertyName,
-                preferUpdateMethods
-            );
-
-            // forge a method instead of resolving one when there are mapping options.
-            Assignment assignment = null;
-            if ( forgeMethodWithMappingReferences == null ) {
-                assignment = ctx.getMappingResolver().getTargetAssignment(
-                    method,
-                    getForgedMethodHistory( rightHandSide ),
-                    targetType,
-                    formattingParameters,
-                    criteria,
-                    rightHandSide,
-                    positionHint,
-                    this::forge
-                );
-            }
-            else {
-                assignment = forge();
+            // #4029 If the adder path still could not produce an assignment, try the setter.
+            if ( assignment == null && targetWriteAccessorType == AccessorType.ADDER ) {
+                Accessor setterFallback = findSetterFallbackWhenAdderNotApplicable();
+                if ( setterFallback != null ) {
+                    reconfigureTargetWriteAccessor( setterFallback );
+                    ctx.getMessager().note(
+                        2,
+                        Message.PROPERTYMAPPING_MAPPING_NOTE,
+                        rightHandSide,
+                        targetWriteAccessor
+                    );
+                    assignment = resolveAssignment();
+                }
             }
 
             // JSpecify: raise a hard compile error when a source that is not guaranteed @NonNull
@@ -333,6 +327,103 @@ public class PropertyMapping extends ModelElement {
             );
         }
 
+        /**
+         * Resolves a mapping assignment for the current target write accessor.
+         * When the accessor is an adder, element type matching is used.
+         */
+        private Assignment resolveAssignment() {
+            rightHandSide.setUseElementAsSourceTypeForMatching(
+                targetWriteAccessorType == AccessorType.ADDER );
+
+            // all the tricky cases will be excluded for the time being.
+            boolean preferUpdateMethods;
+            if ( targetWriteAccessorType == AccessorType.ADDER ) {
+                preferUpdateMethods = false;
+            }
+            else {
+                preferUpdateMethods = method.getMappingTargetParameter() != null;
+            }
+
+            SelectionCriteria criteria = SelectionCriteria.forMappingMethods(
+                selectionParameters,
+                mappingControl,
+                targetPropertyName,
+                preferUpdateMethods
+            );
+
+            // forge a method instead of resolving one when there are mapping options.
+            if ( forgeMethodWithMappingReferences == null ) {
+                return ctx.getMappingResolver().getTargetAssignment(
+                    method,
+                    getForgedMethodHistory( rightHandSide ),
+                    targetType,
+                    formattingParameters,
+                    criteria,
+                    rightHandSide,
+                    positionHint,
+                    this::forge
+                );
+            }
+            return forge();
+        }
+
+        /**
+         * When {@link CollectionMappingStrategyGem#ADDER_PREFERRED} selected an adder but no
+         * assignment could be created for the adder path, look up the setter for the same property
+         * so the mapping can fall back to setter-preferred behavior.
+         *
+         * @return the setter (or field) write accessor for the property, or {@code null} if none
+         */
+        private Accessor findSetterFallbackWhenAdderNotApplicable() {
+            Element adderElement = targetWriteAccessor.getElement();
+            if ( adderElement == null ) {
+                return null;
+            }
+            Element enclosing = adderElement.getEnclosingElement();
+            while ( enclosing != null && !( enclosing instanceof TypeElement ) ) {
+                enclosing = enclosing.getEnclosingElement();
+            }
+            if ( enclosing == null ) {
+                return null;
+            }
+
+            Type beanType = ctx.getTypeFactory().getType( (TypeElement) enclosing );
+            Map<String, Accessor> writeAccessors =
+                beanType.getPropertyWriteAccessors( CollectionMappingStrategyGem.SETTER_PREFERRED );
+            Accessor candidate = writeAccessors.get( targetPropertyName );
+            if ( candidate != null
+                && ( candidate.getAccessorType() == AccessorType.SETTER
+                    || candidate.getAccessorType().isFieldAssignment() ) ) {
+                return candidate;
+            }
+            return null;
+        }
+
+        private void reconfigureTargetWriteAccessor(Accessor newAccessor) {
+            this.targetWriteAccessor = newAccessor;
+            this.targetWriteAccessorType = newAccessor.getAccessorType();
+            this.targetType = ctx.getTypeFactory().getType( newAccessor.getAccessedType() );
+            BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
+            this.targetBuilderType = ctx.getTypeFactory().builderTypeFor( this.targetType, builder );
+        }
+
+        /**
+         * Whether the source type can supply elements for an adder (collection / iterable / stream /
+         * array). Maps are not treated as element-iterable for matching (see
+         * {@link SourceRHS#getSourceTypeForMatching()}), so adder is not applicable for them.
+         * Non-collection sources (single element → adder) remain applicable.
+         */
+        private static boolean isSourceSuitableForAdderElementMatching(Type sourceType) {
+            if ( sourceType.isMapType() ) {
+                return false;
+            }
+            return sourceType.isCollectionType()
+                || sourceType.isIterableType()
+                || sourceType.isStreamType()
+                || sourceType.isArrayType()
+                || !sourceType.isCollectionOrMapType();
+        }
+
         private Assignment forge( ) {
             Assignment assignment;
             Type sourceType = rightHandSide.getSourceType();
@@ -344,7 +435,14 @@ public class PropertyMapping extends ModelElement {
                 assignment = forgeMapMapping( sourceType, targetType, rightHandSide );
             }
             else if ( sourceType.isMapType() && !targetType.isMapType() ) {
-                assignment = forgeMapping( sourceType, targetType.withoutBounds(), rightHandSide );
+                // #4029 Do not forge Map → adder-element (e.g. Map → String). That path is not
+                // meaningful for adders; return null so the caller can fall back to the setter.
+                if ( targetWriteAccessorType == AccessorType.ADDER ) {
+                    assignment = null;
+                }
+                else {
+                    assignment = forgeMapping( sourceType, targetType.withoutBounds(), rightHandSide );
+                }
             }
             else if ( ( sourceType.isIterableType() && targetType.isStreamType() )
                         || ( sourceType.isStreamType() && targetType.isStreamType() )
