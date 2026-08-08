@@ -258,6 +258,9 @@ public class PropertyMapping extends ModelElement {
             );
 
             // forge a method instead of resolving one when there are mapping options.
+            // Exception (#4094): when nested target options are only ignores, prefer an existing
+            // mapping method (e.g. from Mapper#uses). Nested-only ignores must not force an empty
+            // forged method under BeanMapping#ignoreByDefault, silently dropping data.
             Assignment assignment = null;
             if ( forgeMethodWithMappingReferences == null ) {
                 assignment = ctx.getMappingResolver().getTargetAssignment(
@@ -270,6 +273,25 @@ public class PropertyMapping extends ModelElement {
                     positionHint,
                     this::forge
                 );
+            }
+            else if ( forgeMethodWithMappingReferences.containsOnlyIgnoreMappings() ) {
+                // Prefer an existing mapping method (Mapper#uses) so redundant nested ignores
+                // do not empty a forged method under ignoreByDefault (#4094).
+                // But never keep a *direct* / pure type-conversion assignment: for same-type
+                // nested properties that would copy the whole object and drop nested ignores.
+                assignment = ctx.getMappingResolver().getTargetAssignment(
+                    method,
+                    getForgedMethodHistory( rightHandSide ),
+                    targetType,
+                    formattingParameters,
+                    criteria,
+                    rightHandSide,
+                    positionHint,
+                    this::forge
+                );
+                if ( !isMappingMethodAssignment( assignment ) ) {
+                    assignment = forge();
+                }
             }
             else {
                 assignment = forge();
@@ -358,6 +380,22 @@ public class PropertyMapping extends ModelElement {
                 ctx.getMessager().note( 2, Message.PROPERTYMAPPING_CREATE_NOTE, assignment );
             }
             return assignment;
+        }
+
+        /**
+         * {@code true} when the assignment is (or includes) a mapping-method invocation.
+         * Used for #4094 ignore-only nested options: keep {@code Mapper#uses} methods, but not
+         * direct / pure type-conversion assignments that would skip nested ignores.
+         */
+        private static boolean isMappingMethodAssignment(Assignment assignment) {
+            if ( assignment == null ) {
+                return false;
+            }
+            Assignment.AssignmentType type = assignment.getType();
+            return type == Assignment.AssignmentType.MAPPED
+                || type == Assignment.AssignmentType.MAPPED_TWICE
+                || type == Assignment.AssignmentType.MAPPED_TYPE_CONVERTED
+                || type == Assignment.AssignmentType.TYPE_CONVERTED_MAPPED;
         }
 
         /**

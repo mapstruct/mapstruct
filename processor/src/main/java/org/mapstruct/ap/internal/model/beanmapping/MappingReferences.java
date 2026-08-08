@@ -117,6 +117,24 @@ public class MappingReferences {
         return false;
     }
 
+    /**
+     * Whether every defined mapping reference is an ignore. Nested target ignores alone should not force forging an
+     * empty bean mapping when a suitable mapping method already exists (see #4094).
+     *
+     * @return {@code true} if there is at least one mapping reference and all of them are ignores
+     */
+    public boolean containsOnlyIgnoreMappings() {
+        if ( mappingReferences.isEmpty() ) {
+            return false;
+        }
+        for ( MappingReference mappingRef : mappingReferences ) {
+            if ( !mappingRef.getMapping().isIgnored() ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public boolean equals(Object o) {
         if ( this == o ) {

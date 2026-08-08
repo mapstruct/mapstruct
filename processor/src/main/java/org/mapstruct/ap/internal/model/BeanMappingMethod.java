@@ -341,7 +341,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             boolean applyImplicitMappings =
                 shouldHandledDefinedMappings && !mappingReferences.isRestrictToDefinedMappings();
             if ( applyImplicitMappings ) {
-                applyImplicitMappings = beanMapping == null || !beanMapping.isIgnoredByDefault();
+                // Parent @BeanMapping(ignoreByDefault = true) is inherited by forged methods via
+                // BeanMappingOptions.forForgedMethods. That is correct when nested targets define
+                // positive mappings (only those should be applied — see ToolBoxMapper / #1392).
+                // When a forged method only carries nested ignore references (e.g. parent maps
+                // relatedPerson as a whole plus relatedPerson.x ignore), ignoreByDefault would
+                // otherwise suppress name-based mapping and yield an empty nested bean (#4094).
+                if ( beanMapping != null && beanMapping.isIgnoredByDefault() ) {
+                    applyImplicitMappings = method instanceof ForgedMethod
+                        && mappingReferences.containsOnlyIgnoreMappings();
+                }
             }
             if ( applyImplicitMappings ) {
 
