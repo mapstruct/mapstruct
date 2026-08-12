@@ -55,4 +55,43 @@ public class Issue3997Test {
         assertThat( entity.getAddress() ).isNotNull();
         assertThat( entity.getAddress().getCity() ).isEqualTo( "Paris" );
     }
+
+    /**
+     * Parameter name equals a source property, but the full path is not a property path
+     * (Client has no id). SourceReference strips; inverse must strip too so dtoId → id.
+     */
+    @ProcessorTest
+    @WithClasses(Issue3997ParameterNameCollidesWithPropertyMapper.class)
+    public void inverseStripsParameterPrefixWhenFullPathDoesNotResolveAsProperties() {
+        Issue3997ParameterNameCollidesWithPropertyMapper.OrderDto dto =
+            new Issue3997ParameterNameCollidesWithPropertyMapper.OrderDto();
+        dto.setDtoId( 99L );
+
+        Issue3997ParameterNameCollidesWithPropertyMapper.Order entity =
+            Issue3997ParameterNameCollidesWithPropertyMapper.INSTANCE.toEntity( dto );
+
+        assertThat( entity ).isNotNull();
+        assertThat( entity.getId() ).isEqualTo( 99L );
+        assertThat( entity.getClient() ).isNull();
+    }
+
+    /**
+     * Parameter name equals a property and the full path resolves ({@code client.id} on Order).
+     * Inverse keeps the property path: dtoId maps to client.id, not Order.id.
+     */
+    @ProcessorTest
+    @WithClasses(Issue3997ParameterNameIsPropertyPathMapper.class)
+    public void inverseKeepsPathWhenFullPathResolvesAsProperties() {
+        Issue3997ParameterNameIsPropertyPathMapper.OrderDto dto =
+            new Issue3997ParameterNameIsPropertyPathMapper.OrderDto();
+        dto.setDtoId( 77L );
+
+        Issue3997ParameterNameIsPropertyPathMapper.Order entity =
+            Issue3997ParameterNameIsPropertyPathMapper.INSTANCE.toEntity( dto );
+
+        assertThat( entity ).isNotNull();
+        assertThat( entity.getId() ).isNull();
+        assertThat( entity.getClient() ).isNotNull();
+        assertThat( entity.getClient().getId() ).isEqualTo( 77L );
+    }
 }

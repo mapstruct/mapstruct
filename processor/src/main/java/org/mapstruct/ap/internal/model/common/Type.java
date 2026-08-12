@@ -880,6 +880,37 @@ public class Type extends ModelElement implements Comparable<Type> {
         return readAccessors.get( propertyName );
     }
 
+    /**
+     * Whether each segment of {@code propertyNames} resolves as a nested read-accessor path on this type.
+     * Aligns with {@code SourceReference} matching of a full property path.
+     */
+    public boolean hasReadPropertyPath(String[] propertyNames) {
+        if ( propertyNames == null || propertyNames.length == 0 ) {
+            return false;
+        }
+        Type current = this;
+        for ( int i = 0; i < propertyNames.length; i++ ) {
+            Type noBoundsType = current.withoutBounds();
+            if ( noBoundsType.isOptionalType() ) {
+                noBoundsType = noBoundsType.getOptionalBaseType();
+            }
+            if ( !( noBoundsType.getTypeMirror() instanceof DeclaredType ) ) {
+                return false;
+            }
+            ReadAccessor readAccessor = noBoundsType.getReadAccessor( propertyNames[i], true );
+            if ( readAccessor == null ) {
+                return false;
+            }
+            if ( i < propertyNames.length - 1 ) {
+                current = typeFactory.getReturnType( (DeclaredType) noBoundsType.getTypeMirror(), readAccessor );
+                if ( current == null ) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public PresenceCheckAccessor getPresenceChecker(String propertyName) {
         if ( hasStringMapSignature() ) {
             return PresenceCheckAccessor.mapContainsKey( propertyName );
