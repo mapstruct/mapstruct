@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.nullcheck.jspecify;
 
 import java.util.stream.Stream;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.Nullable;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
@@ -16,7 +17,7 @@ import javax.annotation.processing.Generated;
 public class JSpecifyNonNullReturnStreamMapperImpl implements JSpecifyNonNullReturnStreamMapper {
 
     @Override
-    public Stream<NullMarkedTargetBean> mapAll(Stream<NullMarkedSourceBean> sources) {
+    public Stream<NullMarkedTargetBean> mapAll(@Nullable Stream<NullMarkedSourceBean> sources) {
         if ( sources == null ) {
             return Stream.empty();
         }

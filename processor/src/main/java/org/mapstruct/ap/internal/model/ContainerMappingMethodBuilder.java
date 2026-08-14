@@ -166,7 +166,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         PresenceCheck sourceParameterPresenceCheck =
             PresenceCheckMethodResolver.getPresenceCheckForSourceParameter( method, null, sourceParam, ctx );
 
-        return instantiateMappingMethod(
+        M mappingMethod = instantiateMappingMethod(
             method,
             existingVariables,
             assignment,
@@ -178,6 +178,10 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             selectionParameters,
             sourceParameterPresenceCheck
         );
+
+        propagateNullability( mappingMethod );
+
+        return mappingMethod;
     }
 
     private Assignment forge(SourceRHS sourceRHS, Type sourceType, Type targetType) {

@@ -42,6 +42,13 @@ public abstract class MappingMethod extends GeneratedTypeMethod {
     private final List<LifecycleCallbackMethodReference> afterMappingReferences;
 
     /**
+     * The type of the JSpecify {@code @Nullable} annotation to emit in front of this method's return type, or
+     * {@code null} when nothing should be emitted. Only set for methods that override a mapper method, so that the
+     * generated implementation keeps the nullability contract of the interface it implements.
+     */
+    private Type nullableReturnTypeAnnotationType;
+
+    /**
      * constructor to be overloaded when local variable names are required prior to calling this constructor. (e.g. for
      * property mappings). It is supposed to be initialized with at least the parameter names.
      *
@@ -131,6 +138,19 @@ public abstract class MappingMethod extends GeneratedTypeMethod {
         return returnType;
     }
 
+    /**
+     * @return the type of the JSpecify {@code @Nullable} annotation to emit in front of this method's return type,
+     *         or {@code null} when the return type's nullability must not be reproduced in the generated
+     *         implementation
+     */
+    public Type getNullableReturnTypeAnnotationType() {
+        return nullableReturnTypeAnnotationType;
+    }
+
+    public void setNullableReturnTypeAnnotationType(Type nullableReturnTypeAnnotationType) {
+        this.nullableReturnTypeAnnotationType = nullableReturnTypeAnnotationType;
+    }
+
     public Accessibility getAccessibility() {
         return accessibility;
     }
@@ -148,10 +168,14 @@ public abstract class MappingMethod extends GeneratedTypeMethod {
         Set<Type> types = new HashSet<>();
 
         for ( Parameter param : parameters ) {
-            types.addAll( param.getType().getImportTypes() );
+            types.addAll( param.getImportTypes() );
         }
 
         types.addAll( getReturnType().getImportTypes() );
+
+        if ( nullableReturnTypeAnnotationType != null ) {
+            types.add( nullableReturnTypeAnnotationType );
+        }
 
         for ( Type type : thrownTypes ) {
             types.addAll( type.getImportTypes() );

@@ -523,7 +523,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 mapNullToDefault = true;
             }
 
-            return new BeanMappingMethod(
+            BeanMappingMethod beanMappingMethod = new BeanMappingMethod(
                 method,
                 getMethodAnnotations(),
                 existingVariableNames,
@@ -544,6 +544,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 subclassExhaustiveExceptionType,
                 sourceParametersReassignments
             );
+
+            propagateNullability( beanMappingMethod );
+
+            return beanMappingMethod;
         }
 
         private void keepMappingReferencesUsingTarget(List<LifecycleCallbackMethodReference> references, Type type) {

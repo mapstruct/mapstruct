@@ -38,6 +38,13 @@ public class Parameter extends ModelElement {
 
     private final boolean varArgs;
 
+    /**
+     * The type of the JSpecify {@code @Nullable} annotation to emit in front of this parameter's type, or
+     * {@code null} when nothing should be emitted. Only set for parameters of methods that override a mapper
+     * method, so that the generated implementation keeps the nullability contract of the interface it implements.
+     */
+    private Type nullableAnnotationType;
+
     private Parameter(Element element, Type type, boolean varArgs) {
         this.element = element;
         this.name = element.getSimpleName().toString();
@@ -113,9 +120,25 @@ public class Parameter extends ModelElement {
             +  "%s " + name;
     }
 
+    /**
+     * @return the type of the JSpecify {@code @Nullable} annotation to emit in front of this parameter's type, or
+     *         {@code null} when the parameter's nullability must not be reproduced in the generated implementation
+     */
+    public Type getNullableAnnotationType() {
+        return nullableAnnotationType;
+    }
+
+    public void setNullableAnnotationType(Type nullableAnnotationType) {
+        this.nullableAnnotationType = nullableAnnotationType;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
-        return Collections.asSet( type );
+        if ( nullableAnnotationType == null ) {
+            return Collections.asSet( type );
+        }
+
+        return Collections.asSet( type, nullableAnnotationType );
     }
 
     public boolean isTargetType() {
@@ -147,7 +170,7 @@ public class Parameter extends ModelElement {
     }
 
     public Parameter withName(String name) {
-        return new Parameter(
+        Parameter parameter = new Parameter(
             name,
             this.name,
             type,
@@ -158,6 +181,8 @@ public class Parameter extends ModelElement {
             targetPropertyName,
             varArgs
         );
+        parameter.nullableAnnotationType = nullableAnnotationType;
+        return parameter;
     }
 
     @Override
