@@ -8,12 +8,16 @@ package org.mapstruct.ap.internal.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.lang.model.element.Element;
 
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.util.JSpecifyConstants;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -135,6 +139,49 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
             annotations.add( new Annotation( ctx.getTypeFactory().getType( Override.class ) ) );
         }
         return annotations;
+    }
+
+    /**
+     * Propagates the JSpecify {@code @Nullable} annotations of the overridden mapper method onto the generated
+     * implementation's return type and source parameters.
+     * <p>
+     * Only explicit {@code @Nullable} annotations are reproduced. A {@code @NonNull} nullability is left out on
+     * purpose: within a {@code @NullMarked} scope it is the implied default, so emitting it would add noise to every
+     * generated signature without changing the contract.
+     * <p>
+     * Nothing is propagated for methods that do not override a mapper method (e.g. forged methods), since those are
+     * generated helpers that do not have to match an inherited signature.
+     *
+     * @param mappingMethod the mapping method to annotate
+     */
+    protected void propagateNullability(MappingMethod mappingMethod) {
+        if ( method instanceof ForgedMethod || !method.overridesMethod() ) {
+            return;
+        }
+
+        Type nullableType = null;
+
+        if ( isJSpecifyNullable( method.getExecutable() ) ) {
+            nullableType = getNullableAnnotationType();
+            mappingMethod.setNullableReturnTypeAnnotationType( nullableType );
+        }
+
+        for ( Parameter parameter : mappingMethod.getParameters() ) {
+            if ( parameter.getElement() != null && isJSpecifyNullable( parameter.getElement() ) ) {
+                if ( nullableType == null ) {
+                    nullableType = getNullableAnnotationType();
+                }
+                parameter.setNullableAnnotationType( nullableType );
+            }
+        }
+    }
+
+    private boolean isJSpecifyNullable(Element element) {
+        return ctx.getNullabilityInMapperScope( element ) == NullabilityResolver.Nullability.NULLABLE;
+    }
+
+    private Type getNullableAnnotationType() {
+        return ctx.getTypeFactory().getType( JSpecifyConstants.NULLABLE_FQN );
     }
 
 }
