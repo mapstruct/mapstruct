@@ -236,6 +236,14 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 );
         }
 
+        for ( SourceMethod lifecycleCallbackMethod : mappingContext.getUnusedLifecycleCallbackMethods() ) {
+            messager.printMessage(
+                lifecycleCallbackMethod.getExecutable(),
+                Message.LIFECYCLEMETHOD_NOT_USED,
+                lifecycleCallbackMethod.getName()
+            );
+        }
+
         return mapper;
     }
 

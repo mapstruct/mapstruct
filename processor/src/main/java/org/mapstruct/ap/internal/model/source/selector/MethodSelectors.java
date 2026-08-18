@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.model.source.selector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.option.Options;
@@ -58,6 +59,23 @@ public class MethodSelectors {
      */
     public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<T> methods,
                                                                          SelectionContext context) {
+        return getMatchingMethods( methods, context, null );
+    }
+
+    /**
+     * Selects those methods which match the given types and other criteria.
+     *
+     * @param <T> either SourceMethod or BuiltInMethod
+     * @param methods list of available methods
+     * @param context the selection context that should be used in the matching process
+     * @param applicableBeforeLifecycleDedup invoked with every remaining candidate right before overload
+     *     deduplication; used to treat type-matching lifecycle overloads as used even when a more specific
+     *     overload is selected. May be {@code null}.
+     * @return list of methods that passes the matching process
+     */
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<T> methods,
+                                                                         SelectionContext context,
+                                                                         Consumer<T> applicableBeforeLifecycleDedup) {
 
         List<SelectedMethod<T>> candidates = new ArrayList<>( methods.size() );
         for ( T method : methods ) {
@@ -65,6 +83,12 @@ public class MethodSelectors {
         }
 
         for ( MethodSelector selector : selectors ) {
+            if ( applicableBeforeLifecycleDedup != null
+                && selector instanceof LifecycleOverloadDeduplicateSelector ) {
+                for ( SelectedMethod<T> candidate : candidates ) {
+                    applicableBeforeLifecycleDedup.accept( candidate.getMethod() );
+                }
+            }
             candidates = selector.getMatchingMethods( candidates, context );
         }
         return candidates;

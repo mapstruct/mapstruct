@@ -8,6 +8,7 @@ package org.mapstruct.ap.internal.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -124,6 +125,8 @@ public class MappingBuilderContext {
     private final List<MappingMethod> mappingsToGenerate = new ArrayList<>();
     private final Map<ForgedMethod, ForgedMethod> forgedMethodsUnderCreation =
         new HashMap<>();
+    private final Set<SourceMethod> lifecycleCallbackMethods = new LinkedHashSet<>();
+    private final Set<SourceMethod> usedLifecycleCallbackMethods = new HashSet<>();
 
     //CHECKSTYLE:OFF
     public MappingBuilderContext(TypeFactory typeFactory,
@@ -154,6 +157,11 @@ public class MappingBuilderContext {
         this.mapperTypeElement = mapper;
         this.sourceModel = sourceModel;
         this.mapperReferences = mapperReferences;
+        for ( SourceMethod sourceMethod : sourceModel ) {
+            if ( isLifecycleCallbackDeclaredOnMapper( sourceMethod ) ) {
+                lifecycleCallbackMethods.add( sourceMethod );
+            }
+        }
     }
     //CHECKSTYLE:ON
 
@@ -176,6 +184,43 @@ public class MappingBuilderContext {
 
     public List<SourceMethod> getSourceModel() {
         return sourceModel;
+    }
+
+    /**
+     * Records that a lifecycle callback declared by this mapper was applicable to a generated mapping method.
+     * Methods that match by type but are later dropped in favor of a more specific overload still count as used.
+     *
+     * @param lifecycleCallbackMethod the applicable callback method
+     */
+    public void markLifecycleCallbackMethodAsUsed(SourceMethod lifecycleCallbackMethod) {
+        if ( lifecycleCallbackMethods.contains( lifecycleCallbackMethod ) ) {
+            usedLifecycleCallbackMethods.add( lifecycleCallbackMethod );
+        }
+    }
+
+    /**
+     * Returns lifecycle callbacks declared directly on this mapper that were not applicable to any generated
+     * mapping method.
+     *
+     * @return the unused lifecycle callback methods
+     */
+    public Set<SourceMethod> getUnusedLifecycleCallbackMethods() {
+        Set<SourceMethod> unusedLifecycleCallbackMethods = new LinkedHashSet<>( lifecycleCallbackMethods );
+        unusedLifecycleCallbackMethods.removeAll( usedLifecycleCallbackMethods );
+        return unusedLifecycleCallbackMethods;
+    }
+
+    /**
+     * Only callbacks declared on the mapper being processed are reported. Inherited methods and methods coming from
+     * {@code Mapper#uses} are ignored, because those are commonly overloaded by type and shared across mappers.
+     *
+     * @param sourceMethod the method to inspect
+     * @return {@code true} if the method is a lifecycle callback declared on this mapper
+     */
+    private boolean isLifecycleCallbackDeclaredOnMapper(SourceMethod sourceMethod) {
+        return sourceMethod.isLifecycleCallbackMethod()
+            && sourceMethod.getDeclaringMapper() == null
+            && mapperTypeElement.equals( sourceMethod.getExecutable().getEnclosingElement() );
     }
 
     public List<MapperReference> getMapperReferences() {

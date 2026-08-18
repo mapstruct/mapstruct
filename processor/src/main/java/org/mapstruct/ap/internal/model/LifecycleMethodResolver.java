@@ -164,8 +164,13 @@ public final class LifecycleMethodResolver {
                 selectionParameters,
                 ctx.getTypeFactory(),
                 parameterBindingsProvider
-            )
+            ),
+            ctx::markLifecycleCallbackMethodAsUsed
         );
+
+        for ( SelectedMethod<SourceMethod> matchingMethod : matchingMethods ) {
+            ctx.markLifecycleCallbackMethodAsUsed( matchingMethod.getMethod() );
+        }
 
         return toLifecycleCallbackMethodRefs(
             method,
