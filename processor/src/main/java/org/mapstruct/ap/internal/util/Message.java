@@ -146,6 +146,7 @@ public enum Message {
     SUBCLASSMAPPING_ILLOGICAL_ORDER( "SubclassMapping annotation for '%s' found after '%s', but all '%s' objects are also instances of '%s'.", Diagnostic.Kind.WARNING ),
 
     LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS( "Lifecycle method has multiple matching parameters (e. g. same type), in this case please ensure to name the parameters in the lifecycle and mapping method identical. This lifecycle method will not be used for the mapping method '%s'.", Diagnostic.Kind.WARNING),
+    LIFECYCLEMETHOD_NOT_USED( "Lifecycle method %s is not used.", Diagnostic.Kind.WARNING ),
 
     DECORATOR_NO_SUBTYPE( "Specified decorator type is no subtype of the annotated mapper type." ),
     DECORATOR_CONSTRUCTOR( "Specified decorator type has no default constructor nor a constructor with a single parameter accepting the decorated mapper type." ),

@@ -9,6 +9,9 @@ import org.mapstruct.ap.test.callbacks.typematching.CarMapper.CarDto;
 import org.mapstruct.ap.test.callbacks.typematching.CarMapper.CarEntity;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,6 +24,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 public class CallbackMethodTypeMatchingTest {
     @ProcessorTest
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(
+                type = CarMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 26,
+                message = "Lifecycle method neverMatched is not used."
+            ),
+            @Diagnostic(
+                type = CarMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 31,
+                message = "Lifecycle method neverMatched is not used."
+            )
+        }
+    )
     public void callbackMethodAreCalled() {
         CarEntity carEntity = CarMapper.INSTANCE.toCarEntity( new CarDto() );
 
