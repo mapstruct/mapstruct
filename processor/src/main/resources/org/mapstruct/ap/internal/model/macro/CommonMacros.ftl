@@ -52,10 +52,11 @@
 <#--
   macro: handleLocalVarNullCheck
 
-  purpose: macro surrounds nested with either a source presence checker or a null check. It always uses
-           a local variable. Note that the local variable assignemnt is inside the IF statement for the
-           source presence check. Note also, that the else clause contains the default variable assignment if
-           present.
+  purpose: macro surrounds nested with either a source presence checker, an Optional#isPresent() check
+           (when the source is an Optional, so the local var assignment doesn't call Optional#get() on an
+           empty Optional), or a null check. It always uses a local variable. Note that the local variable
+           assignemnt is inside the IF statement for the source presence check. Note also, that the else
+           clause contains the default variable assignment if present.
 
            requires: caller to implement String:getNullCheckLocalVarName()
                      caller to implement Type:getNullCheckLocalVarType()
@@ -72,6 +73,11 @@
       <#else>
         <#nested>
       </#if>
+    }
+  <#elseif sourceType.optionalType>
+    if ( <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if>.isPresent() ) {
+      <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
+      <#nested>
     }
   <#else>
     <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
