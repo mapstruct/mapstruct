@@ -24,6 +24,7 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
+import org.mapstruct.ap.internal.util.NullabilityResolver.Nullability;
 import org.mapstruct.ap.internal.util.Strings;
 
 /**
@@ -63,6 +64,8 @@ public class MethodReference extends ModelElement implements Assignment {
     private final boolean isStatic;
     private final boolean isConstructor;
     private final boolean isMethodChaining;
+    private final Nullability sourceParameterNullability;
+    private final Nullability resultNullability;
 
     /**
      * Creates a new reference to the given method.
@@ -75,6 +78,12 @@ public class MethodReference extends ModelElement implements Assignment {
      */
     protected MethodReference(Method method, MapperReference declaringMapper, Parameter providingParameter,
                               List<ParameterBinding> parameterBindings) {
+        this( method, declaringMapper, providingParameter, parameterBindings, null, null );
+    }
+
+    private MethodReference(Method method, MapperReference declaringMapper, Parameter providingParameter,
+                            List<ParameterBinding> parameterBindings, Nullability sourceParameterNullability,
+                            Nullability resultNullability) {
         this.declaringMapper = declaringMapper;
         this.sourceParameters = Parameter.getSourceParameters( method.getParameters() );
         this.returnType = method.getReturnType();
@@ -100,6 +109,8 @@ public class MethodReference extends ModelElement implements Assignment {
         this.isConstructor = false;
         this.methodsToChain = Collections.emptyList();
         this.isMethodChaining = false;
+        this.sourceParameterNullability = sourceParameterNullability;
+        this.resultNullability = resultNullability;
    }
 
     private MethodReference(BuiltInMethod method, ConversionContext contextParam) {
@@ -118,6 +129,8 @@ public class MethodReference extends ModelElement implements Assignment {
         this.isConstructor = false;
         this.methodsToChain = Collections.emptyList();
         this.isMethodChaining = false;
+        this.sourceParameterNullability = null;
+        this.resultNullability = null;
     }
 
     private MethodReference(String name, Type definingType, boolean isStatic) {
@@ -136,6 +149,8 @@ public class MethodReference extends ModelElement implements Assignment {
         this.isConstructor = false;
         this.methodsToChain = Collections.emptyList();
         this.isMethodChaining = false;
+        this.sourceParameterNullability = null;
+        this.resultNullability = null;
     }
 
     private MethodReference(Type definingType, List<ParameterBinding> parameterBindings) {
@@ -153,6 +168,8 @@ public class MethodReference extends ModelElement implements Assignment {
         this.isConstructor = true;
         this.methodsToChain = Collections.emptyList();
         this.isMethodChaining = false;
+        this.sourceParameterNullability = null;
+        this.resultNullability = null;
 
         if ( parameterBindings.isEmpty() ) {
             this.importTypes = Collections.emptySet();
@@ -186,6 +203,8 @@ public class MethodReference extends ModelElement implements Assignment {
         this.isConstructor = false;
         this.methodsToChain = Arrays.asList( references );
         this.isMethodChaining = true;
+        this.sourceParameterNullability = null;
+        this.resultNullability = null;
     }
 
     public MapperReference getDeclaringMapper() {
@@ -206,6 +225,22 @@ public class MethodReference extends ModelElement implements Assignment {
 
     public Assignment getAssignment() {
         return assignment;
+    }
+
+    @Override
+    public Nullability getSourceParameterNullability() {
+        if ( assignment != null ) {
+            Nullability nestedNullability = assignment.getSourceParameterNullability();
+            if ( nestedNullability != null ) {
+                return nestedNullability;
+            }
+        }
+        return sourceParameterNullability;
+    }
+
+    @Override
+    public Nullability getResultNullability() {
+        return resultNullability;
     }
 
     public String getName() {
@@ -420,6 +455,19 @@ public class MethodReference extends ModelElement implements Assignment {
     public static MethodReference forMapperReference(Method method, MapperReference declaringMapper,
             List<ParameterBinding> parameterBindings) {
         return new MethodReference( method, declaringMapper, null, parameterBindings );
+    }
+
+    public static MethodReference forMapperReference(Method method, MapperReference declaringMapper,
+            List<ParameterBinding> parameterBindings, Nullability sourceParameterNullability,
+            Nullability resultNullability) {
+        return new MethodReference(
+            method,
+            declaringMapper,
+            null,
+            parameterBindings,
+            sourceParameterNullability,
+            resultNullability
+        );
     }
 
     public static MethodReference forStaticBuilder(String builderCreationMethod, Type definingType) {

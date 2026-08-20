@@ -8,6 +8,8 @@ package org.mapstruct.ap.internal.model.common;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.util.NullabilityResolver.Nullability;
+
 /**
  * Assignment represents all kind of manners a source can be assigned to a target.
  *
@@ -153,6 +155,24 @@ public interface Assignment {
      * @return {@link  AssignmentType}
      */
     AssignmentType getType();
+
+    /**
+     * Returns the nullability expected by the innermost reused mapping method that consumes the source value.
+     *
+     * @return the method parameter nullability, or {@code null} when this assignment has no method contract
+     */
+    default Nullability getSourceParameterNullability() {
+        return null;
+    }
+
+    /**
+     * Returns the nullability guaranteed by the outermost reused mapping method in this assignment.
+     *
+     * @return the method result nullability, or {@code null} when this assignment has no method contract
+     */
+    default Nullability getResultNullability() {
+        return null;
+    }
 
     boolean isCallingUpdateMethod();
 }

@@ -40,4 +40,18 @@ class JSpecifyVerboseNoteTest {
         + "parameter is @NonNull\\.$")
     public void emitsMethodLevelGuardSkipNote() {
     }
+
+    @ProcessorTest(Compiler.JDK)
+    @ProcessorOption(name = "mapstruct.verbose", value = "true")
+    @WithClasses({
+        JSpecifyVerboseReusedMethodMapper.class,
+        JSpecifySimpleReusedMethodSource.class,
+        JSpecifySimpleReusedMethodTarget.class,
+        JSpecifySimpleReusedMethodUses.class,
+        JSpecifySimpleReusedMethodValue.class
+    })
+    @ExpectedNote("^-- MapStruct: JSpecify adding null check for property \"value\" because the reused method "
+        + "parameter is @NonNull: source=\\w+, target=\\w+\\.$")
+    public void emitsReusedMethodParameterGuardNote() {
+    }
 }

@@ -100,6 +100,7 @@ public enum Message {
     PROPERTYMAPPING_NULLABLE_SOURCE_TO_NON_NULL_CONSTRUCTOR_PARAM( "Can't map potentially nullable source property \"%s\" to @NonNull constructor parameter \"%s\". Consider adding a defaultValue or defaultExpression." ),
     PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE( "JSpecify skipping null check for property \"%s\": source is @NonNull.", Diagnostic.Kind.NOTE ),
     PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK( "JSpecify adding null check for property \"%s\": source=%s, target=%s.", Diagnostic.Kind.NOTE ),
+    PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK_NON_NULL_PARAM( "JSpecify adding null check for property \"%s\" because the reused method parameter is @NonNull: source=%s, target=%s.", Diagnostic.Kind.NOTE ),
     PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK( "JSpecify skipping null check for property \"%s\": source=%s, target=%s.", Diagnostic.Kind.NOTE ),
     PROPERTYMAPPING_JSPECIFY_SKIP_METHOD_GUARD_NON_NULL_PARAM( "JSpecify skipping method-level null guard for property \"%s\": parameter is @NonNull.", Diagnostic.Kind.NOTE ),
     MAPPING_METHOD_JSPECIFY_FORCE_RETURN_DEFAULT( "JSpecify forcing NullValueMappingStrategy.RETURN_DEFAULT for method \"%s\": return type is @NonNull.", Diagnostic.Kind.NOTE ),

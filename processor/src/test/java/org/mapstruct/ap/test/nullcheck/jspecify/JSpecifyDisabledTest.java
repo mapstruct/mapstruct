@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.nullcheck.jspecify;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -12,6 +13,8 @@ import org.mapstruct.ap.testutil.WithJSpecify;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
+import org.mapstruct.ap.testutil.runner.Compiler;
+import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,6 +29,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WithJSpecify
 @ProcessorOption(name = "mapstruct.disableJSpecify", value = "true")
 class JSpecifyDisabledTest {
+
+    @RegisterExtension
+    final GeneratedSource generatedSource = new GeneratedSource();
 
     @ProcessorTest
     @WithClasses({ SourceBean.class, TargetBean.class, JSpecifyDisabledMapper.class })
@@ -79,5 +85,17 @@ class JSpecifyDisabledTest {
         // disabled, that forcing is suppressed and the default RETURN_NULL strategy applies, so a null source
         // maps to null.
         assertThat( JSpecifyDisabledNonNullReturnMapper.INSTANCE.mapAll( null ) ).isNull();
+    }
+
+    @ProcessorTest(Compiler.JDK)
+    @WithClasses({
+        JSpecifyDisabledReusedMethodMapper.class,
+        JSpecifySimpleReusedMethodSource.class,
+        JSpecifySimpleReusedMethodTarget.class,
+        JSpecifySimpleReusedMethodUses.class,
+        JSpecifySimpleReusedMethodValue.class
+    })
+    public void disabledFlagRestoresLegacyReusedMethodBehavior() {
+        generatedSource.addComparisonToFixtureFor( JSpecifyDisabledReusedMethodMapper.class );
     }
 }

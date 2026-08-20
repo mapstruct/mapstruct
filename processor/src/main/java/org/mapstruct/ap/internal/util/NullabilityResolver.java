@@ -57,6 +57,13 @@ public class NullabilityResolver {
     }
 
     /**
+     * @return whether JSpecify inference is enabled for the current processor run
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
      * Determines the nullability of an accessor element based on JSpecify annotations.
      * <p>
      * For getter methods ({@link ExecutableElement}), this checks the return type's annotations
@@ -160,21 +167,39 @@ public class NullabilityResolver {
      * Determines whether a null check is required for a property mapping based on JSpecify annotations
      * on the source and target elements.
      * <p>
-     * Only returns a non-null decision for the clear-cut cases:
-     * source {@code @NonNull} (skip check) or target {@code @NonNull} (always check).
-     * All other cases return {@code null} to defer to the existing {@code NullValueCheckStrategy}.
+     * A reused mapping method can add a contract on either side of the assignment. The input
+     * contract is considered before the target contract because a non-null parameter must be
+     * protected at the call site, while a nullable parameter whose result is not explicitly
+     * nullable can safely receive the source value directly.
      *
      * @param sourceNullability the nullability of the source (getter return type / parameter)
      * @param targetNullability the nullability of the target (setter parameter / field)
+     * @param parameterNullability the nullability expected by the first reused method, or {@code null}
+     *                             when no reused method consumes the source
+     * @param resultNullability the nullability guaranteed by the outermost reused method, or {@code null}
+     *                          when no reused method produces the assignment result
      * @return {@code Boolean.TRUE} if a null check is needed, {@code Boolean.FALSE} if it should be skipped,
      * or {@code null} if JSpecify annotations are not present and the existing strategy should be used
      */
-    public Boolean requiresNullCheck(Nullability sourceNullability, Nullability targetNullability) {
+    public Boolean requiresNullCheck(Nullability sourceNullability, Nullability targetNullability,
+                                    Nullability parameterNullability, Nullability resultNullability) {
         if ( !enabled ) {
             return null;
         }
         if ( sourceNullability == Nullability.NON_NULL ) {
             // Source is guaranteed non-null, no null check needed
+            return Boolean.FALSE;
+        }
+        if ( parameterNullability == Nullability.NON_NULL ) {
+            // A nullable source must not be passed to a method with a non-null parameter
+            return Boolean.TRUE;
+        }
+        if ( parameterNullability == Nullability.NULLABLE
+            && resultNullability != null
+            && resultNullability != Nullability.NULLABLE ) {
+            // The method accepts null and does not declare a nullable result. UNKNOWN preserves the
+            // pre-JSpecify behavior for unannotated return types; only an explicit @Nullable result
+            // makes the assignment potentially nullable.
             return Boolean.FALSE;
         }
         if ( targetNullability == Nullability.NON_NULL ) {
@@ -183,6 +208,17 @@ public class NullabilityResolver {
         }
         // All other cases: defer to existing NullValueCheckStrategy
         return null;
+    }
+
+    /**
+     * Determines whether a null check is required when no reused-method contract is available.
+     *
+     * @param sourceNullability the nullability of the source
+     * @param targetNullability the nullability of the target
+     * @return the JSpecify decision, or {@code null} when the existing strategy should be used
+     */
+    public Boolean requiresNullCheck(Nullability sourceNullability, Nullability targetNullability) {
+        return requiresNullCheck( sourceNullability, targetNullability, null, null );
     }
 
     /**

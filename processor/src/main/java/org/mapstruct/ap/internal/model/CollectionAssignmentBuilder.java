@@ -75,6 +75,7 @@ public class CollectionAssignmentBuilder {
     private NullValueCheckStrategyGem nvcs;
     private NullValuePropertyMappingStrategyGem nvpms;
     private NullabilityResolver.Nullability sourceJSpecifyNullability = NullabilityResolver.Nullability.UNKNOWN;
+    private NullabilityResolver.Nullability targetJSpecifyNullability = NullabilityResolver.Nullability.UNKNOWN;
 
     public CollectionAssignmentBuilder mappingBuilderContext(MappingBuilderContext ctx) {
         this.ctx = ctx;
@@ -141,6 +142,15 @@ public class CollectionAssignmentBuilder {
     ) {
         this.sourceJSpecifyNullability = sourceJSpecifyNullability != null
             ? sourceJSpecifyNullability
+            : NullabilityResolver.Nullability.UNKNOWN;
+        return this;
+    }
+
+    public CollectionAssignmentBuilder targetJSpecifyNullability(
+        NullabilityResolver.Nullability targetJSpecifyNullability
+    ) {
+        this.targetJSpecifyNullability = targetJSpecifyNullability != null
+            ? targetJSpecifyNullability
             : NullabilityResolver.Nullability.UNKNOWN;
         return this;
     }
@@ -286,12 +296,45 @@ public class CollectionAssignmentBuilder {
             return true;
         }
 
-        if ( nvcs == ALWAYS ) {
-            // NullValueCheckStrategy is ALWAYS -> do a null check
+        if ( nvpms == SET_TO_DEFAULT || nvpms == IGNORE ) {
+            // NullValuePropertyMappingStrategy requires a source null check before applying its behavior.
+            return true;
+        }
+
+        if ( rhs.getType().isConverted() ) {
+            // A type conversion is applied, so a null check is required before invoking it.
             return true;
         }
 
         if ( rhs.getType().isDirect() ) {
+            // Direct collection assignment uses a copy constructor and must not receive null.
+            return true;
+        }
+
+        NullabilityResolver.Nullability parameterNullability = rhs.getSourceParameterNullability();
+        NullabilityResolver.Nullability resultNullability = rhs.getResultNullability();
+        Boolean jspecifyDecision = ctx.getNullabilityResolver().requiresNullCheck(
+            sourceJSpecifyNullability,
+            targetJSpecifyNullability,
+            parameterNullability,
+            resultNullability
+        );
+        if ( jspecifyDecision != null ) {
+            ctx.getMessager().note( 2,
+                jspecifyDecision && parameterNullability == NullabilityResolver.Nullability.NON_NULL
+                    ? Message.PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK_NON_NULL_PARAM
+                    : jspecifyDecision
+                        ? Message.PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK
+                        : Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK,
+                targetPropertyName,
+                sourceJSpecifyNullability,
+                targetJSpecifyNullability
+            );
+            return jspecifyDecision;
+        }
+
+        if ( nvcs == ALWAYS ) {
+            // NullValueCheckStrategy is ALWAYS -> do a null check
             return true;
         }
 

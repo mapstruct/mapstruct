@@ -44,6 +44,7 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
 import org.mapstruct.ap.internal.model.common.FieldReference;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
@@ -60,6 +61,7 @@ import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.MessageConstants;
 import org.mapstruct.ap.internal.util.NativeTypes;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.TypeUtils;
 
@@ -81,6 +83,7 @@ public class MappingResolverImpl implements MappingResolver {
     private final FormattingMessager messager;
     private final TypeUtils typeUtils;
     private final TypeFactory typeFactory;
+    private final NullabilityResolver nullabilityResolver;
 
     private final List<Method> sourceModel;
     private final List<MapperReference> mapperReferences;
@@ -105,11 +108,13 @@ public class MappingResolverImpl implements MappingResolver {
     private final Set<Field> usedSupportedFields = new LinkedHashSet<>();
 
     public MappingResolverImpl(FormattingMessager messager, ElementUtils elementUtils, TypeUtils typeUtils,
-                               TypeFactory typeFactory, List<Method> sourceModel,
+                               TypeFactory typeFactory, NullabilityResolver nullabilityResolver,
+                               List<Method> sourceModel,
                                List<MapperReference> mapperReferences, boolean verboseLogging) {
         this.messager = messager;
         this.typeUtils = typeUtils;
         this.typeFactory = typeFactory;
+        this.nullabilityResolver = nullabilityResolver;
 
         this.sourceModel = sourceModel;
         this.mapperReferences = mapperReferences;
@@ -535,12 +540,33 @@ public class MappingResolverImpl implements MappingResolver {
         }
 
         private Assignment toMethodRef(SelectedMethod<Method> selectedMethod) {
-            MapperReference mapperReference = findMapperReference( selectedMethod.getMethod() );
+            Method method = selectedMethod.getMethod();
+            MapperReference mapperReference = findMapperReference( method );
+
+            NullabilityResolver.Nullability sourceParameterNullability = null;
+            NullabilityResolver.Nullability resultNullability = null;
+            if ( nullabilityResolver.isEnabled()
+                && method.getExecutable() != null
+                && method.getDefiningType() != null ) {
+                if ( !method.getSourceParameters().isEmpty() ) {
+                    Parameter sourceParameter = method.getSourceParameters().get( 0 );
+                    sourceParameterNullability = nullabilityResolver.getNullability(
+                        sourceParameter.getElement(),
+                        method.getDefiningType()::isNullMarked
+                    );
+                }
+                resultNullability = nullabilityResolver.getNullability(
+                    method.getExecutable(),
+                    method.getDefiningType()::isNullMarked
+                );
+            }
 
             return MethodReference.forMapperReference(
-                selectedMethod.getMethod(),
+                method,
                 mapperReference,
-                selectedMethod.getParameterBindings()
+                selectedMethod.getParameterBindings(),
+                sourceParameterNullability,
+                resultNullability
             );
         }
 

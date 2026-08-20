@@ -130,6 +130,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 elementUtils,
                 typeUtils,
                 typeFactory,
+                context.getNullabilityResolver(),
                 new ArrayList<>( sourceModel ),
                 mapperReferences,
                 options.isVerbose()

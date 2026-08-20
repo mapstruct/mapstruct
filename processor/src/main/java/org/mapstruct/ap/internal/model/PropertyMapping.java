@@ -290,7 +290,11 @@ public class PropertyMapping extends ModelElement {
                 NullabilityResolver.Nullability targetNullability = ctx.getNullabilityResolver().getSetterNullability(
                     targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked
                 );
-                if ( sourceNullability != NullabilityResolver.Nullability.NON_NULL
+                NullabilityResolver.Nullability effectiveAssignmentNullability = getAssignmentResultNullability(
+                    assignment,
+                    sourceNullability
+                );
+                if ( effectiveAssignmentNullability != NullabilityResolver.Nullability.NON_NULL
                     && targetNullability == NullabilityResolver.Nullability.NON_NULL ) {
                     ctx.getMessager().printMessage(
                         method.getExecutable(),
@@ -615,12 +619,21 @@ public class PropertyMapping extends ModelElement {
             NullabilityResolver.Nullability targetNullability = resolver.getSetterNullability(
                 targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked
             );
-            Boolean jspecifyDecision = resolver.requiresNullCheck( sourceNullability, targetNullability );
+            NullabilityResolver.Nullability parameterNullability = rhs.getSourceParameterNullability();
+            NullabilityResolver.Nullability resultNullability = rhs.getResultNullability();
+            Boolean jspecifyDecision = resolver.requiresNullCheck(
+                sourceNullability,
+                targetNullability,
+                parameterNullability,
+                resultNullability
+            );
             if ( jspecifyDecision != null ) {
                 ctx.getMessager().note( 2,
-                    jspecifyDecision
-                        ? Message.PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK
-                        : Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK,
+                    jspecifyDecision && parameterNullability == NullabilityResolver.Nullability.NON_NULL
+                        ? Message.PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK_NON_NULL_PARAM
+                        : jspecifyDecision
+                            ? Message.PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK
+                            : Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK,
                     targetPropertyName,
                     sourceNullability,
                     targetNullability
@@ -634,6 +647,31 @@ public class PropertyMapping extends ModelElement {
             }
 
             return false;
+        }
+
+        private NullabilityResolver.Nullability getAssignmentResultNullability(
+            Assignment assignment,
+            NullabilityResolver.Nullability sourceNullability
+        ) {
+            NullabilityResolver.Nullability resultNullability = assignment.getResultNullability();
+            if ( resultNullability == null ) {
+                return sourceNullability;
+            }
+            if ( assignment.getSourceParameterNullability() == NullabilityResolver.Nullability.NULLABLE
+                && resultNullability == NullabilityResolver.Nullability.UNKNOWN ) {
+                // An unannotated reused-method result is not explicitly nullable. Preserve the
+                // pre-JSpecify assignment behavior when that helper accepts null; an explicit
+                // @Nullable result still remains potentially nullable.
+                return NullabilityResolver.Nullability.NON_NULL;
+            }
+            if ( sourceNullability != NullabilityResolver.Nullability.NON_NULL
+                && assignment.getSourceParameterNullability() == NullabilityResolver.Nullability.NON_NULL
+                && resultNullability == NullabilityResolver.Nullability.NON_NULL ) {
+                // A guard before a non-null helper leaves the constructor argument nullable when the
+                // source is absent, even though the helper itself returns a non-null value.
+                return NullabilityResolver.Nullability.NULLABLE;
+            }
+            return resultNullability;
         }
 
         private NullabilityResolver.Nullability getSourceJSpecifyNullability() {
@@ -760,6 +798,9 @@ public class PropertyMapping extends ModelElement {
                 .nullValueCheckStrategy( hasDefaultValueOrDefaultExpression() ? ALWAYS : nvcs )
                 .nullValuePropertyMappingStrategy( nvpms )
                 .sourceJSpecifyNullability( getSourceJSpecifyNullability() )
+                .targetJSpecifyNullability( ctx.getNullabilityResolver().getSetterNullability(
+                    targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked
+                ) )
                 .build();
         }
 

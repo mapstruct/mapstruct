@@ -334,6 +334,12 @@ This rule applies uniformly to bean, iterable, map, and stream mapping methods.
 
 When the return type of a mapping method is `@NonNull` (directly or via a `@NullMarked` scope), MapStruct forces `NullValueMappingStrategy.RETURN_DEFAULT` semantics. The generated method returns a default-constructed target (bean methods), an empty collection (`Iterable` / array mappings), an empty map (`Map` mappings), or `Stream.empty()` (stream mappings) rather than `null`, so the return contract is never violated. This rule applies regardless of the explicit `NullValueMappingStrategy` setting.
 
+==== Reused mapping methods
+
+When a property assignment reuses a mapping method, MapStruct considers both sides of that method's JSpecify contract. A nullable source is guarded before calling a method whose first source parameter is `@NonNull`. A method whose first source parameter is `@Nullable` and whose return type is `@NonNull` is called directly, even when the source and target properties are nullable or non-null. For a chain of methods, the innermost input contract and outermost result contract are used.
+
+JSpecify annotations refine null-check generation only; they do not participate in mapping-method overload selection. If annotations make several methods otherwise applicable, use qualifiers to select the intended method.
+
 ==== Constructor parameter constraint
 
 If a property mapping would assign a potentially `null` source value to a `@NonNull` constructor parameter, MapStruct raises a *compilation error*. Neither inserting a null check (which would leave the variable at `null` and violate the contract) nor passing the value through is safe. Provide a `defaultValue` or `defaultExpression` on the `@Mapping` to satisfy the parameter when the source is absent.
