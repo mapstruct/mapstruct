@@ -1117,8 +1117,8 @@ public class Type extends ModelElement implements Comparable<Type> {
      * Matching occurs on:
      * <ol>
      * <li>The generic type parameter type of the collection should match the adder method argument</li>
-     * <li>When there are more candidates, property name is made singular (as good as is possible). This routine
-     * looks for a matching add method name.</li>
+     * <li>The adder element name must match the property name or its singular form. A single type-compatible
+     * adder is not reused for other collection properties.</li>
      * <li>The singularization rules of Dali are used to make a property name singular. This routine
      * looks for a matching add method name.</li>
      * </ol>
@@ -1146,18 +1146,22 @@ public class Type extends ModelElement implements Comparable<Type> {
             return null;
         }
 
-        if ( candidates.size() == 1 ) {
-            return candidates.get( 0 );
-        }
-
+        String singularPropertyName = Nouns.singularize( pluralPropertyName );
+        Accessor pluralNameMatch = null;
         for ( Accessor candidate : candidates ) {
             String elementName = accessorNaming.getElementNameForAdder( candidate );
-            if ( elementName != null && elementName.equals( Nouns.singularize( pluralPropertyName ) ) ) {
+            if ( elementName == null ) {
+                continue;
+            }
+            if ( elementName.equals( singularPropertyName ) ) {
                 return candidate;
+            }
+            if ( pluralNameMatch == null && elementName.equals( pluralPropertyName ) ) {
+                pluralNameMatch = candidate;
             }
         }
 
-        return null;
+        return pluralNameMatch;
     }
 
     /**
