@@ -74,7 +74,7 @@
         <#nested>
       </#if>
     }
-  <#elseif sourceType.optionalType>
+  <#elseif (sourceType.optionalType)!false>
     if ( <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if>.isPresent() ) {
       <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
       <#nested>
