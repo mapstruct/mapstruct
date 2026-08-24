@@ -286,6 +286,12 @@ public class CollectionAssignmentBuilder {
             return true;
         }
 
+        if ( rhs.getSourceType().isOptionalType() ) {
+            // If the source is an Optional then we need a presence check before calling Optional#get(),
+            // otherwise the local var assignment throws NoSuchElementException for an empty Optional.
+            return true;
+        }
+
         if ( nvcs == ALWAYS ) {
             // NullValueCheckStrategy is ALWAYS -> do a null check
             return true;
