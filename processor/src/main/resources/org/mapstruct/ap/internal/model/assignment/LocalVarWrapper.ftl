@@ -7,14 +7,28 @@
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.assignment.LocalVarWrapper" -->
 <#import "../macro/CommonMacros.ftl" as lib>
-<#if (thrownTypes?size == 0) >
-    <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/></#if> ${ext.targetWriteAccessorName} = <@_assignment/>;
+<#if includeSourceNullCheck>
+    if ( <#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null ) {
+        <@_writeAssignment/>
+    }
+    <#if setExplicitlyToNull>
+    else {
+        ${ext.targetWriteAccessorName} = ${ext.targetType.null};
+    }
+    </#if>
 <#else>
-    <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/> ${ext.targetWriteAccessorName};</#if>
-    <@lib.handleExceptions>
-        ${ext.targetWriteAccessorName} = <@_assignment/>;
-    </@lib.handleExceptions>
+    <@_writeAssignment/>
 </#if>
+<#macro _writeAssignment>
+    <#if (thrownTypes?size == 0) >
+        <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/></#if> ${ext.targetWriteAccessorName} = <@_assignment/>;
+    <#else>
+        <#if !ext.isTargetDefined?? ><@includeModel object=ext.targetType/> ${ext.targetWriteAccessorName};</#if>
+        <@lib.handleExceptions>
+            ${ext.targetWriteAccessorName} = <@_assignment/>;
+        </@lib.handleExceptions>
+    </#if>
+</#macro>
 <#macro _assignment>
     <@includeModel object=assignment
                targetBeanName=ext.targetBeanName

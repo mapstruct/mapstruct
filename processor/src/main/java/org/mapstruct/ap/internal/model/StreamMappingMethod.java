@@ -44,7 +44,8 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
-        protected Assignment getWrapper(Assignment assignment, Method method) {
+        protected Assignment getWrapper(Assignment assignment, Method method, boolean includeSourceNullCheck,
+                                        boolean setExplicitlyToNull) {
             return new Java8FunctionWrapper( assignment );
         }
 

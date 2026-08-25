@@ -127,6 +127,28 @@ public class NullabilityResolver {
     }
 
     /**
+     * Determines the nullability of a type-use position. Unlike an accessor element, a nested type-use position
+     * has no declaration element to inspect, so only annotations on the supplied type mirror and the enclosing
+     * JSpecify scope are considered.
+     *
+     * @param typeMirror the type-use position to inspect; may be {@code null}
+     * @param enclosingTypeNullMarked supplier for the enclosing JSpecify scope; must be non-{@code null}
+     * @return the nullability state
+     */
+    public Nullability getNullability(TypeMirror typeMirror, BooleanSupplier enclosingTypeNullMarked) {
+        if ( !enabled || typeMirror == null ) {
+            return Nullability.UNKNOWN;
+        }
+
+        Nullability result = getNullabilityFromTypeMirror( typeMirror );
+        if ( result != Nullability.UNKNOWN ) {
+            return result;
+        }
+
+        return enclosingTypeNullMarked.getAsBoolean() ? Nullability.NON_NULL : Nullability.UNKNOWN;
+    }
+
+    /**
      * Determines the nullability of a write-accessor element — either a setter method or a field.
      * <p>
      * For setter methods ({@link ExecutableElement}) the nullability annotation lives on the

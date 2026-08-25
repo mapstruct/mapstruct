@@ -40,15 +40,27 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
-        protected Assignment getWrapper(Assignment assignment, Method method) {
+        protected Assignment getWrapper(Assignment assignment, Method method, boolean includeSourceNullCheck,
+                                        boolean setExplicitlyToNull) {
             Type resultType = method.getResultType();
             // target accessor is setter, so decorate assignment as setter
             if ( resultType.isArrayType() ) {
-                return new LocalVarWrapper( assignment, method.getThrownTypes(), resultType, false );
+                return new LocalVarWrapper(
+                    assignment,
+                    method.getThrownTypes(),
+                    resultType,
+                    false,
+                    includeSourceNullCheck,
+                    setExplicitlyToNull
+                );
             }
-            else {
-                return new SetterWrapper( assignment, method.getThrownTypes(), false );
-            }
+            return new SetterWrapper(
+                assignment,
+                method.getThrownTypes(),
+                false,
+                includeSourceNullCheck,
+                setExplicitlyToNull
+            );
         }
 
         @Override
