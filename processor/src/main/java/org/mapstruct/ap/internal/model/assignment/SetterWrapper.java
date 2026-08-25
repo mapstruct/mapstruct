@@ -55,6 +55,17 @@ public class SetterWrapper extends AssignmentWrapper {
         this.nullCastType = null;
     }
 
+    public SetterWrapper(Assignment rhs, List<Type> thrownTypesToExclude, boolean fieldAssignment,
+                         boolean includeSourceNullCheck, boolean setExplicitlyToNull) {
+        super( rhs, fieldAssignment );
+        this.thrownTypesToExclude = thrownTypesToExclude;
+        this.includeSourceNullCheck = includeSourceNullCheck;
+        this.setExplicitlyToNull = setExplicitlyToNull;
+        this.setExplicitlyToDefault = false;
+        this.mustCastForNull = false;
+        this.nullCastType = null;
+    }
+
     @Override
     public List<Type> getThrownTypes() {
         List<Type> parentThrownTypes = super.getThrownTypes();

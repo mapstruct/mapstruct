@@ -10,6 +10,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -21,6 +26,7 @@ import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.Strings;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -75,6 +81,33 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         Type sourceElementType = getElementType( sourceParameterType );
         Type targetElementType = getElementType( resultType );
 
+        TypeMirror sourceElementTypeMirror = getElementTypeMirror( sourceParameterType.getTypeMirror() );
+        Element sourceParameterElement = first( method.getSourceParameters() ).getElement();
+        if ( sourceParameterElement != null
+            && containsJSpecifyTypeUseAnnotation( sourceParameterElement.asType() ) ) {
+            sourceElementTypeMirror = getElementTypeMirror( sourceParameterElement.asType() );
+        }
+        TypeMirror targetElementTypeMirror = getElementTypeMirror( resultType.getTypeMirror() );
+        if ( method.getExecutable() != null
+            && containsJSpecifyTypeUseAnnotation( method.getExecutable().getReturnType() ) ) {
+            targetElementTypeMirror = getElementTypeMirror( method.getExecutable().getReturnType() );
+        }
+        NullabilityResolver.Nullability sourceElementNullability = ctx.getNullabilityInMapperScope(
+            sourceElementTypeMirror
+        );
+        NullabilityResolver.Nullability targetElementNullability = ctx.getNullabilityInMapperScope(
+            targetElementTypeMirror
+        );
+        Boolean elementNullCheck = ctx.getNullabilityResolver().requiresNullCheck(
+            sourceElementNullability,
+            targetElementNullability
+        );
+        boolean includeElementNullCheck = elementNullCheck != null
+            ? elementNullCheck
+            : sourceElementNullability == NullabilityResolver.Nullability.NULLABLE;
+        boolean setElementExplicitlyToNull = sourceElementNullability == NullabilityResolver.Nullability.NULLABLE
+            && targetElementNullability != NullabilityResolver.Nullability.NON_NULL;
+
         String loopVariableName =
             Strings.getSafeVariableName( sourceElementType.getName(), method.getParameterNames() );
 
@@ -124,7 +157,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                 forgedMethod.addThrownTypes( assignment.getThrownTypes() );
             }
         }
-        assignment = getWrapper( assignment, method );
+        assignment = getWrapper( assignment, method, includeElementNullCheck, setElementExplicitlyToNull );
 
         // mapNullToDefault — a JSpecify @NonNull return forces RETURN_DEFAULT to avoid generating `return null`.
         // Forcing is unconditional here (unlike BeanMappingMethod): when the source is @NonNull the template skips
@@ -188,6 +221,42 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         return assignment;
     }
 
+    private static TypeMirror getElementTypeMirror(TypeMirror typeMirror) {
+        if ( typeMirror.getKind() == TypeKind.ARRAY ) {
+            return ( (ArrayType) typeMirror ).getComponentType();
+        }
+        if ( typeMirror.getKind() == TypeKind.DECLARED ) {
+            List<? extends TypeMirror> typeArguments = ( (DeclaredType) typeMirror ).getTypeArguments();
+            if ( !typeArguments.isEmpty() ) {
+                return typeArguments.get( 0 );
+            }
+        }
+        return typeMirror;
+    }
+
+    private static boolean containsJSpecifyTypeUseAnnotation(TypeMirror typeMirror) {
+        if ( !typeMirror.getAnnotationMirrors().isEmpty() ) {
+            for ( AnnotationMirror annotationMirror : typeMirror.getAnnotationMirrors() ) {
+                String annotationName = annotationMirror.getAnnotationType().toString();
+                if ( "org.jspecify.annotations.Nullable".equals( annotationName )
+                    || "org.jspecify.annotations.NonNull".equals( annotationName ) ) {
+                    return true;
+                }
+            }
+        }
+        if ( typeMirror.getKind() == TypeKind.ARRAY ) {
+            return containsJSpecifyTypeUseAnnotation( ( (ArrayType) typeMirror ).getComponentType() );
+        }
+        if ( typeMirror.getKind() == TypeKind.DECLARED ) {
+            for ( TypeMirror typeArgument : ( (DeclaredType) typeMirror ).getTypeArguments() ) {
+                if ( containsJSpecifyTypeUseAnnotation( typeArgument ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     protected abstract M instantiateMappingMethod(Method method, Collection<String> existingVariables,
                                                   Assignment assignment, MethodReference factoryMethod,
                                                   boolean mapNullToDefault, String loopVariableName,
@@ -197,7 +266,8 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
     protected abstract Type getElementType(Type parameterType);
 
-    protected abstract Assignment getWrapper(Assignment assignment, Method method);
+    protected abstract Assignment getWrapper(Assignment assignment, Method method, boolean includeSourceNullCheck,
+                                            boolean setExplicitlyToNull);
 
     @Override
     protected boolean shouldUsePropertyNamesInHistory() {

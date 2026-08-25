@@ -22,12 +22,25 @@ public class LocalVarWrapper extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
     private final Type targetType;
+    private final boolean includeSourceNullCheck;
+    private final boolean setExplicitlyToNull;
 
     public LocalVarWrapper(Assignment decoratedAssignment, List<Type> thrownTypesToExclude, Type targetType,
                            boolean fieldAssignment) {
         super( decoratedAssignment, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.targetType = targetType;
+        this.includeSourceNullCheck = false;
+        this.setExplicitlyToNull = false;
+    }
+
+    public LocalVarWrapper(Assignment decoratedAssignment, List<Type> thrownTypesToExclude, Type targetType,
+                           boolean fieldAssignment, boolean includeSourceNullCheck, boolean setExplicitlyToNull) {
+        super( decoratedAssignment, fieldAssignment );
+        this.thrownTypesToExclude = thrownTypesToExclude;
+        this.targetType = targetType;
+        this.includeSourceNullCheck = includeSourceNullCheck;
+        this.setExplicitlyToNull = setExplicitlyToNull;
     }
 
     @Override
@@ -50,6 +63,14 @@ public class LocalVarWrapper extends AssignmentWrapper {
         imported.add( targetType );
         imported.addAll( targetType.getTypeParameters() );
         return imported;
+    }
+
+    public boolean isIncludeSourceNullCheck() {
+        return includeSourceNullCheck;
+    }
+
+    public boolean isSetExplicitlyToNull() {
+        return setExplicitlyToNull;
     }
 
 }

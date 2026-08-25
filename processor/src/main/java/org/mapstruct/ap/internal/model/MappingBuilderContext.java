@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
@@ -222,6 +223,18 @@ public class MappingBuilderContext {
     public NullabilityResolver.Nullability getNullabilityInMapperScope(Element element) {
         return nullabilityResolver.getNullability(
             element,
+            () -> typeFactory.getType( mapperTypeElement.asType() ).isNullMarked() );
+    }
+
+    /**
+     * Resolves the JSpecify nullability of a nested type-use position in the mapper's scope.
+     *
+     * @param typeMirror the type-use position to inspect
+     * @return the resolved nullability
+     */
+    public NullabilityResolver.Nullability getNullabilityInMapperScope(TypeMirror typeMirror) {
+        return nullabilityResolver.getNullability(
+            typeMirror,
             () -> typeFactory.getType( mapperTypeElement.asType() ).isNullMarked() );
     }
 
