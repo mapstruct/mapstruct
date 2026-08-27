@@ -32,7 +32,8 @@ public class NewInstanceSetterWrapperForCollectionsAndMaps extends SetterWrapper
             thrownTypesToExclude,
             targetType,
             typeFactory,
-            fieldAssignment
+            fieldAssignment,
+            false
         );
         this.instanceVar = decoratedAssignment.createUniqueVarName( targetType.getName() );
     }

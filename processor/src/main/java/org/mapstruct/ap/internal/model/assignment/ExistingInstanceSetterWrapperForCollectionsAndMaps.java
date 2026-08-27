@@ -50,7 +50,8 @@ public class ExistingInstanceSetterWrapperForCollectionsAndMaps
             thrownTypesToExclude,
             targetType,
             typeFactory,
-            fieldAssignment
+            fieldAssignment,
+            false
         );
         this.nvcs = nvcs;
         this.nvpms = nvpms;

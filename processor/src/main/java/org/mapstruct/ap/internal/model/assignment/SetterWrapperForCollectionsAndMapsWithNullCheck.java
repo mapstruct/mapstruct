@@ -28,12 +28,14 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
     private final Type targetType;
     private final TypeFactory typeFactory;
     private final NewInstanceCreation newInstance;
+    private final boolean skipNullCheck;
 
     public SetterWrapperForCollectionsAndMapsWithNullCheck(Assignment decoratedAssignment,
         List<Type> thrownTypesToExclude,
         Type targetType,
         TypeFactory typeFactory,
-        boolean fieldAssignment) {
+        boolean fieldAssignment,
+        boolean skipNullCheck) {
         super(
             decoratedAssignment,
             thrownTypesToExclude,
@@ -43,6 +45,7 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
         this.targetType = targetType;
         this.typeFactory = typeFactory;
         this.newInstance = NewInstanceCreation.forType( targetType );
+        this.skipNullCheck = skipNullCheck;
     }
 
     @Override
@@ -70,6 +73,15 @@ public class SetterWrapperForCollectionsAndMapsWithNullCheck extends WrapperForC
 
     public boolean isEnumSet() {
         return targetType.isEnumSet();
+    }
+
+    /**
+     * @return {@code true} if the source is statically known to be non-null (e.g. via JSpecify
+     * {@code @NonNull}), so the local variable should still be declared and wrapped in the copy
+     * constructor, but no runtime {@code if ( x != null )} check needs to be emitted around it.
+     */
+    public boolean isSkipNullCheck() {
+        return skipNullCheck;
     }
 
 }
