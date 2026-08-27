@@ -60,7 +60,7 @@
            requires: caller to implement String:getNullCheckLocalVarName()
                      caller to implement Type:getNullCheckLocalVarType()
 -->
-<#macro handleLocalVarNullCheck needs_explicit_local_var>
+<#macro handleLocalVarNullCheck needs_explicit_local_var skip_null_check=false>
   <#if sourcePresenceCheckerReference??>
     if ( <@includeModel object=sourcePresenceCheckerReference
            targetType=ext.targetType
@@ -73,13 +73,16 @@
         <#nested>
       </#if>
     }
+  <#elseif skip_null_check>
+    <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
+    <#nested>
   <#else>
     <@includeModel object=nullCheckLocalVarType/> ${nullCheckLocalVarName} = <@lib.handleAssignment/>;
     if ( ${nullCheckLocalVarName} != null ) {
       <#nested>
     }
   </#if>
-  <#if ext.defaultValueAssignment?? >
+  <#if ext.defaultValueAssignment?? && !skip_null_check>
   else {
     <@handeDefaultAssigment/>
   }

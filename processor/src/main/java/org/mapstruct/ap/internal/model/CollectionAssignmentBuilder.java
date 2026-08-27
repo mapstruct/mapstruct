@@ -197,18 +197,27 @@ public class CollectionAssignmentBuilder {
                     method.getThrownTypes(),
                     targetType,
                     ctx.getTypeFactory(),
-                    targetAccessorType.isFieldAssignment()
+                    targetAccessorType.isFieldAssignment(),
+                    false
                 );
             }
             else if ( setterWrapperNeedsSourceNullCheck( result )
                 && canBeMappedOrDirectlyAssigned( result ) ) {
+
+                boolean skipNullCheck = sourceJSpecifyNullability == NullabilityResolver.Nullability.NON_NULL;
+                if ( skipNullCheck ) {
+                    ctx.getMessager().note( 2,
+                        Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE,
+                        targetPropertyName );
+                }
 
                 result = new SetterWrapperForCollectionsAndMapsWithNullCheck(
                     result,
                     method.getThrownTypes(),
                     targetType,
                     ctx.getTypeFactory(),
-                    targetAccessorType.isFieldAssignment()
+                    targetAccessorType.isFieldAssignment(),
+                    skipNullCheck
                 );
             }
             else if ( canBeMappedOrDirectlyAssigned( result ) ) {
@@ -273,14 +282,6 @@ public class CollectionAssignmentBuilder {
      * @return whether to include a null / presence check or not
      */
     private boolean setterWrapperNeedsSourceNullCheck(Assignment rhs) {
-        // JSpecify: source @NonNull means the value is guaranteed non-null, skip the wrapper
-        if ( sourceJSpecifyNullability == NullabilityResolver.Nullability.NON_NULL ) {
-            ctx.getMessager().note( 2,
-                Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE,
-                targetPropertyName );
-            return false;
-        }
-
         if ( rhs.getSourcePresenceCheckerReference() != null ) {
             // If there is a source presence check then we should do a null check
             return true;
@@ -292,6 +293,12 @@ public class CollectionAssignmentBuilder {
         }
 
         if ( rhs.getType().isDirect() ) {
+            // Direct assignment always needs the local-var + copy-constructor wrapper, even when
+            // the source is JSpecify @NonNull and the runtime null check itself can be skipped
+            // (see the skipNullCheck flag passed to SetterWrapperForCollectionsAndMapsWithNullCheck
+            // below). Skipping this wrapper entirely for @NonNull sources would also skip the
+            // defensive copy, silently changing copy() from returning a mutable collection to
+            // sharing the source's collection instance.
             return true;
         }
 

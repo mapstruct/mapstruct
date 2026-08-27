@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.test.nullcheck.jspecify;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.processing.Generated;
 
 @Generated(
@@ -19,7 +21,8 @@ public class JSpecifyCollectionPropertyMapperImpl implements JSpecifyCollectionP
 
         NullMarkedCollectionTargetBean nullMarkedCollectionTargetBean = new NullMarkedCollectionTargetBean();
 
-        nullMarkedCollectionTargetBean.setValues( source.getValues() );
+        List<String> list = source.getValues();
+        nullMarkedCollectionTargetBean.setValues( new ArrayList<>( list ) );
 
         return nullMarkedCollectionTargetBean;
     }
