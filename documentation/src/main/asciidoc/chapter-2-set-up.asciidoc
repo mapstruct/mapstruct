@@ -60,6 +60,26 @@ If you are working with the Eclipse IDE, make sure to have a current version of 
 When importing a Maven project configured as shown above, it will set up the MapStruct annotation processor so it runs right in the IDE, whenever you save a mapper type.
 Neat, isn't it?
 
+However, depending on your Eclipse version, you may also need to add `mapstruct-processor` as a direct dependency in addition to the `annotationProcessorPaths` configuration:
+
+[source, xml]
+----
+<dependencies>
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+        <version>${org.mapstruct.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct-processor</artifactId>
+        <version>${org.mapstruct.version}</version>
+    </dependency>
+</dependencies>
+----
+
+This is particularly important for Eclipse 2024 and later versions where the M2E's annotation processor detection may not automatically pick up processors from `annotationProcessorPaths` alone.
+
 To double check that everything is working as expected, go to your project's properties and select "Java Compiler" -> "Annotation Processing" -> "Factory Path".
 The MapStruct processor JAR should be listed and enabled there.
 Any processor options configured via the compiler plug-in (see below) should be listed under "Java Compiler" -> "Annotation Processing".
