@@ -589,8 +589,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             Type sourceType = typeFactory.getType( subclassMappingOptions.getSource() );
             Type targetType = typeFactory.getType( subclassMappingOptions.getTarget() );
 
+            String sourceArgument = method.getSourceParameters()
+                    .stream().filter( parameter -> ctx.getTypeUtils().isAssignable(
+                            sourceType.getTypeMirror(), parameter.getType().getTypeMirror() ) )
+                    .findFirst().map( Parameter::getName ).orElseThrow(
+                            () -> new IllegalArgumentException( "No source parameter found." ) );
+
             SourceRHS rightHandSide = new SourceRHS(
-                "subclassMapping",
+                "(" + sourceType.createReferenceName() + ") " + sourceArgument,
                 sourceType,
                 Collections.emptySet(),
                 "SubclassMapping for " + sourceType.getFullyQualifiedName() );
@@ -615,18 +621,6 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                                sourceType,
                                                targetType,
                                                mappingReferences ) );
-            String sourceArgument = null;
-            for ( Parameter parameter : method.getSourceParameters() ) {
-                if ( ctx
-                    .getTypeUtils()
-                    .isAssignable( sourceType.getTypeMirror(), parameter.getType().getTypeMirror() ) ) {
-                    sourceArgument = parameter.getName();
-                    if ( assignment != null ) {
-                        assignment.setSourceLocalVarName(
-                            "(" + sourceType.createReferenceName() + ") " + sourceArgument );
-                    }
-                }
-            }
             return new SubclassMapping( sourceType, sourceArgument, targetType, assignment );
         }
 
