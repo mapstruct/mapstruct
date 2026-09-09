@@ -1693,6 +1693,15 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 // apply name based mapping
                 applyPropertyNameBasedMapping( sourceRefs );
 
+                // the source of a target this mapping is only consumed when it actually contributed
+                // a property, so an unused target this still reports its source as unmapped
+                if ( !sourceRefs.isEmpty() ) {
+                    String sourceName = targetThis.getSourceReference().getShallowestPropertyName();
+                    if ( sourceName != null ) {
+                        unprocessedSourceProperties.remove( sourceName );
+                    }
+                }
+
                 // add handled target properties
                 handledTargetProperties.addAll( sourceRefs.stream()
                     .map( SourceReference::getDeepestPropertyName )
