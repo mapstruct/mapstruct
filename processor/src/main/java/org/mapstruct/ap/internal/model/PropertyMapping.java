@@ -932,7 +932,46 @@ public class PropertyMapping extends ModelElement {
                     }
                 }
             }
+
+            if ( sourcePresenceChecker == null ) {
+                sourcePresenceChecker = getNullSafeOptionalPresenceCheck( sourceReference, sourceRHS );
+            }
+
             return sourcePresenceChecker;
+        }
+
+        /**
+         * An {@code Optional} source property is checked with {@code isPresent()}, which throws a
+         * {@code NullPointerException} when the {@code Optional} reference itself is {@code null}. With
+         * {@link org.mapstruct.NullValueCheckStrategy#ALWAYS} the user asked for the source to be null checked
+         * before it is used, so the presence check is combined with a null check.
+         *
+         * @param sourceReference the source reference the presence check is created for
+         * @param sourceRHS the source right hand side
+         *
+         * @return the null safe presence check, or {@code null} if it does not apply
+         */
+        private PresenceCheck getNullSafeOptionalPresenceCheck(SourceReference sourceReference, SourceRHS sourceRHS) {
+            if ( nvcs != ALWAYS || sourceReference.isNested() || sourceReference.getPropertyEntries().isEmpty() ) {
+                // Only a direct property read can be safely repeated within the presence check
+                return null;
+            }
+
+            Type sourceType = sourceRHS.getSourceType();
+            if ( sourceType == null || !sourceType.isOptionalType() ) {
+                return null;
+            }
+
+            if ( getSourceJSpecifyNullability() == NullabilityResolver.Nullability.NON_NULL ) {
+                // JSpecify annotations take precedence over NullValueCheckStrategy
+                return null;
+            }
+
+            String reference = sourceRHS.getSourceReference();
+            return new AllPresenceChecksPresenceCheck( Arrays.asList(
+                new NullPresenceCheck( reference ),
+                new OptionalPresenceCheck( reference, ctx.getVersionInformation() )
+            ) );
         }
 
         private Assignment forgeStreamMapping(Type sourceType, Type targetType, SourceRHS source) {
