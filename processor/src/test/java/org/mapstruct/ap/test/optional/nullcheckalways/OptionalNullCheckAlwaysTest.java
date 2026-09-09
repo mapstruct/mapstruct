@@ -28,6 +28,21 @@ class OptionalNullCheckAlwaysTest {
     }
 
     @ProcessorTest
+    @WithClasses(OptionalDefaultNullCheckMapper.class)
+    void generatedCodeWithDefaultNullValueCheckStrategy() {
+        generatedSource.addComparisonToFixtureFor( OptionalDefaultNullCheckMapper.class );
+    }
+
+    @ProcessorTest
+    void optionalToOptionalWhenNull() {
+        Source source = new Source();
+        source.setOptionalToOptional( null );
+
+        Target target = OptionalNullCheckAlwaysMapper.INSTANCE.toTarget( source );
+        assertThat( target.isOptionalToOptionalCalled() ).isFalse();
+    }
+
+    @ProcessorTest
     void optionalToOptionalWhenEmpty() {
         Source source = new Source();
         source.setOptionalToOptional( Optional.empty() );
@@ -43,6 +58,15 @@ class OptionalNullCheckAlwaysTest {
 
         Target target = OptionalNullCheckAlwaysMapper.INSTANCE.toTarget( source );
         assertThat( target.isOptionalToOptionalCalled() ).isTrue();
+    }
+
+    @ProcessorTest
+    void optionalToNonOptionalWhenNull() {
+        Source source = new Source();
+        source.setOptionalToNonOptional( null );
+
+        Target target = OptionalNullCheckAlwaysMapper.INSTANCE.toTarget( source );
+        assertThat( target.isOptionalToNonOptionalCalled() ).isFalse();
     }
 
     @ProcessorTest

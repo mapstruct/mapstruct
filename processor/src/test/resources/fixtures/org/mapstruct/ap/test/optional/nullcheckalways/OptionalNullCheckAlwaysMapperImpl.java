@@ -23,10 +23,10 @@ public class OptionalNullCheckAlwaysMapperImpl implements OptionalNullCheckAlway
 
         Target target = new Target();
 
-        if ( source.getOptionalToOptional().isPresent() ) {
+        if ( source.getOptionalToOptional() != null && source.getOptionalToOptional().isPresent() ) {
             target.setOptionalToOptional( source.getOptionalToOptional() );
         }
-        if ( source.getOptionalToNonOptional().isPresent() ) {
+        if ( source.getOptionalToNonOptional() != null && source.getOptionalToNonOptional().isPresent() ) {
             target.setOptionalToNonOptional( source.getOptionalToNonOptional().get() );
         }
         if ( source.getNonOptionalToOptional() != null ) {

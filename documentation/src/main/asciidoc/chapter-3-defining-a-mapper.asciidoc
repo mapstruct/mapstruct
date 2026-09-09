@@ -672,6 +672,9 @@ MapStruct handles all common `Optional` mapping scenarios, including conversions
 When using `Optional` as a source type, MapStruct performs presence checks using `Optional.isEmpty()` / `!Optional.isPresent()` instead of `null` checks.
 When using `Optional` as a target type, MapStruct returns `Optional.empty()` instead of `null` when the source is absent.
 
+By default the `Optional` reference itself is not `null` checked, so a source property holding a `null` `Optional` makes the generated presence check throw a `NullPointerException`.
+Configure `nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS` for such sources: the presence check of an `Optional` source property is then combined with a `null` check, i.e. `source.getValue() != null && source.getValue().isPresent()`.
+
 [[optional-mapping-scenarios]]
 ==== Optional Mapping Scenarios
 

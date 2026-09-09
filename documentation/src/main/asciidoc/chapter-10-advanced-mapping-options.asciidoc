@@ -296,6 +296,7 @@ MapStruct offers control over when to generate a `null` check. By default (`null
 First calling a mapping method on the source property is not protected by a null check. Therefore generated mapping methods will do a null check prior to carrying out mapping on a source property. Handwritten mapping methods must take care of null value checking. They have the possibility to add 'meaning' to `null`. For instance: mapping `null` to a default value.
 
 The option `nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS` will always include a null check when source is non primitive, unless a source presence checker is defined on the source bean.
+For a source property of an `Optional` type this means that the null check is combined with the presence check, see <<optional-basic-behavior>>.
 
 The strategy works in a hierarchical fashion. `@Mapping#nullValueCheckStrategy` will override `@BeanMapping#nullValueCheckStrategy`, `@BeanMapping#nullValueCheckStrategy` will override `@Mapper#nullValueCheckStrategy` and `@Mapper#nullValueCheckStrategy` will override `@MapperConfig#nullValueCheckStrategy`.
 
