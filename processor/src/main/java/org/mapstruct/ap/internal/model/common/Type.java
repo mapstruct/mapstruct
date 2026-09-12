@@ -2000,11 +2000,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         if ( className == null ) {
             return null;
         }
-        String trimmedClassName = className;
-        while ( trimmedClassName.endsWith( "[]" ) ) {
-            trimmedClassName = trimmedClassName.substring( 0, trimmedClassName.length() - 2 );
-        }
-        return trimmedClassName;
+        int arrayPos = className.indexOf( '[' );
+        return arrayPos == -1 ? className : className.substring( 0, arrayPos );
     }
 
     private static String nameWithTopLevelTypeName(TypeElement element, String name) {
