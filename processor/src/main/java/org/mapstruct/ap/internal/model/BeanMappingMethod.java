@@ -1015,8 +1015,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return primaryConstructor != null ? getConstructorAccessor( type, primaryConstructor ) : null;
             }
 
-            List<ExecutableElement> constructors = ElementFilter.constructorsIn( type.getTypeElement()
-                .getEnclosedElements() );
+            List<ExecutableElement> constructors = ignoreDeprecatedConstructors( ElementFilter.constructorsIn(
+                type.getTypeElement().getEnclosedElements() ) );
 
             // The rules for picking a constructor are the following:
             // 1. Constructor annotated with @Default (from any package) has highest precedence
@@ -1097,6 +1097,48 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 return getConstructorAccessor( type, accessibleConstructors.get( 0 ) );
             }
 
+        }
+
+        /**
+         * Removes the deprecated constructors from the given constructors, so that they do not take precedence over
+         * the constructors that are meant to be used.
+         * <p>
+         * Kotlin compiler plugins generate constructors that are hidden from Kotlin and marked as deprecated. The
+         * {@code no-arg} plugin (applied by {@code kotlin("plugin.jpa")}) for example adds a parameterless
+         * constructor to every annotated class. Such a constructor must not win over the constructor that is declared
+         * in the class, since for a class with {@code val} properties the declared constructor is the only way to
+         * populate the object.
+         *
+         * @param constructors the constructors of the type
+         * @return the constructors that should be taken into account. The deprecated constructors are only kept when
+         * there is no accessible non-deprecated constructor to fall back to, or when they are explicitly annotated
+         * with {@code @Default}
+         */
+        private List<ExecutableElement> ignoreDeprecatedConstructors(List<ExecutableElement> constructors) {
+            boolean hasNonDeprecatedCandidate = false;
+            for ( ExecutableElement constructor : constructors ) {
+                if ( !constructor.getModifiers().contains( Modifier.PRIVATE ) && !isDeprecated( constructor ) ) {
+                    hasNonDeprecatedCandidate = true;
+                    break;
+                }
+            }
+
+            if ( !hasNonDeprecatedCandidate ) {
+                return constructors;
+            }
+
+            List<ExecutableElement> candidates = new ArrayList<>( constructors.size() );
+            for ( ExecutableElement constructor : constructors ) {
+                if ( !isDeprecated( constructor ) || hasDefaultAnnotationFromAnyPackage( constructor ) ) {
+                    candidates.add( constructor );
+                }
+            }
+
+            return candidates;
+        }
+
+        private boolean isDeprecated(ExecutableElement constructor) {
+            return ctx.getElementUtils().isDeprecated( constructor );
         }
 
         private ConstructorAccessor getConstructorAccessor(Type type, ExecutableElement constructor) {
