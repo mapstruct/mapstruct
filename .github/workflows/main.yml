@@ -22,7 +22,7 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: 'Set up JDK'
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
@@ -33,7 +33,7 @@ jobs:
         run: ./mvnw jacoco:report
       - name: 'Upload coverage to Codecov'
         if: matrix.java == 21 && github.repository == 'mapstruct/mapstruct'
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@0b35c9ecc4f0529d0eb674914510c22f85b196b4 # v7.1.0
         with:
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -51,14 +51,14 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: 'Set up JDK 21 for building everything'
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: 'zulu'
           java-version: 21
       - name: 'Install Processor'
         run: ./mvnw ${MAVEN_ARGS} -DskipTests install -pl processor -am
       - name: 'Set up JDK ${{ matrix.java }} for running integration tests'
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
