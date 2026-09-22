@@ -17,6 +17,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which does mapping of generic types.
@@ -146,4 +147,14 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
         return true;
     }
 
+    @Override
+    public Nullability getReturnTypeNullability() {
+        if ( getReturnType().isVoid() ) {
+            return Nullability.voidNullability();
+        }
+        if ( sourceParameterPresenceCheck == null ) {
+            return Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL );
+        }
+        return super.getReturnTypeNullability().withIsReturnDefault( isMapNullToDefault() );
+    }
 }

@@ -53,6 +53,7 @@ import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
+import org.mapstruct.ap.internal.util.accessor.NullabilityResolver;
 import org.mapstruct.ap.internal.version.VersionInformation;
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;
 import org.mapstruct.ap.spi.BuilderInfo;
@@ -103,10 +104,11 @@ public class TypeFactory {
     private final Map<String, String> notToBeImportedTypes;
 
     private final boolean loggingVerbose;
+    private final NullabilityResolver nullabilityResolver;
 
     public TypeFactory(ElementUtils elementUtils, TypeUtils typeUtils, FormattingMessager messager,
                        RoundContext roundContext, Map<String, String> notToBeImportedTypes, boolean loggingVerbose,
-                       VersionInformation versionInformation) {
+                       VersionInformation versionInformation, NullabilityResolver nullabilityResolver) {
         this.elementUtils = elementUtils;
         this.typeUtils = typeUtils;
         this.messager = messager;
@@ -160,6 +162,7 @@ public class TypeFactory {
         );
 
         this.loggingVerbose = loggingVerbose;
+        this.nullabilityResolver = nullabilityResolver;
     }
 
     public Type getTypeForLiteral(Class<?> type) {
@@ -339,7 +342,7 @@ public class TypeFactory {
         }
 
         return new Type(
-            typeUtils, elementUtils, this,
+            typeUtils, elementUtils, this, nullabilityResolver,
             roundContext.getAnnotationProcessorContext().getAccessorNaming(),
             mirror,
             typeElement,
@@ -465,7 +468,8 @@ public class TypeFactory {
             // we know that this parameter should be used as varargs
             boolean isVarArgs = !varIt.hasNext() && method.isVarArgs();
 
-            result.add( Parameter.forElementAndType( parameter, type, isVarArgs ) );
+            result.add( Parameter.forElementAndType( parameter, type, isVarArgs,
+                    nullabilityResolver.getParameterNullability( parameter ) ) );
         }
 
         return result;
@@ -567,6 +571,7 @@ public class TypeFactory {
                 typeUtils,
                 elementUtils,
                 this,
+                nullabilityResolver,
                 roundContext.getAnnotationProcessorContext().getAccessorNaming(),
                 typeUtils.getDeclaredType(
                     implementationType.getTypeElement(),

@@ -6,15 +6,19 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
+import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * An abstract builder that can be reused for building {@link MappingMethod}(s).
@@ -32,20 +36,22 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
     }
 
     private interface ForgeMethodCreator {
-        ForgedMethod createMethod(String name, Type sourceType, Type returnType, Method basedOn,
-                                  ForgedMethodHistory history, boolean forgedNameBased);
+        ForgedMethod createMethod(String name, TypeInstance source, TypeInstance target,
+                                   Method basedOn, ForgedMethodHistory history, boolean forgedNameBased,
+                                   Predicate<MappingMethodOptions> returnDefaultValue);
 
         static ForgeMethodCreator forSubclassMapping(MappingReferences mappingReferences) {
-            return (name, sourceType, targetType, method, description,
-                    forgedNameBased) -> ForgedMethod
-                                                    .forSubclassMapping(
-                                                        name,
-                                                        sourceType,
-                                                        targetType,
-                                                        method,
-                                                        mappingReferences,
-                                                        description,
-                                                        forgedNameBased );
+            return (name, source, target, method, description,
+                    forgedNameBased, returnDefaultValue) -> ForgedMethod
+                        .forSubclassMapping(
+                            name,
+                            source,
+                            target,
+                            method,
+                            mappingReferences,
+                            description,
+                            forgedNameBased,
+                            returnDefaultValue );
         }
     }
 
@@ -58,26 +64,37 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
      */
     protected abstract boolean shouldUsePropertyNamesInHistory();
 
-    Assignment forgeMapping(SourceRHS sourceRHS, Type sourceType, Type targetType) {
-        return forgeMapping( sourceRHS, sourceType, targetType, ForgedMethod::forElementMapping );
+    Assignment forge(SourceRHS sourceRHS, Type sourceType, TypeInstance targetType, Message message) {
+        Assignment assignment = forgeMapping( sourceRHS, sourceType, targetType );
+        if ( assignment != null ) {
+            ctx.getMessager().note( 2, message, assignment );
+        }
+        return assignment;
     }
 
-    Assignment forgeSubclassMapping(SourceRHS sourceRHS, Type sourceType, Type targetType,
+    Assignment forgeMapping(SourceRHS sourceRHS, Type sourceType, TypeInstance targetType) {
+        return forgeMapping( sourceRHS,
+                TypeInstance.of( sourceType, sourceRHS.getSourceNullability() ),
+                targetType,
+                ForgedMethod::forElementMapping );
+    }
+
+    Assignment forgeSubclassMapping(SourceRHS sourceRHS, Type sourceType, TypeInstance targetType,
                                     MappingReferences mappingReferences) {
         return forgeMapping(
             sourceRHS,
-            sourceType,
+            TypeInstance.of( sourceType, Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL ) ),
             targetType,
             ForgeMethodCreator.forSubclassMapping( mappingReferences ) );
     }
 
-    private Assignment forgeMapping(SourceRHS sourceRHS, Type sourceType, Type targetType,
-                            ForgeMethodCreator forgeMethodCreator) {
-        if ( !canGenerateAutoSubMappingBetween( sourceType, targetType ) ) {
+    private Assignment forgeMapping(SourceRHS sourceRHS, TypeInstance sourceType, TypeInstance targetType,
+                                   ForgeMethodCreator forgeMethodCreator) {
+        if ( !canGenerateAutoSubMappingBetween( sourceType.getType(), targetType.getType() ) ) {
             return null;
         }
 
-        String name = getName( sourceType, targetType );
+        String name = getName( sourceType.getType(), targetType.getType() );
         name = Strings.getSafeVariableName( name, ctx.getReservedNames() );
         ForgedMethodHistory history = null;
         if ( method instanceof ForgedMethod ) {
@@ -87,14 +104,18 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
         description = new ForgedMethodHistory(
             history,
             Strings.stubPropertyName( sourceRHS.getSourceType().getName() ),
-            Strings.stubPropertyName( targetType.getName() ),
+            Strings.stubPropertyName( targetType.getType().getName() ),
             sourceRHS.getSourceType(),
-            targetType,
+            targetType.getType(),
             shouldUsePropertyNamesInHistory(),
             sourceRHS.getSourceErrorMessagePart() );
 
         ForgedMethod forgedMethod =
-            forgeMethodCreator.createMethod( name, sourceType, targetType, method, description, true );
+            forgeMethodCreator.createMethod( name, sourceType, targetType,
+                    method,
+                    description, true,
+                    ForgedMethod.NEVER_RETURN_DEFAULT
+            );
 
         return createForgedAssignment( sourceRHS, forgedMethod );
     }
@@ -120,7 +141,7 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
 
     public List<Annotation> getMethodAnnotations() {
         if ( method instanceof ForgedMethod ) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
                 new AdditionalAnnotationsBuilder(

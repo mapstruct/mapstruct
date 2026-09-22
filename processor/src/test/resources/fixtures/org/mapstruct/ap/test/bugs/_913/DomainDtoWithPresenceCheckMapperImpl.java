@@ -206,7 +206,9 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
 
         Set<Long> set = new LinkedHashSet<>( Math.max( (int) ( list.size() / .75f ) + 1, 16 ) );
         for ( String string : list ) {
-            set.add( Long.parseLong( string ) );
+            if ( string != null ) {
+                set.add( Long.parseLong( string ) );
+            }
         }
 
         return set;

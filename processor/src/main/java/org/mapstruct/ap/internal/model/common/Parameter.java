@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -17,7 +18,8 @@ import org.mapstruct.ap.internal.gem.MappingTargetGem;
 import org.mapstruct.ap.internal.gem.SourcePropertyNameGem;
 import org.mapstruct.ap.internal.gem.TargetPropertyNameGem;
 import org.mapstruct.ap.internal.gem.TargetTypeGem;
-import org.mapstruct.ap.internal.util.Collections;
+import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * A parameter of a mapping method.
@@ -35,10 +37,11 @@ public class Parameter extends ModelElement {
     private final boolean mappingContext;
     private final boolean sourcePropertyName;
     private final boolean targetPropertyName;
-
+    private final Nullability nullability;
     private final boolean varArgs;
+    private Type typeAnnotation = null;
 
-    private Parameter(Element element, Type type, boolean varArgs) {
+    private Parameter(Element element, Type type, Nullability nullability, boolean varArgs) {
         this.element = element;
         this.name = element.getSimpleName().toString();
         this.originalName = name;
@@ -48,12 +51,14 @@ public class Parameter extends ModelElement {
         this.mappingContext = ContextGem.instanceOn( element ) != null;
         this.sourcePropertyName = SourcePropertyNameGem.instanceOn( element ) != null;
         this.targetPropertyName = TargetPropertyNameGem.instanceOn( element ) != null;
+        this.nullability = nullability;
         this.varArgs = varArgs;
     }
 
     private Parameter(String name, String originalName, Type type, boolean mappingTarget, boolean targetType,
                       boolean mappingContext,
                       boolean sourcePropertyName, boolean targetPropertyName,
+                      Nullability nullability,
                       boolean varArgs) {
         this.element = null;
         this.name = name;
@@ -64,15 +69,30 @@ public class Parameter extends ModelElement {
         this.mappingContext = mappingContext;
         this.sourcePropertyName = sourcePropertyName;
         this.targetPropertyName = targetPropertyName;
+        this.nullability = nullability;
         this.varArgs = varArgs;
     }
 
-    public Parameter(String name, Type type) {
-        this( name, name, type );
+    protected Parameter(Parameter parameter) {
+        this.element = parameter.element;
+        this.name = parameter.name;
+        this.originalName = parameter.originalName;
+        this.type = parameter.type;
+        this.mappingTarget = parameter.mappingTarget;
+        this.targetType = parameter.targetType;
+        this.mappingContext = parameter.mappingContext;
+        this.sourcePropertyName = parameter.sourcePropertyName;
+        this.targetPropertyName = parameter.targetPropertyName;
+        this.nullability = parameter.nullability;
+        this.varArgs = parameter.varArgs;
     }
 
-    public Parameter(String name, String originalName, Type type) {
-        this( name, originalName, type, false, false, false, false, false, false );
+    public Parameter(String name, Type type, Nullability nullability) {
+        this( name, name, type, nullability );
+    }
+
+    public Parameter(String name, String originalName, Type type, Nullability nullability) {
+        this( name, originalName, type, false, false, false, false, false, nullability, false );
     }
 
     public Element getElement() {
@@ -115,7 +135,12 @@ public class Parameter extends ModelElement {
 
     @Override
     public Set<Type> getImportTypes() {
-        return Collections.asSet( type );
+        Set<Type> targetTypes = new HashSet<>( );
+        if ( typeAnnotation != null ) {
+            targetTypes.add( typeAnnotation );
+        }
+        targetTypes.add( type );
+        return targetTypes;
     }
 
     public boolean isTargetType() {
@@ -138,6 +163,19 @@ public class Parameter extends ModelElement {
         return varArgs;
     }
 
+    public Type getTypeAnnotation() {
+        return typeAnnotation;
+    }
+
+    /**
+     * Added a type annotation to the method. When calling this after a {@link Mapper} is created requires manual
+     * ensuring that the type is imported.
+     * @param typeAnnotation the annotation type to add to the method
+     */
+    public void setTypeAnnotation(Type typeAnnotation) {
+        this.typeAnnotation = typeAnnotation;
+    }
+
     public boolean isSourceParameter() {
         return !isMappingTarget() &&
             !isTargetType() &&
@@ -156,6 +194,7 @@ public class Parameter extends ModelElement {
             mappingContext,
             sourcePropertyName,
             targetPropertyName,
+            nullability,
             varArgs
         );
     }
@@ -185,15 +224,17 @@ public class Parameter extends ModelElement {
 
     }
 
-    public static Parameter forElementAndType(VariableElement element, Type parameterType, boolean isVarArgs) {
+    public static Parameter forElementAndType(VariableElement element, Type parameterType, boolean isVarArgs,
+                                              Nullability nullability) {
         return new Parameter(
             element,
             parameterType,
+            nullability,
             isVarArgs
         );
     }
 
-    public static Parameter forForgedMappingTarget(Type parameterType) {
+    public static Parameter forForgedMappingTarget(Type parameterType, Nullability nullability) {
         return new Parameter(
             "mappingTarget",
             "mappingTarget",
@@ -203,6 +244,7 @@ public class Parameter extends ModelElement {
             false,
             false,
             false,
+            nullability,
             false
         );
     }
@@ -250,6 +292,10 @@ public class Parameter extends ModelElement {
 
     public static Parameter getTargetPropertyNameParameter(List<Parameter> parameters) {
       return parameters.stream().filter( Parameter::isTargetPropertyName ).findAny().orElse( null );
+    }
+
+    public Nullability getNullability() {
+        return nullability;
     }
 
 }

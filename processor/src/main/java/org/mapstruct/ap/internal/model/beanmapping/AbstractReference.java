@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.last;
@@ -97,6 +98,14 @@ public abstract class AbstractReference {
 
     public boolean isNested() {
         return propertyEntries.size() > 1;
+    }
+
+    public Nullability getResultingNullability() {
+        Nullability nullability = Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL );
+        for ( PropertyEntry propertyEntry : propertyEntries ) {
+            nullability = nullability.chain( propertyEntry.getReadAccessor().getNullability() );
+        }
+        return nullability;
     }
 
     @Override

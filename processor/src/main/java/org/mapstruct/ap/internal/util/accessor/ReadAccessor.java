@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.internal.util.accessor;
 
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
@@ -19,8 +18,8 @@ public interface ReadAccessor extends Accessor {
 
     String getReadValueSource();
 
-    static ReadAccessor fromField(VariableElement variableElement, TypeMirror accessedType) {
-        return new ReadDelegateAccessor( new ElementAccessor( variableElement, accessedType ) ) {
+    static ReadAccessor fromField(VariableElement variableElement, TypeMirror accessedType, Nullability nullability) {
+        return new ReadDelegateAccessor( new ElementAccessor( variableElement, accessedType, nullability ) ) {
             @Override
             public String getReadValueSource() {
                 return getSimpleName();
@@ -28,8 +27,11 @@ public interface ReadAccessor extends Accessor {
         };
     }
 
-    static ReadAccessor fromRecordComponent(Element element, TypeMirror accessedType) {
-        return new ReadDelegateAccessor( new ElementAccessor( element, accessedType, AccessorType.GETTER ) ) {
+    static ReadAccessor fromRecordComponent(VariableElement element, TypeMirror accessedType,
+                                            NullabilityResolver nullabilityResolver) {
+        return new ReadDelegateAccessor( new ElementAccessor( element, accessedType, AccessorType.GETTER,
+               nullabilityResolver.getParameterNullability( element )
+               ) ) {
             @Override
             public String getReadValueSource() {
                 return getSimpleName() + "()";
@@ -37,8 +39,10 @@ public interface ReadAccessor extends Accessor {
         };
     }
 
-    static ReadAccessor fromGetter(ExecutableElement element, TypeMirror accessedType) {
-        return new ReadDelegateAccessor( new ElementAccessor( element, accessedType, AccessorType.GETTER ) ) {
+    static ReadAccessor fromGetter(ExecutableElement element, TypeMirror accessedType,
+                                   NullabilityResolver nullabilityResolver) {
+        return new ReadDelegateAccessor( new ElementAccessor( element, accessedType, AccessorType.GETTER,
+                nullabilityResolver.getMethodeReturnTypeNullability( element )) ) {
             @Override
             public String getReadValueSource() {
                 return getSimpleName() + "()";

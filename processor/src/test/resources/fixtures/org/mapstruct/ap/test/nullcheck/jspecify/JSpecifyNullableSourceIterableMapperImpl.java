@@ -8,23 +8,28 @@ package org.mapstruct.ap.test.nullcheck.jspecify;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
     date = "2026-06-05T14:55:49+0200",
     comments = "version: , compiler: javac, environment: Java 25 (Eclipse Adoptium)"
 )
+@NullMarked
 public class JSpecifyNullableSourceIterableMapperImpl implements JSpecifyNullableSourceIterableMapper {
 
     @Override
-    public List<NullMarkedTargetBean> mapAll(List<NullMarkedSourceBean> sources) {
+    public @Nullable List<NullMarkedTargetBean> mapAll(@Nullable List<NullMarkedSourceBean> sources) {
         if ( sources == null ) {
             return null;
         }
 
         List<NullMarkedTargetBean> list = new ArrayList<>( sources.size() );
         for ( NullMarkedSourceBean nullMarkedSourceBean : sources ) {
-            list.add( map( nullMarkedSourceBean ) );
+            if ( nullMarkedSourceBean != null ) {
+                list.add( map( nullMarkedSourceBean ) );
+            }
         }
 
         return list;

@@ -10,6 +10,11 @@
 <@lib.handleExceptions>
     <@lib.sourceLocalVarAssignment/>
     <@lib.handleSourceReferenceNullCheck>
-        <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.handleAssignment/></@lib.handleWrite>;
+        <#if targetVariableName??>
+        <@includeModel object=targetType/> ${targetVariableName} = <@lib.handleAssignment/>;
+        </#if>
+        <@lib.nullCheckWithElseDefaultAssignment needsNullCheck=needsResultNullCheck variableName=targetVariableName!sourceReference>
+            <#if ext.targetBeanName?has_content>${ext.targetBeanName}.</#if>${ext.targetWriteAccessorName}<@lib.handleWrite><#if needsResultNullCheck><#if targetVariableName??>${targetVariableName}<#elseif sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if><#else><@lib.handleAssignment/></#if></@lib.handleWrite>;
+        </@lib.nullCheckWithElseDefaultAssignment>
     </@lib.handleSourceReferenceNullCheck>
 </@lib.handleExceptions>

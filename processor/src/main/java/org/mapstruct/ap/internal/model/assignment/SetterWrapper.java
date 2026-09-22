@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * Wraps the assignment in a target setter.
@@ -26,7 +27,11 @@ public class SetterWrapper extends AssignmentWrapper {
     private final boolean setExplicitlyToDefault;
     private final boolean mustCastForNull;
     private final Type nullCastType;
+    private final boolean needsResultNullCheck;
+    private final String targetVariableName;
+    private final Type returnType;
 
+    //CHECKSTYLE:OFF
     public SetterWrapper(Assignment rhs,
                          List<Type> thrownTypesToExclude,
                          boolean fieldAssignment,
@@ -34,8 +39,11 @@ public class SetterWrapper extends AssignmentWrapper {
                          boolean setExplicitlyToNull,
                          boolean setExplicitlyToDefault,
                          boolean mustCastForNull,
-                         Type nullCastType) {
-
+                         Type nullCastType,
+                         boolean needsResultNullCheck,
+                         String targetVariableName,
+                         Type returnType) {
+    //CHECKSTYLE:ON
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.includeSourceNullCheck = includeSourceNullCheck;
@@ -43,6 +51,9 @@ public class SetterWrapper extends AssignmentWrapper {
         this.setExplicitlyToNull = setExplicitlyToNull;
         this.mustCastForNull = mustCastForNull;
         this.nullCastType = nullCastType;
+        this.needsResultNullCheck = needsResultNullCheck;
+        this.targetVariableName = targetVariableName;
+        this.returnType = returnType;
     }
 
     public SetterWrapper(Assignment rhs, List<Type> thrownTypesToExclude, boolean fieldAssignment  ) {
@@ -53,6 +64,9 @@ public class SetterWrapper extends AssignmentWrapper {
         this.setExplicitlyToDefault = false;
         this.mustCastForNull = false;
         this.nullCastType = null;
+        this.needsResultNullCheck = false;
+        this.targetVariableName = null;
+        this.returnType = null;
     }
 
     @Override
@@ -75,6 +89,9 @@ public class SetterWrapper extends AssignmentWrapper {
         if ( isSetExplicitlyToNull() && isMustCastForNull() ) {
             imported.add( nullCastType );
         }
+        if ( needsResultNullCheck ) {
+            imported.add( returnType );
+        }
         return imported;
     }
 
@@ -93,4 +110,22 @@ public class SetterWrapper extends AssignmentWrapper {
     public boolean isMustCastForNull() {
         return mustCastForNull;
     }
+
+    @Override
+    public Nullability getSourceNullability() {
+       return Nullability.voidNullability();
+    }
+
+    public boolean isNeedsResultNullCheck() {
+        return needsResultNullCheck;
+    }
+
+    public String getTargetVariableName() {
+        return targetVariableName;
+    }
+
+    public Type getTargetType() {
+        return returnType;
+    }
+
 }

@@ -7,18 +7,20 @@ package org.mapstruct.ap.test.nullcheck.jspecify;
 
 import java.util.stream.Stream;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
     date = "2026-06-05T14:54:43+0200",
     comments = "version: , compiler: javac, environment: Java 25 (Eclipse Adoptium)"
 )
+@NullMarked
 public class JSpecifyStreamMethodMapperImpl implements JSpecifyStreamMethodMapper {
 
     @Override
     public Stream<NullMarkedTargetBean> mapAll(Stream<NullMarkedSourceBean> sources) {
 
-        return sources.map( nullMarkedSourceBean -> map( nullMarkedSourceBean ) );
+        return sources.filter( resultName -> resultName != null ).map( nullMarkedSourceBean -> map( nullMarkedSourceBean ) );
     }
 
     @Override

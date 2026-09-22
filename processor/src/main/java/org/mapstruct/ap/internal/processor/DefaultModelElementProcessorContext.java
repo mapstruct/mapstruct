@@ -23,9 +23,9 @@ import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
-import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.RoundContext;
 import org.mapstruct.ap.internal.util.TypeUtils;
+import org.mapstruct.ap.internal.util.accessor.NullabilityResolver;
 import org.mapstruct.ap.internal.version.VersionInformation;
 import org.mapstruct.ap.spi.EnumMappingStrategy;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
@@ -66,7 +66,8 @@ public class DefaultModelElementProcessorContext implements ProcessorContext {
             roundContext,
             notToBeImported,
             options.isVerbose(),
-            versionInformation
+            versionInformation,
+            nullabilityResolver
         );
         this.options = options;
     }

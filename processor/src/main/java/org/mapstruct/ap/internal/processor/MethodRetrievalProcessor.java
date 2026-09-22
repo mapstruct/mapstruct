@@ -59,6 +59,7 @@ import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.MetaAnnotations;
 import org.mapstruct.ap.internal.util.RepeatableAnnotations;
 import org.mapstruct.ap.internal.util.TypeUtils;
+import org.mapstruct.ap.internal.util.accessor.NullabilityResolver;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 
 /**
@@ -87,6 +88,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private TypeUtils typeUtils;
     private ElementUtils elementUtils;
     private Options options;
+    private NullabilityResolver nullabilityResolver;
 
     @Override
     public List<SourceMethod> process(ProcessorContext context, TypeElement mapperTypeElement, Void sourceModel) {
@@ -97,6 +99,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         this.elementUtils = context.getElementUtils();
         this.enumTransformationStrategies = context.getEnumTransformationStrategies();
         this.options = context.getOptions();
+        this.nullabilityResolver = context.getNullabilityResolver();
 
         this.messager.note( 0, Message.PROCESSING_NOTE, mapperTypeElement );
 
@@ -352,6 +355,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setPrototypeMethods( prototypeMethods )
             .setContextProvidedMethods( contextProvidedMethods )
             .setVerboseLogging( options.isVerbose() )
+            .setNullability( nullabilityResolver.getMethodeReturnTypeNullability( method ) )
             .build();
     }
 
@@ -409,6 +413,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setTypeFactory( typeFactory )
             .setConditionOptions( getConditionOptions( method, parameters ) )
             .setVerboseLogging( options.isVerbose() )
+            .setNullability( nullabilityResolver.getMethodeReturnTypeNullability( method ) )
             .build();
     }
 

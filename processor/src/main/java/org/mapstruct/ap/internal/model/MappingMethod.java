@@ -12,11 +12,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import javax.lang.model.element.ExecutableElement;
 
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.source.Method;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Strings.getSafeVariableName;
 import static org.mapstruct.ap.internal.util.Strings.join;
@@ -37,9 +40,13 @@ public abstract class MappingMethod extends GeneratedTypeMethod {
     private final List<Type> thrownTypes;
     private final boolean isStatic;
     private final String resultName;
+    private final Nullability returnTypeNullability;
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithMappingTarget;
     private final List<LifecycleCallbackMethodReference> beforeMappingReferencesWithoutMappingTarget;
     private final List<LifecycleCallbackMethodReference> afterMappingReferences;
+    private final ExecutableElement executable;
+    private final List<Annotation> annotations;
+    private Type typeAnnotation = null;
 
     /**
      * constructor to be overloaded when local variable names are required prior to calling this constructor. (e.g. for
@@ -52,39 +59,65 @@ public abstract class MappingMethod extends GeneratedTypeMethod {
      */
     protected MappingMethod(Method method, Collection<String> existingVariableNames,
                             List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                            List<LifecycleCallbackMethodReference> afterMappingReferences) {
-        this( method, method.getParameters(), existingVariableNames, beforeMappingReferences, afterMappingReferences );
+                            List<LifecycleCallbackMethodReference> afterMappingReferences,
+                            List<Annotation> annotations) {
+        this( method, method.getParameters(), existingVariableNames, beforeMappingReferences, afterMappingReferences,
+                annotations );
     }
 
     protected MappingMethod(Method method, List<Parameter> parameters, Collection<String> existingVariableNames,
                             List<LifecycleCallbackMethodReference> beforeMappingReferences,
-        List<LifecycleCallbackMethodReference> afterMappingReferences) {
+                            List<LifecycleCallbackMethodReference> afterMappingReferences,
+                            List<Annotation> annotations) {
         this.name = method.getName();
         this.parameters = parameters;
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.returnType = method.getReturnType();
+        this.returnTypeNullability = method.getReturnTypeNullability();
         this.targetParameter = method.getMappingTargetParameter();
         this.accessibility = method.getAccessibility();
         this.thrownTypes = method.getThrownTypes();
         this.isStatic = method.isStatic();
+        this.executable = method.getExecutable();
         this.resultName = initResultName( existingVariableNames );
         this.beforeMappingReferencesWithMappingTarget = filterMappingTarget( beforeMappingReferences, true );
         this.beforeMappingReferencesWithoutMappingTarget = filterMappingTarget( beforeMappingReferences, false );
         this.afterMappingReferences = afterMappingReferences == null ? Collections.emptyList() : afterMappingReferences;
+        this.annotations = annotations;
+    }
+
+    protected MappingMethod(Collection<String> existingVariableNames, List<Type> thrownTypes, TypeInstance returnType,
+                             List<Parameter> parameters, String name) {
+        this.isStatic = false;
+        this.thrownTypes = thrownTypes;
+        this.accessibility = Accessibility.PRIVATE;
+        this.targetParameter = Parameter.getMappingTargetParameter( parameters );
+        this.returnType = returnType.getType();
+        this.returnTypeNullability = returnType.getNullability();
+        this.sourceParameters = Parameter.getSourceParameters( parameters );
+        this.parameters = parameters;
+        this.name = name;
+        this.beforeMappingReferencesWithMappingTarget = Collections.emptyList();
+        this.beforeMappingReferencesWithoutMappingTarget = Collections.emptyList();
+        this.afterMappingReferences = Collections.emptyList();
+        this.resultName =  initResultName( existingVariableNames );
+        this.executable = null;
+        this.annotations = new ArrayList<>();
     }
 
     protected MappingMethod(Method method, List<Parameter> parameters) {
-        this( method, parameters, new ArrayList<>( method.getParameterNames() ), null, null );
+        this( method, parameters, new ArrayList<>( method.getParameterNames() ), null, null, new ArrayList<>() );
     }
 
     protected MappingMethod(Method method) {
-        this( method, new ArrayList<>( method.getParameterNames() ), null, null );
+        this( method, new ArrayList<>( method.getParameterNames() ), null, null, new ArrayList<>() );
     }
 
     protected MappingMethod(Method method, List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                            List<LifecycleCallbackMethodReference> afterMappingReferences) {
+                            List<LifecycleCallbackMethodReference> afterMappingReferences,
+                            List<Annotation> annotations) {
         this( method, new ArrayList<>( method.getParameterNames() ), beforeMappingReferences,
-            afterMappingReferences );
+            afterMappingReferences, annotations );
     }
 
     private String initResultName(Collection<String> existingVarNames) {
@@ -143,6 +176,14 @@ public abstract class MappingMethod extends GeneratedTypeMethod {
         return isStatic;
     }
 
+    public ExecutableElement getExecutable() {
+        return executable;
+    }
+
+    public Nullability getReturnTypeNullability() {
+        return returnTypeNullability;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = new HashSet<>();
@@ -165,6 +206,12 @@ public abstract class MappingMethod extends GeneratedTypeMethod {
         }
         for ( LifecycleCallbackMethodReference reference : afterMappingReferences ) {
             types.addAll( reference.getImportTypes() );
+        }
+        for ( Annotation annotation : annotations ) {
+            types.addAll( annotation.getImportTypes() );
+        }
+        if ( typeAnnotation != null ) {
+            types.add( typeAnnotation );
         }
 
         return types;
@@ -217,6 +264,32 @@ public abstract class MappingMethod extends GeneratedTypeMethod {
 
     public List<LifecycleCallbackMethodReference> getBeforeMappingReferencesWithoutMappingTarget() {
         return beforeMappingReferencesWithoutMappingTarget;
+    }
+
+    /**
+     * Added an annotation to the method. When calling this after a {@link Mapper} is created requires manual ensuring
+     * that the type is imported.
+     * @param annotation the Annotation to add to the method
+     */
+    public void addAnnotation(Annotation annotation) {
+        this.annotations.add( annotation );
+    }
+
+    public List<Annotation> getAnnotations() {
+        return annotations;
+    }
+
+    /**
+     * Added a return type annotation to the method. When calling this after a {@link Mapper} is created requires
+     * manual ensuring that the type is imported.
+     * @param typeAnnotation the Annotation to add to the method
+     */
+    public void addTypeAnnotation(Type typeAnnotation) {
+        this.typeAnnotation =  typeAnnotation;
+    }
+
+    public Type getTypeAnnotation() {
+        return typeAnnotation;
     }
 
     @Override

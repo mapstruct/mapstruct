@@ -13,6 +13,7 @@
         ? super <@includeModel object=typeBound />
     <#else>
         <#assign createReferenceName = createReferenceName() />
-        ${createReferenceName?keep_before("[]")}<#if (!ext.raw?? && typeParameters?size > 0) ><<#list typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>></#if>${createReferenceName?keep_after("[]")}<#if ext.asVarArgs!false>...<#elseif isArrayType()>[]</#if>
+        <#assign createNoneArrayReferenceName = createReferenceName?keep_before("[]")/>
+        ${createNoneArrayReferenceName?contains(".")?then(createNoneArrayReferenceName?keep_before_last(".") + ".", "")}<#if ext.typeAnnotation??>@<@includeModel object=ext.typeAnnotation /> </#if>${createNoneArrayReferenceName?contains(".")?then(createNoneArrayReferenceName?keep_after_last("."), createNoneArrayReferenceName)}<#if (!ext.raw?? && typeParameters?size > 0) ><<#list typeParameters as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>></#if>${createReferenceName?keep_after("[]")}<#if ext.asVarArgs!false>...<#elseif isArrayType()>[]</#if>
     </#if>
 </@compress>

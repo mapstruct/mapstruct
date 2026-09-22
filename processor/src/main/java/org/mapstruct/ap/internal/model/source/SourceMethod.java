@@ -23,6 +23,7 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.TypeUtils;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.model.source.MappingMethodUtils.isEnumMapping;
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -67,13 +68,20 @@ public class SourceMethod implements Method {
     private List<SourceMethod> applicablePrototypeMethods;
     private List<SourceMethod> applicableReversePrototypeMethods;
 
-    private Boolean isValueMapping;
-    private Boolean isIterableMapping;
-    private Boolean isMapMapping;
-    private Boolean isStreamMapping;
+    private final MappingType mappingType;
     private final boolean hasObjectFactoryAnnotation;
 
     private final boolean verboseLogging;
+    private final Nullability nullability;
+
+    private enum MappingType {
+        ITERABLE_MAPPING,
+        MAP_MAPPING,
+        VALUE_MAPPING,
+        REMOVED_ENUM_MAPPING,
+        STREAM_MAPPING,
+        BEAN_MAPPING
+    }
 
     public static class Builder {
 
@@ -97,6 +105,7 @@ public class SourceMethod implements Method {
         private Set<ConditionOptions> conditionOptions;
         private List<Type> typeParameters;
         private Set<SubclassMappingOptions> subclassMappings;
+        private Nullability nullability = null;
 
         private boolean verboseLogging;
         private SubclassValidator subclassValidator;
@@ -206,8 +215,12 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public SourceMethod build() {
+        public Builder setNullability(Nullability nullability) {
+            this.nullability = nullability;
+            return this;
+        }
 
+        public SourceMethod build() {
             if ( mappings == null ) {
                 mappings = Collections.emptySet();
             }
@@ -272,6 +285,61 @@ public class SourceMethod implements Method {
         this.mapperToImplement = builder.definingType;
 
         this.verboseLogging = builder.verboseLogging;
+        this.mappingType = getMappingType();
+        this.nullability = getNullability( builder.nullability );
+    }
+
+    private MappingType getMappingType() {
+        if ( getSourceParameters().size() != 1 ) {
+            return  MappingType.BEAN_MAPPING;
+        }
+        Type mappingSourceType = getMappingSourceType();
+        Type resultType = getResultType();
+        if ( mappingSourceType.isIterableType() && resultType.isIterableType() ) {
+            return MappingType.ITERABLE_MAPPING;
+        }
+        if ( mappingSourceType.isMapType() && resultType.isMapType() ) {
+            return MappingType.MAP_MAPPING;
+        }
+        if ( isEnumMapping( this ) ) {
+            return mappingMethodOptions.getMappings().isEmpty() ?
+                    MappingType.VALUE_MAPPING :  MappingType.REMOVED_ENUM_MAPPING;
+        }
+        if ( mappingSourceType.isIterableType() && resultType.isStreamType()
+                || mappingSourceType.isStreamType() && resultType.isIterableType()
+                || mappingSourceType.isStreamType() && resultType.isStreamType() ) {
+            return MappingType.STREAM_MAPPING;
+        }
+        return MappingType.BEAN_MAPPING;
+    }
+
+    private Nullability getNullability(Nullability byType) {
+        if ( !overridesMethod() ) {
+            return byType;
+        }
+        boolean isReturnDefault;
+        switch ( mappingType ) {
+            case ITERABLE_MAPPING:
+            case STREAM_MAPPING:
+                isReturnDefault = mappingMethodOptions.getIterableMapping().getNullValueMappingStrategy()
+                        .isReturnDefault();
+                break;
+            case MAP_MAPPING:
+                isReturnDefault =  mappingMethodOptions.getMapMapping().getNullValueMappingStrategy().isReturnDefault();
+                break;
+            case VALUE_MAPPING:
+                // Todo returnDefault is possible, but we need to determin it here.
+                //  Currently the logic lives in org.mapstruct.ap.internal.model.ValueMappingMethod.Builder
+                isReturnDefault = false;
+                break;
+            case BEAN_MAPPING:
+                isReturnDefault = mappingMethodOptions.getBeanMapping().getNullValueMappingStrategy().isReturnDefault();
+                break;
+            default:
+                isReturnDefault = false;
+                break;
+        }
+        return byType.withIsReturnDefault( isReturnDefault );
     }
 
     private boolean determineIfIsObjectFactory() {
@@ -391,31 +459,15 @@ public class SourceMethod implements Method {
     }
 
     public boolean isIterableMapping() {
-        if ( isIterableMapping == null ) {
-            isIterableMapping = getSourceParameters().size() == 1
-                && getMappingSourceType().isIterableType()
-                && getResultType().isIterableType();
-        }
-        return isIterableMapping;
+        return mappingType == MappingType.ITERABLE_MAPPING;
     }
 
     public boolean isStreamMapping() {
-        if ( isStreamMapping == null ) {
-            isStreamMapping = getSourceParameters().size() == 1
-                && ( getMappingSourceType().isIterableType() && getResultType().isStreamType()
-                    || getMappingSourceType().isStreamType() && getResultType().isIterableType()
-                    || getMappingSourceType().isStreamType() && getResultType().isStreamType() );
-        }
-        return isStreamMapping;
+        return mappingType == MappingType.STREAM_MAPPING;
     }
 
     public boolean isMapMapping() {
-        if ( isMapMapping == null ) {
-            isMapMapping = getSourceParameters().size() == 1
-                && getMappingSourceType().isMapType()
-                && getResultType().isMapType();
-        }
-        return isMapMapping;
+        return mappingType == MappingType.MAP_MAPPING;
     }
 
     /**
@@ -435,11 +487,7 @@ public class SourceMethod implements Method {
      * @return whether (true) or not (false) to execute value mappings
      */
     public boolean isValueMapping() {
-
-        if ( isValueMapping == null ) {
-            isValueMapping = isEnumMapping( this ) && mappingMethodOptions.getMappings().isEmpty();
-        }
-        return isValueMapping;
+        return mappingType == MappingType.VALUE_MAPPING;
     }
 
     @Override
@@ -611,5 +659,10 @@ public class SourceMethod implements Method {
                 .collect( Collectors.joining( ", " ) );
             return getResultType().describe() + " " + mapper + getName() + "(" + sourceTypes + ")";
         }
+    }
+
+    @Override
+    public Nullability getReturnTypeNullability() {
+        return nullability;
     }
 }

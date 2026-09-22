@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -57,7 +56,6 @@ import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Filters;
-import org.mapstruct.ap.internal.util.JSpecifyConstants;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Nouns;
@@ -66,6 +64,7 @@ import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
+import org.mapstruct.ap.internal.util.accessor.NullabilityResolver;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 import org.mapstruct.ap.internal.util.kotlin.KotlinMetadata;
@@ -112,6 +111,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     private final TypeUtils typeUtils;
     private final ElementUtils elementUtils;
     private final TypeFactory typeFactory;
+    private final NullabilityResolver nullabilityResolver;
     private final AccessorNamingUtils accessorNaming;
 
     private final TypeMirror typeMirror;
@@ -149,7 +149,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     private List<ExecutableElement> allMethods = null;
     private List<VariableElement> allFields = null;
-    private List<Element> recordComponents = null;
+    private List<VariableElement> recordComponents = null;
 
     private List<Accessor> setters = null;
     private List<Accessor> adders = null;
@@ -161,7 +161,6 @@ public class Type extends ModelElement implements Comparable<Type> {
     private Type boxedEquivalent = null;
 
     private Boolean hasAccessibleConstructor;
-    private Boolean isNullMarked;
     private KotlinMetadata kotlinMetadata;
     private boolean kotlinMetadataInitialized;
 
@@ -169,7 +168,7 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     //CHECKSTYLE:OFF
     public Type(TypeUtils typeUtils, ElementUtils elementUtils, TypeFactory typeFactory,
-                AccessorNamingUtils accessorNaming,
+                NullabilityResolver nullabilityResolver, AccessorNamingUtils accessorNaming,
                 TypeMirror typeMirror, TypeElement typeElement,
                 List<Type> typeParameters, ImplementationType implementationType, Type componentType,
                 String packageName, String name, String qualifiedName,
@@ -183,6 +182,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.typeUtils = typeUtils;
         this.elementUtils = elementUtils;
         this.typeFactory = typeFactory;
+        this.nullabilityResolver = nullabilityResolver;
         this.accessorNaming = accessorNaming;
 
         this.typeMirror = typeMirror;
@@ -223,7 +223,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         this.isToBeImported = isToBeImported;
         this.toBeImportedTypes = toBeImportedTypes;
         this.notToBeImportedTypes = notToBeImportedTypes;
-        this.filters = new Filters( accessorNaming, typeUtils, typeMirror );
+        this.filters = new Filters( accessorNaming, typeUtils, nullabilityResolver,
+                typeMirror );
 
         this.loggingVerbose = loggingVerbose;
 
@@ -325,53 +326,6 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isString() {
         return String.class.getName().equals( getFullyQualifiedName() );
-    }
-
-    /**
-     * Whether this type is within a JSpecify {@code @NullMarked} scope. Walks the enclosing-element
-     * chain (this type, outer classes, package) and returns at the first {@code @NullMarked} or
-     * {@code @NullUnmarked} encountered &mdash; the closest annotation wins. Module-level annotations
-     * are only reached when the compiler populates {@code PackageElement.getEnclosingElement()}
-     * with a {@link javax.lang.model.element.ModuleElement} (JPMS only).
-     * <p>
-     * The result is memoized on this {@code Type} instance. {@link TypeFactory#getType} does not
-     * intern {@code Type} instances, so callers that invoke this repeatedly should cache the
-     * {@code Type} reference or the result.
-     *
-     * @return {@code true} if the closest enclosing annotation is {@code @NullMarked};
-     * {@code false} if it is {@code @NullUnmarked} or if no such annotation was found
-     */
-    public boolean isNullMarked() {
-        if ( isNullMarked == null ) {
-            isNullMarked = resolveNullMarked();
-        }
-        return isNullMarked;
-    }
-
-    private boolean resolveNullMarked() {
-        if ( typeElement == null ) {
-            return false;
-        }
-        Element current = typeElement;
-        while ( current != null ) {
-            for ( AnnotationMirror mirror : current.getAnnotationMirrors() ) {
-                Element annotationElement = mirror.getAnnotationType().asElement();
-                if ( !( annotationElement instanceof TypeElement ) ) {
-                    // Defensive: unresolved annotations (e.g. ErrorType during incremental
-                    // builds) can produce a non-TypeElement. Skip instead of crashing.
-                    continue;
-                }
-                String fqn = ( (TypeElement) annotationElement ).getQualifiedName().toString();
-                if ( JSpecifyConstants.NULL_MARKED_FQN.equals( fqn ) ) {
-                    return true;
-                }
-                if ( JSpecifyConstants.NULL_UNMARKED_FQN.equals( fqn ) ) {
-                    return false;
-                }
-            }
-            current = current.getEnclosingElement();
-        }
-        return false;
     }
 
     /**
@@ -645,6 +599,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             typeUtils,
             elementUtils,
             typeFactory,
+            nullabilityResolver,
             accessorNaming,
             typeUtils.erasure( typeMirror ),
             typeElement,
@@ -719,6 +674,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                 typeUtils,
                 elementUtils,
                 typeFactory,
+                nullabilityResolver,
                 accessorNaming,
                 typeMirrorWithoutBounds,
                 typeElementWithoutBounds,
@@ -776,6 +732,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             typeUtils,
             elementUtils,
             typeFactory,
+            nullabilityResolver,
             accessorNaming,
             typeMirrorWithoutBounds,
             typeElementWithoutBounds,
@@ -931,7 +888,8 @@ public class Type extends ModelElement implements Comparable<Type> {
                 }
             }
 
-            List<ReadAccessor> fieldsList = filters.fieldsIn( getAllFields(), ReadAccessor::fromField );
+            List<ReadAccessor> fieldsList = filters.fieldsIn( getAllFields(), ReadAccessor::fromField,
+                    nullabilityResolver );
             for ( ReadAccessor field : fieldsList ) {
                 String propertyName = getPropertyName( field );
                 // If there was no getter or is method for booleans, then resort to the field.
@@ -1046,7 +1004,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         return result;
     }
 
-    public List<Element> getRecordComponents() {
+    public List<VariableElement> getRecordComponents() {
         if ( recordComponents == null ) {
             recordComponents = nullSafeTypeElementListConversion( filters::recordComponentsIn );
         }
@@ -1245,7 +1203,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             List<Accessor> setterMethods = getSetters();
             List<Accessor> readAccessors = new ArrayList<>( getPropertyReadAccessors().values() );
             // All the fields are also alternative accessors
-            readAccessors.addAll( filters.fieldsIn( getAllFields(), ElementAccessor::new ) );
+            readAccessors.addAll( filters.fieldsIn( getAllFields(), ElementAccessor::new, nullabilityResolver ) );
 
             // there could be a read accessor (field or  method) for a list/map that is not present as setter.
             // an accessor could substitute the setter in that case and act as setter.

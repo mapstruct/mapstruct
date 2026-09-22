@@ -53,6 +53,7 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer;
 import org.mapstruct.ap.internal.model.dependency.GraphAnalyzer.GraphAnalyzerBuilder;
 import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
@@ -68,6 +69,7 @@ import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
 import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 import org.mapstruct.ap.internal.util.kotlin.KotlinMetadata;
@@ -289,7 +291,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     sourceParameterType = sourceParameterType.getOptionalBaseType();
                     sourceParametersReassignments.put(
                         sourceParameter.getName(),
-                        new Parameter( sourceParameterValueName, sourceParameter.getName(), sourceParameterType )
+                        new Parameter( sourceParameterValueName, sourceParameter.getName(), sourceParameterType,
+                                sourceParameter.getNullability() )
                     );
                 }
                 if ( sourceParameterType.isPrimitive() || sourceParameterType.isArrayType() ||
@@ -507,6 +510,10 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 }
             }
 
+            if ( presenceChecksByParameter.isEmpty() ) {
+                // Without a check it is there is nothing to map to default. The method does not accept nullable input
+                mapNullToDefault = false;
+            }
             // JSpecify: a @NonNull return forces RETURN_DEFAULT to avoid generating `return null`.
             // The extra presence-check guard is bean-specific and required for correctness, not just an
             // optimization: the bean template only emits a `return null` (and the presence-check wrapping that
@@ -514,9 +521,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             // getPresenceCheckByParameter would resolve to null in the single-source template branches.
             // Container/Map/Stream methods instead gate this in their templates via `sourceParameterPresenceCheck??`,
             // so they force unconditionally.
-            if ( !mapNullToDefault
-                    && !presenceChecksByParameter.isEmpty()
-                    && ctx.isJSpecifyNonNullReturn( method ) ) {
+            else if ( !mapNullToDefault && ctx.isJSpecifyNonNullReturn( method ) ) {
                 ctx.getMessager().note( 2,
                     Message.MAPPING_METHOD_JSPECIFY_FORCE_RETURN_DEFAULT,
                     method.getName() );
@@ -593,7 +598,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 "subclassMapping",
                 sourceType,
                 Collections.emptySet(),
-                "SubclassMapping for " + sourceType.getFullyQualifiedName() );
+                "SubclassMapping for " + sourceType.getFullyQualifiedName(),
+                    Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
             SelectionCriteria criteria =
                 SelectionCriteria
                     .forSubclassMappingMethods(
@@ -610,11 +616,11 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                                        criteria,
                                        rightHandSide,
                                        subclassMappingOptions.getMirror(),
-                                           () -> forgeSubclassMapping(
-                                               rightHandSide,
-                                               sourceType,
-                                               targetType,
-                                               mappingReferences ) );
+                                            () -> forgeSubclassMapping(
+                                                rightHandSide,
+                                                sourceType,
+                                                TypeInstance.of( targetType, method.getReturnTypeNullability() ),
+                                                mappingReferences ) );
             String sourceArgument = null;
             for ( Parameter parameter : method.getSourceParameters() ) {
                 if ( ctx
@@ -966,15 +972,16 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
 
                 // Other than that, just get the record components and use them
-                List<Element> recordComponents = type.getRecordComponents();
+                List<VariableElement> recordComponents = type.getRecordComponents();
                 List<ParameterBinding> parameterBindings = new ArrayList<>( recordComponents.size() );
                 Map<String, Accessor> constructorAccessors = new LinkedHashMap<>();
-                for ( Element recordComponent : recordComponents ) {
+                for ( VariableElement recordComponent : recordComponents ) {
                     TypeMirror recordComponentMirror = ctx.getTypeUtils()
                         .asMemberOf( (DeclaredType) type.getTypeMirror(), recordComponent );
                     String parameterName = recordComponent.getSimpleName().toString();
                     Accessor accessor = createConstructorAccessor(
                         recordComponent,
+                        ctx.getNullabilityResolver().getParameterNullability( recordComponent ),
                         recordComponentMirror,
                         parameterName
                     );
@@ -1129,6 +1136,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     Element parameterElement = constructorParameter.getElement();
                     Accessor constructorAccessor = createConstructorAccessor(
                         parameterElement,
+                        constructorParameter.getNullability(),
                         constructorParameter.getType().getTypeMirror(),
                         parameterName
                     );
@@ -1161,6 +1169,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     Element parameterElement = constructorParameter.getElement();
                     Accessor constructorAccessor = createConstructorAccessor(
                         parameterElement,
+                        constructorParameter.getNullability(),
                         constructorParameter.getType().getTypeMirror(),
                         parameterName
                     );
@@ -1178,13 +1187,14 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             }
         }
 
-        private Accessor createConstructorAccessor(Element element, TypeMirror accessedType, String parameterName) {
+        private Accessor createConstructorAccessor(Element element, Nullability elementNullability,
+                                                   TypeMirror accessedType, String parameterName) {
             String safeParameterName = Strings.getSafeVariableName(
                 parameterName,
                 existingVariableNames
             );
             existingVariableNames.add( safeParameterName );
-            return new ElementAccessor( element, accessedType, safeParameterName );
+            return new ElementAccessor( element, accessedType, safeParameterName, elementNullability );
         }
 
         private boolean hasDefaultAnnotationFromAnyPackage(Element element) {

@@ -12,6 +12,7 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
@@ -27,7 +28,8 @@ public class DateToXmlGregorianCalendar extends AbstractToXmlGregorianCalendar {
 
     public DateToXmlGregorianCalendar(TypeFactory typeFactory) {
         super( typeFactory );
-        this.parameter = new Parameter( "date", typeFactory.getType( Date.class ) );
+        this.parameter = new Parameter( "date", typeFactory.getType( Date.class ),
+                Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL ) );
         this.importTypes = asSet(
             parameter.getType(),
             typeFactory.getType( GregorianCalendar.class )

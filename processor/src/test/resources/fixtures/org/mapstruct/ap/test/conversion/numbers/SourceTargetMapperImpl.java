@@ -359,7 +359,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
 
         List<String> list = new ArrayList<>( source.size() );
         for ( Float float1 : source ) {
-            list.add( new DecimalFormat( "##.00" ).format( float1 ) );
+            if ( float1 != null ) {
+                list.add( new DecimalFormat( "##.00" ).format( float1 ) );
+            }
         }
 
         return list;
@@ -373,11 +375,13 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
 
         List<Float> list = new ArrayList<>( source.size() );
         for ( String string : source ) {
-            try {
-                list.add( new DecimalFormat( "##.00" ).parse( string ).floatValue() );
-            }
-            catch ( ParseException e ) {
-                throw new RuntimeException( e );
+            if ( string != null ) {
+                try {
+                    list.add( new DecimalFormat( "##.00" ).parse( string ).floatValue() );
+                }
+                catch ( ParseException e ) {
+                    throw new RuntimeException( e );
+                }
             }
         }
 
@@ -392,7 +396,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
 
         List<String> list = new ArrayList<>( source.size() );
         for ( BigDecimal bigDecimal : source ) {
-            list.add( createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).format( bigDecimal ) );
+            if ( bigDecimal != null ) {
+                list.add( createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).format( bigDecimal ) );
+            }
         }
 
         return list;
@@ -406,11 +412,13 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
 
         List<BigDecimal> list = new ArrayList<>( source.size() );
         for ( String string : source ) {
-            try {
-                list.add( (BigDecimal) createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).parse( string ) );
-            }
-            catch ( ParseException e ) {
-                throw new RuntimeException( e );
+            if ( string != null ) {
+                try {
+                    list.add( (BigDecimal) createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).parse( string ) );
+                }
+                catch ( ParseException e ) {
+                    throw new RuntimeException( e );
+                }
             }
         }
 
@@ -426,9 +434,13 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Map<String, String> map = new LinkedHashMap<>( Math.max( (int) ( source.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<Float, Float> entry : source.entrySet() ) {
-            String key = new DecimalFormat( "##.00" ).format( entry.getKey() );
-            String value = new DecimalFormat( "##" ).format( entry.getValue() );
-            map.put( key, value );
+            if ( entry.getKey() != null ) {
+                String key = new DecimalFormat( "##.00" ).format( entry.getKey() );
+                if ( entry.getValue() != null ) {
+                    String value = new DecimalFormat( "##" ).format( entry.getValue() );
+                    map.put( key, value );
+                }
+            }
         }
 
         return map;
@@ -443,9 +455,13 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Map<String, String> map = new LinkedHashMap<>( Math.max( (int) ( source.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<BigDecimal, BigDecimal> entry : source.entrySet() ) {
-            String key = createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).format( entry.getKey() );
-            String value = createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "fr" ) ).format( entry.getValue() );
-            map.put( key, value );
+            if ( entry.getKey() != null ) {
+                String key = createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).format( entry.getKey() );
+                if ( entry.getValue() != null ) {
+                    String value = createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "fr" ) ).format( entry.getValue() );
+                    map.put( key, value );
+                }
+            }
         }
 
         return map;
@@ -460,21 +476,25 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Map<Float, Float> map = new LinkedHashMap<>( Math.max( (int) ( source.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<String, String> entry : source.entrySet() ) {
-            Float key;
-            try {
-                key = new DecimalFormat( "##.00" ).parse( entry.getKey() ).floatValue();
+            if ( entry.getKey() != null ) {
+                Float key;
+                try {
+                    key = new DecimalFormat( "##.00" ).parse( entry.getKey() ).floatValue();
+                }
+                catch ( ParseException e ) {
+                    throw new RuntimeException( e );
+                }
+                if ( entry.getValue() != null ) {
+                    Float value;
+                    try {
+                        value = new DecimalFormat( "##" ).parse( entry.getValue() ).floatValue();
+                    }
+                    catch ( ParseException e ) {
+                        throw new RuntimeException( e );
+                    }
+                    map.put( key, value );
+                }
             }
-            catch ( ParseException e ) {
-                throw new RuntimeException( e );
-            }
-            Float value;
-            try {
-                value = new DecimalFormat( "##" ).parse( entry.getValue() ).floatValue();
-            }
-            catch ( ParseException e ) {
-                throw new RuntimeException( e );
-            }
-            map.put( key, value );
         }
 
         return map;
@@ -489,21 +509,25 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Map<BigDecimal, BigDecimal> map = new LinkedHashMap<>( Math.max( (int) ( source.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<String, String> entry : source.entrySet() ) {
-            BigDecimal key;
-            try {
-                key = (BigDecimal) createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).parse( entry.getKey() );
+            if ( entry.getKey() != null ) {
+                BigDecimal key;
+                try {
+                    key = (BigDecimal) createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).parse( entry.getKey() );
+                }
+                catch ( ParseException e ) {
+                    throw new RuntimeException( e );
+                }
+                if ( entry.getValue() != null ) {
+                    BigDecimal value;
+                    try {
+                        value = (BigDecimal) createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "fr" ) ).parse( entry.getValue() );
+                    }
+                    catch ( ParseException e ) {
+                        throw new RuntimeException( e );
+                    }
+                    map.put( key, value );
+                }
             }
-            catch ( ParseException e ) {
-                throw new RuntimeException( e );
-            }
-            BigDecimal value;
-            try {
-                value = (BigDecimal) createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "fr" ) ).parse( entry.getValue() );
-            }
-            catch ( ParseException e ) {
-                throw new RuntimeException( e );
-            }
-            map.put( key, value );
         }
 
         return map;

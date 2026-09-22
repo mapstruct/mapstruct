@@ -112,6 +112,28 @@ public abstract class BuiltInMethod implements Method {
     }
 
     /**
+     * Additional parameters that are part of the rendered method signature (e.g. an auxiliary {@code dateFormat}) but
+     * not part of the actual call, where the value is supplied as a raw context parameter string instead.
+     *
+     * @return the auxiliary parameters to include in the signature; defaults to the empty list
+     */
+    public List<Parameter> getAuxiliaryParameters() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * The parameters rendered into the generated method signature, i.e. the actual {@link #getParameters()} plus any
+     * {@link #getAuxiliaryParameters()}.
+     *
+     * @return the signature parameters
+     */
+    public List<Parameter> getSignatureParameters() {
+        List<Parameter> parameters = new ArrayList<>( getParameters() );
+        parameters.addAll( getAuxiliaryParameters() );
+        return parameters;
+    }
+
+    /**
      * mapping target parameter mechanism not supported for built-in methods
      *
      * @return {@code null}

@@ -135,7 +135,6 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
             ParameterBinding.fromParameters( methodRef.getParameters() )
         );
         assignment.setAssignment( source );
-
         return assignment;
     }
 

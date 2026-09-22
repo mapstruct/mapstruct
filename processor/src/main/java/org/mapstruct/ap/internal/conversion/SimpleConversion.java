@@ -27,7 +27,8 @@ public abstract class SimpleConversion implements ConversionProvider {
         String toExpression = getToExpression( conversionContext );
         return new TypeConversion( getToConversionImportTypes( conversionContext ),
             getToConversionExceptionTypes( conversionContext ),
-            toExpression
+            toExpression,
+            conversionContext.getTargetType()
         );
     }
 
@@ -36,7 +37,8 @@ public abstract class SimpleConversion implements ConversionProvider {
         String fromExpression = getFromExpression( conversionContext );
         return new TypeConversion( getFromConversionImportTypes( conversionContext ),
             getFromConversionExceptionTypes( conversionContext ),
-            fromExpression
+            fromExpression,
+            conversionContext.getSourceType()
         );
     }
 

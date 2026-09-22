@@ -167,6 +167,10 @@ public abstract class GeneratedType extends ModelElement {
         annotations.add( annotation );
     }
 
+    public void addExtraImportedType(Type type) {
+        extraImportedTypes.add( type );
+    }
+
     public List<GeneratedTypeMethod> getMethods() {
         return methods;
     }

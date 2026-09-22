@@ -100,7 +100,6 @@ public enum Message {
     PROPERTYMAPPING_NULLABLE_SOURCE_TO_NON_NULL_CONSTRUCTOR_PARAM( "Can't map potentially nullable source property \"%s\" to @NonNull constructor parameter \"%s\". Consider adding a defaultValue or defaultExpression." ),
     PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE( "JSpecify skipping null check for property \"%s\": source is @NonNull.", Diagnostic.Kind.NOTE ),
     PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK( "JSpecify adding null check for property \"%s\": source=%s, target=%s.", Diagnostic.Kind.NOTE ),
-    PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK( "JSpecify skipping null check for property \"%s\": source=%s, target=%s.", Diagnostic.Kind.NOTE ),
     PROPERTYMAPPING_JSPECIFY_SKIP_METHOD_GUARD_NON_NULL_PARAM( "JSpecify skipping method-level null guard for property \"%s\": parameter is @NonNull.", Diagnostic.Kind.NOTE ),
     MAPPING_METHOD_JSPECIFY_FORCE_RETURN_DEFAULT( "JSpecify forcing NullValueMappingStrategy.RETURN_DEFAULT for method \"%s\": return type is @NonNull.", Diagnostic.Kind.NOTE ),
 
@@ -221,6 +220,9 @@ public enum Message {
     VALUEMAPPING_NON_EXISTING_CONSTANT_FROM_SPI( "Constant %s doesn't exist in enum type %s. Constant was returned from EnumMappingStrategy: %s"),
     VALUEMAPPING_NON_EXISTING_CONSTANT( "Constant %s doesn't exist in enum type %s." ),
     VALUEMAPPING_THROW_EXCEPTION_SOURCE( "Source = \"<THROW_EXCEPTION>\" is not allowed. Target = \"<THROW_EXCEPTION>\" can only be used." ),
+    VALUEMAPPING_JSPECIFY_DEFAULT_RETURN_NULLABILITY("JSpecify value mapping method has a @NonNull return type but the implementation can return null. Either define a default value for null with source = \"NULL\" or implement a custom EnumMappingStrategy."),
+    VALUEMAPPING_JSPECIFY_SOURCE_MAPPED_TO_NULL("JSpecify value mapping method has a @NonNull return type but source =\"%s\" mapped to target = \"NULL\"."),
+    VALUEMAPPING_JSPECIFY_NULL_SOURCE_UNREACHABLE("Source parameter can't be null so source = \"NULL\" is ignored.", Diagnostic.Kind.WARNING ),
 
     MAPTOBEANMAPPING_WRONG_KEY_TYPE( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was typed with %s.", Diagnostic.Kind.WARNING ),
     MAPTOBEANMAPPING_RAW_MAP( "The Map parameter \"%s\" cannot be used for property mapping. It must be typed with Map<String, ???> but it was raw.", Diagnostic.Kind.WARNING ),

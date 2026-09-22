@@ -12,7 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -24,6 +23,8 @@ import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
+import org.mapstruct.ap.internal.util.accessor.NullabilityResolver;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -53,46 +54,50 @@ public class Filters {
 
     private final AccessorNamingUtils accessorNaming;
     private final TypeUtils typeUtils;
+    private final NullabilityResolver nullabilityResolver;
     private final TypeMirror typeMirror;
 
-    public Filters(AccessorNamingUtils accessorNaming, TypeUtils typeUtils, TypeMirror typeMirror) {
+    public Filters(AccessorNamingUtils accessorNaming, TypeUtils typeUtils, NullabilityResolver nullabilityResolver,
+                   TypeMirror typeMirror) {
         this.accessorNaming = accessorNaming;
         this.typeUtils = typeUtils;
+        this.nullabilityResolver = nullabilityResolver;
         this.typeMirror = typeMirror;
     }
 
     public List<ReadAccessor> getterMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isGetterMethod )
-            .map( method -> ReadAccessor.fromGetter( method, getReturnType( method ) ) )
+            .map( method -> ReadAccessor.fromGetter( method, getReturnType( method ), nullabilityResolver ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
     @SuppressWarnings("unchecked")
-    public List<Element> recordComponentsIn(TypeElement typeElement) {
+    public List<VariableElement> recordComponentsIn(TypeElement typeElement) {
         if ( RECORD_COMPONENTS_METHOD == null ) {
             return java.util.Collections.emptyList();
         }
 
         try {
-            return (List<Element>) RECORD_COMPONENTS_METHOD.invoke( typeElement );
+            return (List<VariableElement>) RECORD_COMPONENTS_METHOD.invoke( typeElement );
         }
         catch ( IllegalAccessException | InvocationTargetException e ) {
             return java.util.Collections.emptyList();
         }
     }
 
-    public Map<String, ReadAccessor> recordAccessorsIn(Collection<Element> recordComponents) {
+    public Map<String, ReadAccessor> recordAccessorsIn(Collection<VariableElement> recordComponents) {
         if ( recordComponents.isEmpty() ) {
             return java.util.Collections.emptyMap();
         }
         Map<String, ReadAccessor> recordAccessors = new LinkedHashMap<>();
-        for ( Element recordComponent : recordComponents ) {
+        for ( VariableElement recordComponent : recordComponents ) {
             recordAccessors.put(
                 recordComponent.getSimpleName().toString(),
                 ReadAccessor.fromRecordComponent(
                     recordComponent,
-                    typeUtils.asMemberOf( (DeclaredType) typeMirror, recordComponent )
+                    typeUtils.asMemberOf( (DeclaredType) typeMirror, recordComponent ),
+                    nullabilityResolver
                 )
             );
         }
@@ -104,10 +109,16 @@ public class Filters {
         return getWithinContext( executableElement ).getReturnType();
     }
 
-    public <T> List<T> fieldsIn(List<VariableElement> accessors, BiFunction<VariableElement, TypeMirror, T> creator) {
+    public interface FieldAccessorCreator <R> {
+        R create(VariableElement variableElement, TypeMirror accessedType, Nullability nullability);
+    }
+
+    public <T> List<T> fieldsIn(List<VariableElement> accessors, FieldAccessorCreator<T> creator,
+                                NullabilityResolver nullabilityResolver) {
         return accessors.stream()
             .filter( Fields::isFieldAccessor )
-            .map( variableElement -> creator.apply( variableElement, getWithinContext( variableElement ) ) )
+            .map( variableElement -> creator.create( variableElement, getWithinContext( variableElement ),
+                    nullabilityResolver.getFieldNullability( variableElement ) ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
@@ -120,7 +131,8 @@ public class Filters {
     public List<Accessor> setterMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isSetterMethod )
-            .map( method -> new ElementAccessor( method, getFirstParameter( method ), SETTER ) )
+            .map( method -> new ElementAccessor( method, getFirstParameter( method ), SETTER,
+                    nullabilityResolver.getParameterNullability( method.getParameters().get( 0 ) ) ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
@@ -139,7 +151,8 @@ public class Filters {
     public List<Accessor> adderMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isAdderMethod )
-            .map( method -> new ElementAccessor( method, getFirstParameter( method ), ADDER ) )
+            .map( method -> new ElementAccessor( method, getFirstParameter( method ), ADDER,
+                    nullabilityResolver.getParameterNullability( method.getParameters().get( 0 ) ) ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 }

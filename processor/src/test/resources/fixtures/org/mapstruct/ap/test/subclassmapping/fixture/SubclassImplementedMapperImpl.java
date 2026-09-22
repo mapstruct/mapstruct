@@ -37,9 +37,6 @@ public class SubclassImplementedMapperImpl implements SubclassImplementedMapper 
     }
 
     protected SubTarget subSourceToSubTarget(SubSource subSource) {
-        if ( subSource == null ) {
-            return null;
-        }
 
         SubTarget subTarget = new SubTarget();
 
@@ -51,9 +48,6 @@ public class SubclassImplementedMapperImpl implements SubclassImplementedMapper 
     }
 
     protected SubTargetOther subSourceOtherToSubTargetOther(SubSourceOther subSourceOther) {
-        if ( subSourceOther == null ) {
-            return null;
-        }
 
         String finalValue = null;
 

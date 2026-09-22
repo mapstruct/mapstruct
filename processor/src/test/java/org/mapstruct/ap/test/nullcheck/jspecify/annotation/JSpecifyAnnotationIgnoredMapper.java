@@ -1,0 +1,36 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.mapstruct.ap.test.nullcheck.jspecify.annotation;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
+import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.nullcheck.jspecify.SimpleSource;
+import org.mapstruct.ap.test.nullcheck.jspecify.SimpleTarget;
+
+@Mapper
+@NullUnmarked
+public interface JSpecifyAnnotationIgnoredMapper {
+
+    // Has no effect and must not be added to generated
+    @Nullable
+    SimpleTarget reflectDefaultState(@Nullable SimpleSource simpleSource);
+
+    @NonNull
+    @Nullable
+    SimpleTarget cancelingAnnotations(@NonNull @Nullable SimpleSource simpleSource);
+
+    @NullMarked
+    @NullUnmarked
+    SimpleTarget cancelingScopeAnnotations(SimpleSource simpleSource);
+
+    @NullMarked
+    @NullUnmarked
+    @Nullable
+    SimpleTarget cancelingScopeAnnotationsWithDefaultState(@Nullable SimpleSource simpleSource);
+}

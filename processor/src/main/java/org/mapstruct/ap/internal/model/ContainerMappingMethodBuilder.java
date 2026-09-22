@@ -17,11 +17,13 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -69,7 +71,8 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
     @Override
     public final M build() {
-        Type sourceParameterType = first( method.getSourceParameters() ).getType();
+        Parameter parameter = first( method.getSourceParameters() );
+        Type sourceParameterType = parameter.getType();
         Type resultType = method.getResultType();
 
         Type sourceElementType = getElementType( sourceParameterType );
@@ -82,7 +85,9 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             loopVariableName,
             sourceElementType,
             new HashSet<>(),
-            errorMessagePart
+            errorMessagePart,
+            // We do not support generic annotations yet. So pessimistic nullable
+            Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE )
         );
 
         SelectionCriteria criteria = SelectionCriteria.forMappingMethods( selectionParameters,
@@ -98,7 +103,11 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             criteria,
             sourceRHS,
             positionHint,
-            () -> forge( sourceRHS, sourceElementType, targetElementType )
+            () -> forge( sourceRHS, sourceElementType,
+                    TypeInstance.of( targetElementType,
+                            // We do not support generic annotations yet. So pessimistic nullable
+                            Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) ),
+                    Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE )
         );
 
         if ( assignment == null ) {
@@ -178,14 +187,6 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             selectionParameters,
             sourceParameterPresenceCheck
         );
-    }
-
-    private Assignment forge(SourceRHS sourceRHS, Type sourceType, Type targetType) {
-        Assignment assignment = super.forgeMapping( sourceRHS, sourceType, targetType );
-        if ( assignment != null ) {
-            ctx.getMessager().note( 2, Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE, assignment );
-        }
-        return assignment;
     }
 
     protected abstract M instantiateMappingMethod(Method method, Collection<String> existingVariables,

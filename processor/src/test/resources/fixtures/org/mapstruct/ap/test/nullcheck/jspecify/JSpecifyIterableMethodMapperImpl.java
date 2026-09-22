@@ -8,12 +8,14 @@ package org.mapstruct.ap.test.nullcheck.jspecify;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
     date = "2026-05-14T23:18:22+0200",
     comments = "version: , compiler: javac, environment: Java 25 (Eclipse Adoptium)"
 )
+@NullMarked
 public class JSpecifyIterableMethodMapperImpl implements JSpecifyIterableMethodMapper {
 
     @Override
@@ -21,7 +23,9 @@ public class JSpecifyIterableMethodMapperImpl implements JSpecifyIterableMethodM
 
         List<NullMarkedTargetBean> list = new ArrayList<>( sources.size() );
         for ( NullMarkedSourceBean nullMarkedSourceBean : sources ) {
-            list.add( map( nullMarkedSourceBean ) );
+            if ( nullMarkedSourceBean != null ) {
+                list.add( map( nullMarkedSourceBean ) );
+            }
         }
 
         return list;

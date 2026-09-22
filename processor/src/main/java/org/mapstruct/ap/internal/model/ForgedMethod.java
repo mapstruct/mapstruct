@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.lang.model.element.ExecutableElement;
 
@@ -17,10 +18,12 @@ import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * This method will be generated in absence of a suitable abstract method to implement.
@@ -31,6 +34,7 @@ public class ForgedMethod implements Method {
 
     private final List<Parameter> parameters;
     private final Type returnType;
+    private final Nullability returnTypeNullability;
     private final String name;
     private final List<Type> thrownTypes;
     private final ForgedMethodHistory history;
@@ -44,6 +48,8 @@ public class ForgedMethod implements Method {
     private final boolean forgedNameBased;
     private MappingMethodOptions options;
 
+    public static final Predicate<MappingMethodOptions> NEVER_RETURN_DEFAULT = o -> false;
+
     /**
      * Creates a new forged method with the given name for mapping a method parameter to a property.
      *
@@ -53,8 +59,8 @@ public class ForgedMethod implements Method {
      * @param basedOn the method that (originally) triggered this nested method generation.
      * @return a new forge method
      */
-    public static ForgedMethod forParameterMapping(String name, Type sourceType, Type returnType,
-                                                   Method basedOn) {
+    public static ForgedMethod forParameterMapping(String name, TypeInstance sourceType,
+                                                    TypeInstance returnType, Method basedOn) {
         return new ForgedMethod(
             name,
             sourceType,
@@ -63,7 +69,8 @@ public class ForgedMethod implements Method {
             basedOn,
             null,
             MappingReferences.empty(),
-            false
+            false,
+            NEVER_RETURN_DEFAULT
         );
     }
 
@@ -80,10 +87,12 @@ public class ForgedMethod implements Method {
      * @param forgedNameBased forges a name based (matched) mapping method
      * @return a new forge method
      */
-    public static ForgedMethod forPropertyMapping(String name, Type sourceType, Type returnType,
-                                                  List<Parameter> parameters, Method basedOn,
-                                                  ForgedMethodHistory history, MappingReferences mappingReferences,
-                                                  boolean forgedNameBased) {
+    public static ForgedMethod forPropertyMapping(String name, TypeInstance sourceType,
+                                                   TypeInstance returnType, List<Parameter> parameters,
+                                                   Method basedOn,
+                                                   ForgedMethodHistory history, MappingReferences mappingReferences,
+                                                   boolean forgedNameBased,
+                                                   Predicate<MappingMethodOptions> returnDefaultValue) {
         return new ForgedMethod(
             name,
             sourceType,
@@ -92,7 +101,8 @@ public class ForgedMethod implements Method {
             basedOn,
             history,
             mappingReferences == null ? MappingReferences.empty() : mappingReferences,
-            forgedNameBased
+            forgedNameBased,
+            returnDefaultValue
         );
     }
 
@@ -108,8 +118,10 @@ public class ForgedMethod implements Method {
      *
      * @return a new forge method
      */
-    public static ForgedMethod forElementMapping(String name, Type sourceType, Type returnType, Method basedOn,
-                                                 ForgedMethodHistory history, boolean forgedNameBased) {
+    public static ForgedMethod forElementMapping(String name, TypeInstance sourceType,
+                                                  TypeInstance returnType,
+                                                  Method basedOn, ForgedMethodHistory history, boolean forgedNameBased,
+                                                  Predicate<MappingMethodOptions> returnDefaultValue) {
         return new ForgedMethod(
             name,
             sourceType,
@@ -118,7 +130,8 @@ public class ForgedMethod implements Method {
             basedOn,
             history,
             MappingReferences.empty(),
-            forgedNameBased
+            forgedNameBased,
+            returnDefaultValue
         );
     }
 
@@ -134,9 +147,11 @@ public class ForgedMethod implements Method {
      *
      * @return a new forge method
      */
-    public static ForgedMethod forSubclassMapping(String name, Type sourceType, Type returnType, Method basedOn,
-                                                 MappingReferences mappingReferences, ForgedMethodHistory history,
-                                                 boolean forgedNameBased) {
+    public static ForgedMethod forSubclassMapping(String name, TypeInstance sourceType,
+                                                   TypeInstance returnType, Method basedOn,
+                                                   MappingReferences mappingReferences,
+                                                   ForgedMethodHistory history, boolean forgedNameBased,
+                                                   Predicate<MappingMethodOptions> returnDefaultValue) {
         return new ForgedMethod(
             name,
             sourceType,
@@ -146,13 +161,17 @@ public class ForgedMethod implements Method {
             history,
             mappingReferences == null ? MappingReferences.empty() : mappingReferences,
             forgedNameBased,
-            MappingMethodOptions.getSubclassForgedMethodInheritedOptions( basedOn.getOptions() )
+            MappingMethodOptions.getSubclassForgedMethodInheritedOptions( basedOn.getOptions() ),
+            returnDefaultValue
         );
     }
 
-    private ForgedMethod(String name, Type sourceType, Type returnType, List<Parameter> additionalParameters,
-                         Method basedOn, ForgedMethodHistory history, MappingReferences mappingReferences,
-                         boolean forgedNameBased) {
+    //CHECKSTYLE:OFF
+    private ForgedMethod(String name, TypeInstance sourceType, TypeInstance returnType,
+                          List<Parameter> additionalParameters, Method basedOn, ForgedMethodHistory history,
+                          MappingReferences mappingReferences, boolean forgedNameBased,
+                          Predicate<MappingMethodOptions> returnDefaultValue) {
+        //CHECKSTYLE:ON
         this(
             name,
             sourceType,
@@ -162,35 +181,43 @@ public class ForgedMethod implements Method {
             history,
             mappingReferences,
             forgedNameBased,
-            MappingMethodOptions.getForgedMethodInheritedOptions( basedOn.getOptions() )
+            MappingMethodOptions.getForgedMethodInheritedOptions( basedOn.getOptions() ),
+            returnDefaultValue
         );
     }
 
-    private ForgedMethod(String name, Type sourceType, Type returnType, List<Parameter> additionalParameters,
-                         Method basedOn, ForgedMethodHistory history, MappingReferences mappingReferences,
-                         boolean forgedNameBased, MappingMethodOptions options) {
-
+    //CHECKSTYLE:OFF
+    private ForgedMethod(String name, TypeInstance sourceType, TypeInstance returnType,
+                          List<Parameter> additionalParameters,
+                          Method basedOn, ForgedMethodHistory history, MappingReferences mappingReferences,
+                          boolean forgedNameBased, MappingMethodOptions options,
+                          Predicate<MappingMethodOptions> returnDefaultValue) {
+        //CHECKSTYLE:ON
         // establish name
         String sourceParamSafeName;
         if ( additionalParameters.isEmpty() ) {
-            sourceParamSafeName = Strings.getSafeVariableName( sourceType.getName() );
+            sourceParamSafeName = Strings.getSafeVariableName( sourceType.getType().getName() );
         }
         else {
             sourceParamSafeName = Strings.getSafeVariableName(
-                sourceType.getName(),
+                sourceType.getType().getName(),
                 additionalParameters.stream().map( Parameter::getName ).collect( Collectors.toList() )
             );
         }
 
         // establish parameters
         this.parameters = new ArrayList<>( 1 + additionalParameters.size() );
-        Parameter sourceParameter = new Parameter( sourceParamSafeName, sourceType );
+        Parameter sourceParameter = new Parameter( sourceParamSafeName, sourceType.getType(),
+                sourceType.getNullability() );
         this.parameters.add( sourceParameter );
         this.parameters.addAll( additionalParameters );
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
-        this.returnType = returnType;
+        this.returnType = returnType.getType();
+        this.returnTypeNullability = Nullability.getPrimitiveNullability( this.returnType.getTypeMirror() )
+                .orElseGet( () -> returnType.getNullability().withIsReturnDefault(
+                returnDefaultValue.test( options ) ) );
         this.thrownTypes = new ArrayList<>();
 
         // based on method
@@ -212,6 +239,7 @@ public class ForgedMethod implements Method {
     public ForgedMethod(String name, ForgedMethod forgedMethod) {
         this.parameters = forgedMethod.parameters;
         this.returnType = forgedMethod.returnType;
+        this.returnTypeNullability = forgedMethod.returnTypeNullability;
         this.thrownTypes = forgedMethod.thrownTypes;
         this.history = forgedMethod.history;
 
@@ -402,6 +430,11 @@ public class ForgedMethod implements Method {
     @Override
     public List<Type> getTypeParameters() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public Nullability getReturnTypeNullability() {
+        return returnTypeNullability;
     }
 
     @Override

@@ -6,11 +6,10 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.SupportingMappingMethod" -->
-private String ${name}( <@includeModel object=findType("XMLGregorianCalendar")/> xcal, String dateFormat ) {
-    if ( xcal == null ) {
-        return null;
-    }
-
+<#list annotations as annotation>
+    <#nt><@includeModel object=annotation/>
+</#list>
+private <#if typeAnnotation??>@<@includeModel object=typeAnnotation/> </#if>String ${name}( <@includeModel object=sourceParameters[0]/>, <@includeModel object=sourceParameters[1]/> ) {
     if (dateFormat == null ) {
         return xcal.toString();
     }
