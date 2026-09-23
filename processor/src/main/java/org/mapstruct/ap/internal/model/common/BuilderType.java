@@ -8,6 +8,8 @@ package org.mapstruct.ap.internal.model.common;
 import java.util.Collection;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.util.TypeUtils;
@@ -112,6 +114,8 @@ public class BuilderType {
             builder = owner;
         }
 
+        builder = resolveTypeParameters( builder, typeToBuild, builderInfo.getBuildMethods(), typeFactory, typeUtils );
+
         return new BuilderType(
             builder,
             owner,
@@ -119,5 +123,41 @@ public class BuilderType {
             builderCreationMethod,
             builderInfo.getBuildMethods()
         );
+    }
+
+    /**
+     * Resolves the type parameters of a generic builder against the type that needs to be built.
+     * <p>
+     * For example, when building {@code Record<String>} with a {@code RecordBuilder<T>} whose build method
+     * returns {@code Record<T>}, the resolved builder type is {@code RecordBuilder<String>}.
+     *
+     * @param builder the builder type
+     * @param typeToBuild the type that needs to be built
+     * @param buildMethods the build methods of the builder
+     * @param typeFactory the type factory
+     * @param typeUtils the type utils
+     *
+     * @return the builder with its type parameters resolved, or the given builder if they cannot be resolved
+     */
+    private static Type resolveTypeParameters(Type builder, Type typeToBuild,
+        Collection<ExecutableElement> buildMethods, TypeFactory typeFactory, TypeUtils typeUtils) {
+        if ( builder.getTypeParameters().isEmpty() || typeToBuild.getTypeParameters().isEmpty()
+            || !( builder.getTypeMirror() instanceof DeclaredType ) ) {
+            return builder;
+        }
+
+        for ( ExecutableElement buildMethod : buildMethods ) {
+            TypeMirror buildMethodType = typeUtils.asMemberOf( (DeclaredType) builder.getTypeMirror(), buildMethod );
+            if ( !( buildMethodType instanceof ExecutableType ) ) {
+                continue;
+            }
+            TypeMirror builtType = ( (ExecutableType) buildMethodType ).getReturnType();
+            TypeMirror erasedTypeToBuild = typeUtils.erasure( typeToBuild.getTypeMirror() );
+            if ( typeUtils.isSameType( typeUtils.erasure( builtType ), erasedTypeToBuild ) ) {
+                return builder.resolveGenericTypeParameters( typeToBuild, typeFactory.getType( builtType ) );
+            }
+        }
+
+        return builder;
     }
 }

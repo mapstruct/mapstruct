@@ -419,7 +419,11 @@ public class DefaultBuilderProvider implements BuilderProvider {
         }
         TypeMirror buildMethodType = typeUtils.asMemberOf( builderType, buildMethod );
         if ( buildMethodType instanceof ExecutableType ) {
-            return typeUtils.isAssignable( ( (ExecutableType) buildMethodType ).getReturnType(), typeElement.asType() );
+            // Compare erasures, the type variables of a generic builder are not the ones of the type being built
+            return typeUtils.isAssignable(
+                typeUtils.erasure( ( (ExecutableType) buildMethodType ).getReturnType() ),
+                typeUtils.erasure( typeElement.asType() )
+            );
         }
         return false;
     }
