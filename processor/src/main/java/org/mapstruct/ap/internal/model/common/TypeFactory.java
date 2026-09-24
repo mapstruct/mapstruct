@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -101,6 +103,9 @@ public class TypeFactory {
     private final Map<String, ImplementationType> implementationTypes = new HashMap<>();
     private final Map<String, String> toBeImportedTypes = new HashMap<>();
     private final Map<String, String> notToBeImportedTypes;
+
+    private final Map<TypeElement, Type> typeElementCache = new IdentityHashMap<>();
+    private final Map<TypeCacheKey, Type> typeCache = new HashMap<>();
 
     private final boolean loggingVerbose;
 
@@ -207,10 +212,19 @@ public class TypeFactory {
     }
 
     public Type getType(TypeElement typeElement) {
-        return getType( typeElement.asType(), false );
+        return getType( typeElement, false );
     }
 
     private Type getType(TypeElement typeElement, boolean isLiteral) {
+        if ( !isLiteral ) {
+            Type cached = typeElementCache.get( typeElement );
+            if ( cached != null ) {
+                return cached;
+            }
+            Type type = getType( typeElement.asType(), false );
+            typeElementCache.put( typeElement, type );
+            return type;
+        }
         return getType( typeElement.asType(), isLiteral );
     }
 
@@ -238,6 +252,18 @@ public class TypeFactory {
     private Type getType(TypeMirror mirror, boolean isLiteral, Boolean alwaysImport) {
         if ( !canBeProcessed( mirror ) ) {
             throw new TypeHierarchyErroneousException( mirror );
+        }
+
+        Object fingerprint = createFingerprint( mirror );
+        TypeCacheKey cacheKey = fingerprint != null
+            ? new TypeCacheKey( fingerprint, isLiteral, alwaysImport )
+            : null;
+
+        if ( cacheKey != null ) {
+            Type cached = typeCache.get( cacheKey );
+            if ( cached != null ) {
+                return cached;
+            }
         }
 
         ImplementationType implementationType = getImplementationType( mirror );
@@ -338,7 +364,7 @@ public class TypeFactory {
             toBeImported = false;
         }
 
-        return new Type(
+        Type type = new Type(
             typeUtils, elementUtils, this,
             roundContext.getAnnotationProcessorContext().getAccessorNaming(),
             mirror,
@@ -361,6 +387,19 @@ public class TypeFactory {
             isLiteral,
             loggingVerbose
         );
+
+        if ( cacheKey != null ) {
+            typeCache.put( cacheKey, type );
+        }
+
+        if ( !isLiteral && alwaysImport == null && typeElement != null && mirror.getKind() == TypeKind.DECLARED ) {
+            DeclaredType declaredType = (DeclaredType) mirror;
+            if ( declaredType.getTypeArguments().isEmpty() ) {
+                typeElementCache.put( typeElement, type );
+            }
+        }
+
+        return type;
     }
 
     /**
@@ -729,5 +768,210 @@ public class TypeFactory {
             return builderType != null ? builderType.getBuilder() : type;
         }
         return type;
+    }
+
+    private Object createFingerprint(TypeMirror mirror) {
+        if ( mirror == null ) {
+            return null;
+        }
+        TypeKind kind = mirror.getKind();
+        if ( kind.isPrimitive() || kind == TypeKind.VOID ) {
+            return kind;
+        }
+        if ( kind == TypeKind.DECLARED ) {
+            DeclaredType declaredType = (DeclaredType) mirror;
+            Element element = declaredType.asElement();
+            if ( !( element instanceof TypeElement ) ) {
+                return null;
+            }
+            TypeElement typeElement = (TypeElement) element;
+            List<? extends TypeMirror> typeArgs = declaredType.getTypeArguments();
+            Object enclosingFp = declaredType.getEnclosingType() != null
+                && declaredType.getEnclosingType().getKind() == TypeKind.DECLARED
+                ? createFingerprint( declaredType.getEnclosingType() )
+                : null;
+            if ( typeArgs.isEmpty() ) {
+                return new DeclaredTypeFingerprint( typeElement, enclosingFp, java.util.Collections.emptyList() );
+            }
+            List<Object> argFingerprints = new ArrayList<>( typeArgs.size() );
+            for ( TypeMirror arg : typeArgs ) {
+                Object argFp = createFingerprint( arg );
+                if ( argFp == null ) {
+                    return null;
+                }
+                argFingerprints.add( argFp );
+            }
+            return new DeclaredTypeFingerprint( typeElement, enclosingFp, argFingerprints );
+        }
+        if ( kind == TypeKind.ARRAY ) {
+            ArrayType arrayType = (ArrayType) mirror;
+            Object compFp = createFingerprint( arrayType.getComponentType() );
+            if ( compFp == null ) {
+                return null;
+            }
+            return new ArrayTypeFingerprint( compFp );
+        }
+        if ( kind == TypeKind.WILDCARD ) {
+            WildcardType wildcardType = (WildcardType) mirror;
+            Object extendsBound = wildcardType.getExtendsBound() != null
+                ? createFingerprint( wildcardType.getExtendsBound() )
+                : null;
+            Object superBound = wildcardType.getSuperBound() != null
+                ? createFingerprint( wildcardType.getSuperBound() )
+                : null;
+            return new WildcardTypeFingerprint( extendsBound, superBound );
+        }
+        if ( kind == TypeKind.TYPEVAR ) {
+            TypeVariable typeVariable = (TypeVariable) mirror;
+            return new TypeVarFingerprint( typeVariable.asElement() );
+        }
+        return null;
+    }
+
+    private static final class TypeCacheKey {
+        private final Object fingerprint;
+        private final boolean isLiteral;
+        private final Boolean alwaysImport;
+
+        private TypeCacheKey(Object fingerprint, boolean isLiteral, Boolean alwaysImport) {
+            this.fingerprint = fingerprint;
+            this.isLiteral = isLiteral;
+            this.alwaysImport = alwaysImport;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if ( this == o ) {
+                return true;
+            }
+            if ( o == null || getClass() != o.getClass() ) {
+                return false;
+            }
+            TypeCacheKey that = (TypeCacheKey) o;
+            return isLiteral == that.isLiteral
+                && Objects.equals( alwaysImport, that.alwaysImport )
+                && Objects.equals( fingerprint, that.fingerprint );
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hashCode( fingerprint );
+            result = 31 * result + Boolean.hashCode( isLiteral );
+            result = 31 * result + Objects.hashCode( alwaysImport );
+            return result;
+        }
+    }
+
+    private static final class DeclaredTypeFingerprint {
+        private final TypeElement typeElement;
+        private final Object enclosingFingerprint;
+        private final List<Object> typeArguments;
+
+        private DeclaredTypeFingerprint(TypeElement typeElement, Object enclosingFingerprint,
+                                        List<Object> typeArguments) {
+            this.typeElement = typeElement;
+            this.enclosingFingerprint = enclosingFingerprint;
+            this.typeArguments = typeArguments;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if ( this == o ) {
+                return true;
+            }
+            if ( o == null || getClass() != o.getClass() ) {
+                return false;
+            }
+            DeclaredTypeFingerprint that = (DeclaredTypeFingerprint) o;
+            return this.typeElement == that.typeElement
+                && Objects.equals( this.enclosingFingerprint, that.enclosingFingerprint )
+                && Objects.equals( this.typeArguments, that.typeArguments );
+        }
+
+        @Override
+        public int hashCode() {
+            int result = System.identityHashCode( typeElement );
+            result = 31 * result + Objects.hashCode( enclosingFingerprint );
+            result = 31 * result + Objects.hashCode( typeArguments );
+            return result;
+        }
+    }
+
+    private static final class ArrayTypeFingerprint {
+        private final Object componentFingerprint;
+
+        private ArrayTypeFingerprint(Object componentFingerprint) {
+            this.componentFingerprint = componentFingerprint;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if ( this == o ) {
+                return true;
+            }
+            if ( o == null || getClass() != o.getClass() ) {
+                return false;
+            }
+            ArrayTypeFingerprint that = (ArrayTypeFingerprint) o;
+            return Objects.equals( componentFingerprint, that.componentFingerprint );
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode( componentFingerprint );
+        }
+    }
+
+    private static final class WildcardTypeFingerprint {
+        private final Object extendsBound;
+        private final Object superBound;
+
+        private WildcardTypeFingerprint(Object extendsBound, Object superBound) {
+            this.extendsBound = extendsBound;
+            this.superBound = superBound;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if ( this == o ) {
+                return true;
+            }
+            if ( o == null || getClass() != o.getClass() ) {
+                return false;
+            }
+            WildcardTypeFingerprint that = (WildcardTypeFingerprint) o;
+            return Objects.equals( extendsBound, that.extendsBound )
+                && Objects.equals( superBound, that.superBound );
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash( extendsBound, superBound );
+        }
+    }
+
+    private static final class TypeVarFingerprint {
+        private final Element element;
+
+        private TypeVarFingerprint(Element element) {
+            this.element = element;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if ( this == o ) {
+                return true;
+            }
+            if ( o == null || getClass() != o.getClass() ) {
+                return false;
+            }
+            TypeVarFingerprint that = (TypeVarFingerprint) o;
+            return this.element == that.element;
+        }
+
+        @Override
+        public int hashCode() {
+            return System.identityHashCode( element );
+        }
     }
 }
