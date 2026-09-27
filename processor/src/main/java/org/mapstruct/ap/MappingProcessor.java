@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -254,33 +255,26 @@ public class MappingProcessor extends AbstractProcessor {
 
     private Set<TypeElement> getMappers(final Set<? extends TypeElement> annotations,
                                         final RoundEnvironment roundEnvironment) {
-        Set<TypeElement> mapperTypes = new HashSet<>();
+        return annotations.stream()
+            .filter( a -> a.getKind().equals( ElementKind.ANNOTATION_TYPE ) )
+            .map( a -> mapperTypeElements( roundEnvironment, a ) )
+            .flatMap( Set::stream )
+            .collect( Collectors.toSet() );
+    }
 
-        for ( TypeElement annotation : annotations ) {
-            //Indicates that the annotation's type isn't on the class path of the compiled
-            //project. Let the compiler deal with that and print an appropriate error.
-            if ( annotation.getKind() != ElementKind.ANNOTATION_TYPE ) {
-                continue;
-            }
-
-            try {
-                Set<? extends Element> annotatedMappers = roundEnvironment.getElementsAnnotatedWith( annotation );
-                for ( Element mapperElement : annotatedMappers ) {
-                    TypeElement mapperTypeElement = asTypeElement( mapperElement );
-
-                    // on some JDKs, RoundEnvironment.getElementsAnnotatedWith( ... ) returns types with
-                    // annotations unknown to the compiler, even though they are not declared Mappers
-                    if ( mapperTypeElement != null && MapperGem.instanceOn( mapperTypeElement ) != null ) {
-                        mapperTypes.add( mapperTypeElement );
-                    }
-                }
-            }
-            catch ( Throwable t ) { // whenever that may happen, but just to stay on the save side
-                handleUncaughtError( annotation, t );
-                continue;
-            }
+    private Set<TypeElement> mapperTypeElements(final RoundEnvironment roundEnvironment, final TypeElement annotation) {
+        try {
+            return roundEnvironment.getElementsAnnotatedWith( annotation )
+                .stream()
+                .map( this::asTypeElement )
+                .filter( Objects::nonNull )
+                .filter( mapper -> Objects.nonNull( MapperGem.instanceOn( mapper ) ) )
+                .collect( Collectors.toSet() );
         }
-        return mapperTypes;
+        catch ( Throwable t ) { // whenever that may happen, but just to stay on the save side
+            handleUncaughtError( annotation, t );
+            return new HashSet<>();
+        }
     }
 
     private void processMapperElements(Set<TypeElement> mapperElements, RoundContext roundContext) {
