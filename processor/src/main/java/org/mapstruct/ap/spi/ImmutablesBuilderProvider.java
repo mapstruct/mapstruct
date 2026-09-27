@@ -5,8 +5,8 @@
  */
 package org.mapstruct.ap.spi;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Name;
@@ -64,19 +64,16 @@ public class ImmutablesBuilderProvider extends DefaultBuilderProvider {
 
     protected BuilderInfo findBuilderInfoForImmutables(TypeElement typeElement,
                                                        TypeElement immutableAnnotation) {
-        for ( AnnotationMirror annotationMirror : elementUtils.getAllAnnotationMirrors( typeElement ) ) {
-            if ( typeUtils.isSameType( annotationMirror.getAnnotationType(), immutableAnnotation.asType() ) ) {
-                TypeElement immutableElement = asImmutableElement( typeElement );
-                if ( immutableElement != null ) {
-                    return super.findBuilderInfo( immutableElement, false );
-                }
-                else {
-                    // Immutables processor has not run yet. Trigger a postpone to the next round for MapStruct
-                    throw new TypeHierarchyErroneousException( typeElement );
-                }
-            }
-        }
-        return null;
+        return elementUtils.getAllAnnotationMirrors( typeElement )
+            .stream()
+            .filter( annotationMirror -> typeUtils.isSameType(
+                annotationMirror.getAnnotationType(),
+                immutableAnnotation.asType() ) )
+            .findFirst()
+            .map( annotationMirror -> Optional.ofNullable( asImmutableElement( typeElement ) )
+            .orElseThrow( () -> new TypeHierarchyErroneousException( typeElement ) ) )
+            .map( immutableElement -> super.findBuilderInfo( immutableElement, false ) )
+            .orElse( null );
     }
 
     protected TypeElement asImmutableElement(TypeElement typeElement) {
