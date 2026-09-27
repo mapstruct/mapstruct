@@ -263,23 +263,30 @@ public class MappingProcessor extends AbstractProcessor {
                 continue;
             }
 
-            try {
-                Set<? extends Element> annotatedMappers = roundEnvironment.getElementsAnnotatedWith( annotation );
-                for ( Element mapperElement : annotatedMappers ) {
-                    TypeElement mapperTypeElement = asTypeElement( mapperElement );
+            mapperTypes.addAll( mapperTypeElements( roundEnvironment, annotation ) );
+        }
+        return mapperTypes;
+    }
 
-                    // on some JDKs, RoundEnvironment.getElementsAnnotatedWith( ... ) returns types with
-                    // annotations unknown to the compiler, even though they are not declared Mappers
-                    if ( mapperTypeElement != null && MapperGem.instanceOn( mapperTypeElement ) != null ) {
-                        mapperTypes.add( mapperTypeElement );
-                    }
+    private Set<TypeElement> mapperTypeElements(final RoundEnvironment roundEnvironment, final TypeElement annotation) {
+        Set<TypeElement> mapperTypes = new HashSet<>();
+        try {
+            Set<? extends Element> annotatedMappers = roundEnvironment.getElementsAnnotatedWith( annotation );
+            for ( Element mapperElement : annotatedMappers ) {
+                TypeElement mapperTypeElement = asTypeElement( mapperElement );
+
+                // on some JDKs, RoundEnvironment.getElementsAnnotatedWith( ... ) returns types with
+                // annotations unknown to the compiler, even though they are not declared Mappers
+                if ( mapperTypeElement != null && MapperGem.instanceOn( mapperTypeElement ) != null ) {
+                    mapperTypes.add( mapperTypeElement );
                 }
             }
-            catch ( Throwable t ) { // whenever that may happen, but just to stay on the save side
-                handleUncaughtError( annotation, t );
-                continue;
-            }
         }
+        catch ( Throwable t ) { // whenever that may happen, but just to stay on the save side
+            handleUncaughtError( annotation, t );
+            return new HashSet<>();
+        }
+
         return mapperTypes;
     }
 
