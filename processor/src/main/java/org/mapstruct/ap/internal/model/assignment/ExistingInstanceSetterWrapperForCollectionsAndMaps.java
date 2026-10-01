@@ -15,7 +15,6 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 
-import static org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem.ALWAYS;
 import static org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem.IGNORE;
 
 /**
@@ -67,7 +66,7 @@ public class ExistingInstanceSetterWrapperForCollectionsAndMaps
     }
 
     public boolean isIncludeElseBranch() {
-        return nvcs != ALWAYS && nvpms != IGNORE;
+        return nvpms != IGNORE;
     }
 
     public boolean isMapNullToDefault() {
