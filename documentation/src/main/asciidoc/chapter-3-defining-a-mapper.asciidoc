@@ -710,7 +710,7 @@ public Optional<ProductDto> map(Optional<Product> product) {
         return Optional.empty();
     }
 
-    Product productValue = product.get();
+    Product productValue = product.orElseThrow();
 
     ProductDto productDto = new ProductDto();
 
@@ -734,7 +734,7 @@ public ProductDto unwrap(Optional<Product> product) {
         return null;
     }
 
-    Product productValue = product.get();
+    Product productValue = product.orElseThrow();
 
     ProductDto productDto = new ProductDto();
 
@@ -822,10 +822,10 @@ public class CarMapperImpl implements CarMapper {
         CarDto carDto = new CarDto();
 
         if ( car.getMake().isPresent() ) {
-            carDto.setManufacturer( car.getMake().get() );
+            carDto.setManufacturer( car.getMake().orElseThrow() );
         }
         if ( car.getNumberOfSeats().isPresent() ) {
-            carDto.setSeatCount( car.getNumberOfSeats().get() );
+            carDto.setSeatCount( car.getNumberOfSeats().orElseThrow() );
         }
         carDto.setDriver( personToPersonDto( car.getDriver() ) );
 
@@ -886,10 +886,10 @@ public void updateProduct(ProductUpdateDto dto, Product product) {
     }
 
     if ( dto.getName().isPresent() ) {
-        product.setName( dto.getName().get() );
+        product.setName( dto.getName().orElseThrow() );
     }
     if ( dto.getPrice().isPresent() ) {
-        product.setPrice( dto.getPrice().get() );
+        product.setPrice( dto.getPrice().orElseThrow() );
     }
 }
 ----
@@ -985,7 +985,7 @@ public Optional<PersonDto> map(Optional<Person> person) {
         return Optional.empty();
     }
 
-    Person personValue = person.get();
+    Person personValue = person.orElseThrow();
 
     PersonDto.Builder builder = PersonDto.builder();
 

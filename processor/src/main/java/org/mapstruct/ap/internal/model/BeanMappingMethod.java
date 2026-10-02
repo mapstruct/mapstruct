@@ -71,6 +71,7 @@ import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 import org.mapstruct.ap.internal.util.kotlin.KotlinMetadata;
+import org.mapstruct.ap.internal.version.VersionInformation;
 
 import static org.mapstruct.ap.internal.model.beanmapping.MappingReferences.forSourceMethod;
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -108,6 +109,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final List<LifecycleCallbackMethodReference> afterMappingReferencesWithOptionalReturnType;
     private final Type subclassExhaustiveException;
     private final Map<String, Parameter> sourceParametersReassignments;
+    private final VersionInformation versionInformation;
 
     private final MappingReferences mappingReferences;
 
@@ -396,7 +398,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                         ParameterBinding.fromParameter( parameter ) :
                         ParameterBinding.fromTypeAndName(
                             parameter.getType(),
-                            parameter.getOriginalName() + ".get()"
+                            parameter.getOriginalName() + ( ctx.getVersionInformation().isSourceVersionAtLeast10() ?
+                                ".orElseThrow()" : ".get()" )
                         ) )
                     .collect( Collectors.toList() );
             List<LifecycleCallbackMethodReference> afterMappingMethods = LifecycleMethodResolver.afterMappingMethods(
@@ -542,7 +545,8 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 subclasses,
                 presenceChecksByParameter,
                 subclassExhaustiveExceptionType,
-                sourceParametersReassignments
+                sourceParametersReassignments,
+                ctx.getVersionInformation()
             );
         }
 
@@ -2131,8 +2135,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               MappingReferences mappingReferences,
                               List<SubclassMapping> subclassMappings,
                               Map<String, PresenceCheck> presenceChecksByParameter,
-                              Type subclassExhaustiveException,
-                              Map<String, Parameter> sourceParametersReassignments
+                               Type subclassExhaustiveException,
+                              Map<String, Parameter> sourceParametersReassignments,
+                              VersionInformation versionInformation
     ) {
         super(
             method,
@@ -2206,6 +2211,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             : null;
         this.subclassMappings = subclassMappings;
         this.sourceParametersReassignments = sourceParametersReassignments;
+        this.versionInformation = versionInformation;
     }
 
     public Type getSubclassExhaustiveException() {
@@ -2411,5 +2417,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
 
         return true;
+    }
+
+    public VersionInformation getVersionInformation() {
+        return versionInformation;
     }
 }

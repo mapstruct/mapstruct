@@ -62,6 +62,7 @@ import org.mapstruct.ap.internal.util.MessageConstants;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.TypeUtils;
+import org.mapstruct.ap.internal.version.VersionInformation;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.firstKey;
@@ -90,6 +91,7 @@ public class MappingResolverImpl implements MappingResolver {
     private final MethodSelectors methodSelectors;
 
     private final boolean verboseLogging;
+    private final VersionInformation versionInformation;
 
     private static final String JL_OBJECT_NAME = Object.class.getName();
 
@@ -107,6 +109,13 @@ public class MappingResolverImpl implements MappingResolver {
     public MappingResolverImpl(FormattingMessager messager, ElementUtils elementUtils, TypeUtils typeUtils,
                                TypeFactory typeFactory, List<Method> sourceModel,
                                List<MapperReference> mapperReferences, boolean verboseLogging) {
+        this( messager, elementUtils, typeUtils, typeFactory, sourceModel, mapperReferences, verboseLogging, null );
+    }
+
+    public MappingResolverImpl(FormattingMessager messager, ElementUtils elementUtils, TypeUtils typeUtils,
+                               TypeFactory typeFactory, List<Method> sourceModel,
+                               List<MapperReference> mapperReferences, boolean verboseLogging,
+                               VersionInformation versionInformation) {
         this.messager = messager;
         this.typeUtils = typeUtils;
         this.typeFactory = typeFactory;
@@ -119,6 +128,7 @@ public class MappingResolverImpl implements MappingResolver {
         this.methodSelectors = new MethodSelectors( typeUtils, elementUtils, messager, null );
 
         this.verboseLogging = verboseLogging;
+        this.versionInformation = versionInformation;
     }
 
     @Override
@@ -442,7 +452,8 @@ public class MappingResolverImpl implements MappingResolver {
                 messager,
                 sourceType,
                 targetType,
-                formattingParameters
+                formattingParameters,
+                versionInformation
             );
 
             // add helper methods required in conversion
@@ -555,7 +566,8 @@ public class MappingResolverImpl implements MappingResolver {
                 messager,
                 method.getMappingSourceType(),
                 method.getResultType(),
-                formattingParameters
+                formattingParameters,
+                versionInformation
             );
             Assignment methodReference = MethodReference.forBuiltInMethod( method, ctx );
             methodReference.setAssignment( sourceRHS );

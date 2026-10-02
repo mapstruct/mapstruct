@@ -21,6 +21,8 @@ public interface VersionInformation {
 
     boolean isSourceVersionAtLeast9();
 
+    boolean isSourceVersionAtLeast10();
+
     boolean isSourceVersionAtLeast11();
 
     boolean isSourceVersionAtLeast14();

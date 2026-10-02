@@ -36,11 +36,14 @@ public class TypeToOptionalConversion extends SimpleConversion {
 
     @Override
     protected String getFromExpression(ConversionContext conversionContext) {
-        StringBuilder sb = new StringBuilder("<SOURCE>.get");
         Type optionalBaseType = conversionContext.getSourceType().getOptionalBaseType();
         if ( optionalBaseType.isPrimitive() ) {
-            sb.append( "As" ).append( Strings.capitalize( optionalBaseType.getName() ) );
+            return "<SOURCE>.getAs" + Strings.capitalize( optionalBaseType.getName() ) + "()";
         }
-        return sb.append( "()" ).toString();
+        if ( conversionContext.getVersionInformation() != null &&
+            conversionContext.getVersionInformation().isSourceVersionAtLeast10() ) {
+            return "<SOURCE>.orElseThrow()";
+        }
+        return "<SOURCE>.get()";
     }
 }

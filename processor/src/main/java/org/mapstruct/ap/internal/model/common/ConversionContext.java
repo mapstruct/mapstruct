@@ -7,6 +7,8 @@ package org.mapstruct.ap.internal.model.common;
 
 import java.util.Date;
 
+import org.mapstruct.ap.internal.version.VersionInformation;
+
 /**
  * Context object passed to conversion providers and built-in methods.
  *
@@ -43,4 +45,7 @@ public interface ConversionContext {
 
     TypeFactory getTypeFactory();
 
+    default VersionInformation getVersionInformation() {
+        return null;
+    }
 }

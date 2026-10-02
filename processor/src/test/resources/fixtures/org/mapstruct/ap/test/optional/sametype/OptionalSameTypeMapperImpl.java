@@ -27,7 +27,7 @@ public class OptionalSameTypeMapperImpl implements OptionalSameTypeMapper {
 
         constructorOptionalToOptional = source.getConstructorOptionalToOptional();
         if ( source.getConstructorOptionalToNonOptional().isPresent() ) {
-            constructorOptionalToNonOptional = source.getConstructorOptionalToNonOptional().get();
+            constructorOptionalToNonOptional = source.getConstructorOptionalToNonOptional().orElseThrow();
         }
         if ( source.getConstructorNonOptionalToOptional() != null ) {
             constructorNonOptionalToOptional = Optional.of( source.getConstructorNonOptionalToOptional() );
@@ -37,14 +37,14 @@ public class OptionalSameTypeMapperImpl implements OptionalSameTypeMapper {
 
         target.setOptionalToOptional( source.getOptionalToOptional() );
         if ( source.getOptionalToNonOptional().isPresent() ) {
-            target.setOptionalToNonOptional( source.getOptionalToNonOptional().get() );
+            target.setOptionalToNonOptional( source.getOptionalToNonOptional().orElseThrow() );
         }
         if ( source.getNonOptionalToOptional() != null ) {
             target.setNonOptionalToOptional( Optional.of( source.getNonOptionalToOptional() ) );
         }
         target.publicOptionalToOptional = source.publicOptionalToOptional;
         if ( source.publicOptionalToNonOptional.isPresent() ) {
-            target.publicOptionalToNonOptional = source.publicOptionalToNonOptional.get();
+            target.publicOptionalToNonOptional = source.publicOptionalToNonOptional.orElseThrow();
         }
         if ( source.publicNonOptionalToOptional != null ) {
             target.publicNonOptionalToOptional = Optional.of( source.publicNonOptionalToOptional );

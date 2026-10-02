@@ -25,7 +25,7 @@ public class OptionalNestedMapperImpl implements OptionalNestedMapper {
 
         Optional<String> value = sourceOptionalToNonOptionalValue( source );
         if ( value.isPresent() ) {
-            target.setOptionalToNonOptional( value.get() );
+            target.setOptionalToNonOptional( value.orElseThrow() );
         }
         target.setOptionalToOptional( sourceOptionalToOptionalValue( source ) );
         target.setNonOptionalToNonOptional( sourceNonOptionalToNonOptionalValue( source ) );
@@ -42,7 +42,7 @@ public class OptionalNestedMapperImpl implements OptionalNestedMapper {
         if ( optionalToNonOptional.isEmpty() ) {
             return Optional.empty();
         }
-        return optionalToNonOptional.get().getValue();
+        return optionalToNonOptional.orElseThrow().getValue();
     }
 
     private Optional<String> sourceOptionalToOptionalValue(Source source) {
@@ -50,7 +50,7 @@ public class OptionalNestedMapperImpl implements OptionalNestedMapper {
         if ( optionalToOptional.isEmpty() ) {
             return Optional.empty();
         }
-        return optionalToOptional.get().getValue();
+        return optionalToOptional.orElseThrow().getValue();
     }
 
     private String sourceNonOptionalToNonOptionalValue(Source source) {
@@ -58,7 +58,7 @@ public class OptionalNestedMapperImpl implements OptionalNestedMapper {
         if ( nonOptionalToNonOptional.isEmpty() ) {
             return null;
         }
-        return nonOptionalToNonOptional.get().getValue();
+        return nonOptionalToNonOptional.orElseThrow().getValue();
     }
 
     private String sourceNonOptionalToOptionalValue(Source source) {
@@ -66,6 +66,6 @@ public class OptionalNestedMapperImpl implements OptionalNestedMapper {
         if ( nonOptionalToOptional.isEmpty() ) {
             return null;
         }
-        return nonOptionalToOptional.get().getValue();
+        return nonOptionalToOptional.orElseThrow().getValue();
     }
 }
