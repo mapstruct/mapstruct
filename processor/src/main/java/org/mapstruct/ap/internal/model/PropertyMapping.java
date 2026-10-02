@@ -907,7 +907,9 @@ public class PropertyMapping extends ModelElement {
                                     variableName,
                                     ctx.getVersionInformation()
                                 ) );
-                                variableName = variableName + ".get()";
+                                variableName = variableName + (
+                                    ctx.getVersionInformation().isSourceVersionAtLeast10() ? ".orElseThrow()" : ".get()"
+                                );
                             }
                             else {
                                 presenceChecks.add( new NullPresenceCheck( variableName ) );

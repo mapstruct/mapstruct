@@ -9,6 +9,8 @@
 <@compress single_line=true>
 <#if optionalType.optionalBaseType.isPrimitive()>
 ${assignment}.getAs${optionalType.optionalBaseType.name?cap_first}()
+<#elseif versionInformation?? && versionInformation.isSourceVersionAtLeast10()>
+${assignment}.orElseThrow()
 <#else>
 ${assignment}.get()
 </#if>

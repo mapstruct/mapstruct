@@ -13,6 +13,7 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
  * An inline conversion from an optional source to it's value.
@@ -23,10 +24,17 @@ public class FromOptionalTypeConversion extends ModelElement implements Assignme
 
     private final Assignment conversionAssignment;
     private final Type optionalType;
+    private final VersionInformation versionInformation;
 
     public FromOptionalTypeConversion(Type optionalType, Assignment conversionAssignment) {
+        this( optionalType, conversionAssignment, null );
+    }
+
+    public FromOptionalTypeConversion(Type optionalType, Assignment conversionAssignment,
+                                      VersionInformation versionInformation) {
         this.conversionAssignment = conversionAssignment;
         this.optionalType = optionalType;
+        this.versionInformation = versionInformation;
     }
 
     @Override
@@ -95,7 +103,9 @@ public class FromOptionalTypeConversion extends ModelElement implements Assignme
 
     @Override
     public void setAssignment(Assignment assignment) {
-        this.conversionAssignment.setAssignment( new OptionalGetWrapper( assignment, optionalType ) );
+        this.conversionAssignment.setAssignment(
+            new OptionalGetWrapper( assignment, optionalType, versionInformation )
+        );
     }
 
     @Override

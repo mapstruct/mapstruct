@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model.common;
 
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
  * Default implementation of the {@link ConversionContext} passed to conversion providers.
@@ -23,9 +24,16 @@ public class DefaultConversionContext implements ConversionContext {
     private final String numberFormat;
     private final String locale;
     private final TypeFactory typeFactory;
+    private final VersionInformation versionInformation;
 
     public DefaultConversionContext(TypeFactory typeFactory, FormattingMessager messager, Type sourceType,
                                     Type targetType, FormattingParameters formattingParameters) {
+        this( typeFactory, messager, sourceType, targetType, formattingParameters, null );
+    }
+
+    public DefaultConversionContext(TypeFactory typeFactory, FormattingMessager messager, Type sourceType,
+                                    Type targetType, FormattingParameters formattingParameters,
+                                    VersionInformation versionInformation) {
         this.typeFactory = typeFactory;
         this.messager = messager;
         this.sourceType = sourceType;
@@ -34,6 +42,7 @@ public class DefaultConversionContext implements ConversionContext {
         this.dateFormat = this.formattingParameters.getDate();
         this.numberFormat = this.formattingParameters.getNumber();
         this.locale = this.formattingParameters.getLocale();
+        this.versionInformation = versionInformation;
         validateDateFormat();
     }
 
@@ -88,5 +97,10 @@ public class DefaultConversionContext implements ConversionContext {
 
     protected FormattingMessager getMessager() {
         return messager;
+    }
+
+    @Override
+    public VersionInformation getVersionInformation() {
+        return versionInformation;
     }
 }

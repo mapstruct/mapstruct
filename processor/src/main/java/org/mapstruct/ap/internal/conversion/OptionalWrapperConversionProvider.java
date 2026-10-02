@@ -15,6 +15,7 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.FieldReference;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
  * A conversion provider that wraps / unwraps the underlying conversion in Optional.
@@ -39,7 +40,11 @@ public class OptionalWrapperConversionProvider implements ConversionProvider {
     @Override
     public Assignment from(ConversionContext conversionContext) {
         Assignment assignment = conversionProvider.to( new OptionalConversionContext( conversionContext ) );
-        return new FromOptionalTypeConversion( conversionContext.getSourceType(), assignment );
+        return new FromOptionalTypeConversion(
+            conversionContext.getSourceType(),
+            assignment,
+            conversionContext.getVersionInformation()
+        );
     }
 
     @Override
@@ -95,6 +100,11 @@ public class OptionalWrapperConversionProvider implements ConversionProvider {
         @Override
         public TypeFactory getTypeFactory() {
             return delegate.getTypeFactory();
+        }
+
+        @Override
+        public VersionInformation getVersionInformation() {
+            return delegate.getVersionInformation();
         }
     }
 }

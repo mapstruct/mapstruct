@@ -132,7 +132,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                 typeFactory,
                 new ArrayList<>( sourceModel ),
                 mapperReferences,
-                options.isVerbose()
+                options.isVerbose(),
+                versionInformation
             ),
             mapperTypeElement,
             //sourceModel is passed only to fetch the after/before mapping methods in lifecycleCallbackFactory;

@@ -33,7 +33,7 @@ public class OptionalBeforeAfterMapperImpl implements OptionalBeforeAfterMapper 
         deepNonOptionalToOptional = subTypeToSubTypeOptional( source.getDeepNonOptionalToOptional() );
         shallowOptionalToOptional = source.getShallowOptionalToOptional();
         if ( source.getShallowOptionalToNonOptional().isPresent() ) {
-            shallowOptionalToNonOptional = source.getShallowOptionalToNonOptional().get();
+            shallowOptionalToNonOptional = source.getShallowOptionalToNonOptional().orElseThrow();
         }
         if ( source.getShallowNonOptionalToOptional() != null ) {
             shallowNonOptionalToOptional = Optional.of( source.getShallowNonOptionalToOptional() );
@@ -54,7 +54,7 @@ public class OptionalBeforeAfterMapperImpl implements OptionalBeforeAfterMapper 
 
         String value = null;
 
-        Source.SubType optionalValue = optional.get();
+        Source.SubType optionalValue = optional.orElseThrow();
 
         value = optionalValue.getValue();
 
@@ -81,7 +81,7 @@ public class OptionalBeforeAfterMapperImpl implements OptionalBeforeAfterMapper 
 
         String value = null;
 
-        Source.SubType optionalValue = optional.get();
+        Source.SubType optionalValue = optional.orElseThrow();
 
         value = optionalValue.getValue();
 
