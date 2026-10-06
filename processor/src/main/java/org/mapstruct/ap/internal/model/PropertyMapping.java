@@ -995,11 +995,12 @@ public class PropertyMapping extends ModelElement {
             else {
                  sourceType = sourceRHS.getSourceType();
             }
-            if ( forgedNamedBased && !canGenerateAutoSubMappingBetween( sourceType, targetType ) ) {
+            Type forgedTargetType = targetType.isOptionalType() ? targetType.withoutBounds() : targetType;
+            if ( forgedNamedBased && !canGenerateAutoSubMappingBetween( sourceType, forgedTargetType ) ) {
                 return null;
             }
 
-            return forgeMapping( sourceType, targetType, sourceRHS );
+            return forgeMapping( sourceType, forgedTargetType, sourceRHS );
         }
 
         private Assignment forgeMapping(Type sourceType, Type targetType, SourceRHS sourceRHS) {
