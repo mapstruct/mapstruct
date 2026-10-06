@@ -314,10 +314,11 @@ public class MappingBuilderContext {
      * @return {@code true} if the type is not excluded from the {@link MappingExclusionProvider}
      */
     private boolean canGenerateAutoSubMappingFor(Type type) {
-        if ( "java.util.Optional".equals( type.getFullyQualifiedName() ) ) {
-            return !SUB_MAPPING_EXCLUSION_PROVIDER.isExcluded( type.getOptionalBaseType().getTypeElement() );
-        }
-        return type.getTypeElement() != null && !SUB_MAPPING_EXCLUSION_PROVIDER.isExcluded( type.getTypeElement() );
+        Type typeToMap = "java.util.Optional".equals( type.getFullyQualifiedName() ) ?
+            type.getOptionalBaseType() :
+            type;
+        TypeElement typeElement = typeToMap.getTypeElement();
+        return typeElement != null && !SUB_MAPPING_EXCLUSION_PROVIDER.isExcluded( typeElement );
     }
 
     public boolean isErroneous() {
