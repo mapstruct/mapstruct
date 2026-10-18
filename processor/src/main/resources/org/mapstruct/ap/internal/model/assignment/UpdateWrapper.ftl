@@ -43,7 +43,8 @@
         sourcePropertyName=ext.sourcePropertyName
         targetType=ext.targetType/>
     <#else>
-      <#if sourceLocalVarName??> ${sourceLocalVarName} <#else> ${sourceReference} </#if> != null
+      <#assign sourceRef><#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if></#assign>
+      ${sourceRef} != null<#if sourceType.optionalType> && ${sourceRef}.isPresent()</#if>
     </#if>
   </@compress>
 </#macro>
