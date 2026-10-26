@@ -877,6 +877,7 @@ public class PropertyMapping extends ModelElement {
             PresenceCheck presenceCheck = PresenceCheckMethodResolver.getPresenceCheck(
                 method,
                 selectionParameters,
+                targetType,
                 ctx
             );
             if ( presenceCheck != null ) {

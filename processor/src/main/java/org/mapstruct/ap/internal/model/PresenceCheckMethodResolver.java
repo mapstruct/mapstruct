@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.mapstruct.ap.internal.gem.ConditionStrategyGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
+import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -39,11 +40,17 @@ public final class PresenceCheckMethodResolver {
     public static PresenceCheck getPresenceCheck(
         Method method,
         SelectionParameters selectionParameters,
+        Type targetType,
         MappingBuilderContext ctx
     ) {
         List<SelectedMethod<SourceMethod>> matchingMethods = findMatchingMethods(
             method,
-            SelectionContext.forPresenceCheckMethods( method, selectionParameters, ctx.getTypeFactory() ),
+            SelectionContext.forPresenceCheckMethods(
+                method,
+                selectionParameters,
+                targetType,
+                ctx.getTypeFactory()
+            ),
             ctx
         );
 

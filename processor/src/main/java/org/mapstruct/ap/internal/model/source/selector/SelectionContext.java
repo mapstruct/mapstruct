@@ -120,6 +120,7 @@ public class SelectionContext {
                 List<ParameterBinding> parameterBindings = getAvailableParameterBindingsFromMethod(
                     mappingMethod,
                     targetType,
+                    targetType,
                     criteria.getSourceRHS(),
                     typeFactory
                 );
@@ -142,6 +143,7 @@ public class SelectionContext {
             () -> getAvailableParameterBindingsFromMethod(
                 mappingMethod,
                 alternativeTarget,
+                alternativeTarget,
                 criteria.getSourceRHS(),
                 typeFactory
             )
@@ -150,6 +152,7 @@ public class SelectionContext {
 
     public static SelectionContext forPresenceCheckMethods(Method mappingMethod,
                                                            SelectionParameters selectionParameters,
+                                                           Type targetType,
                                                            TypeFactory typeFactory) {
         SelectionCriteria criteria = SelectionCriteria.forPresenceCheckMethods( selectionParameters );
         Type booleanType = typeFactory.getType( Boolean.class );
@@ -162,6 +165,7 @@ public class SelectionContext {
             () -> getAvailableParameterBindingsFromMethod(
                 mappingMethod,
                 booleanType,
+                targetType,
                 criteria.getSourceRHS(),
                 typeFactory
             )
@@ -207,7 +211,9 @@ public class SelectionContext {
         return availableParams;
     }
 
-    private static List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method, Type targetType,
+    private static List<ParameterBinding> getAvailableParameterBindingsFromMethod(Method method,
+                                                                                  Type mappingTargetType,
+                                                                                  Type targetType,
                                                                                   SourceRHS sourceRHS,
                                                                                   TypeFactory typeFactory) {
         List<ParameterBinding> availableParams = new ArrayList<>( method.getParameters().size() + 3 );
@@ -221,7 +227,7 @@ public class SelectionContext {
             availableParams.addAll( ParameterBinding.fromParameters( method.getParameters() ) );
         }
 
-        addTargetRelevantBindings( availableParams, targetType, typeFactory );
+        addTargetRelevantBindings( availableParams, mappingTargetType, targetType, typeFactory );
 
         return availableParams;
     }
@@ -242,7 +248,7 @@ public class SelectionContext {
             }
         }
 
-        addTargetRelevantBindings( availableParams, targetType, typeFactory );
+        addTargetRelevantBindings( availableParams, targetType, targetType, typeFactory );
 
         return availableParams;
     }
@@ -266,11 +272,12 @@ public class SelectionContext {
     /**
      * Adds default parameter bindings for the mapping-target and target-type if not already available.
      *
-     * @param availableParams Already available params, new entries will be added to this list
-     * @param targetType      Target type
+     * @param availableParams   Already available params, new entries will be added to this list
+     * @param mappingTargetType Type of the default mapping-target binding
+     * @param targetType        Type whose class is used for the default target-type binding
      */
-    private static void addTargetRelevantBindings(List<ParameterBinding> availableParams, Type targetType,
-                                                  TypeFactory typeFactory) {
+    private static void addTargetRelevantBindings(List<ParameterBinding> availableParams, Type mappingTargetType,
+                                                  Type targetType, TypeFactory typeFactory) {
         boolean mappingTargetAvailable = false;
         boolean targetTypeAvailable = false;
         boolean targetPropertyNameAvailable = false;
@@ -289,7 +296,7 @@ public class SelectionContext {
         }
 
         if ( !mappingTargetAvailable ) {
-            availableParams.add( ParameterBinding.forMappingTargetBinding( targetType ) );
+            availableParams.add( ParameterBinding.forMappingTargetBinding( mappingTargetType ) );
         }
         if ( !targetTypeAvailable ) {
             availableParams.add( ParameterBinding.forTargetTypeBinding( typeFactory.classTypeOf( targetType ) ) );
