@@ -107,6 +107,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     private final List<LifecycleCallbackMethodReference> afterMappingReferencesWithFinalizedReturnType;
     private final List<LifecycleCallbackMethodReference> afterMappingReferencesWithOptionalReturnType;
     private final Type subclassExhaustiveException;
+    private final boolean sourceTypeExhaustivelyMapped;
     private final Map<String, Parameter> sourceParametersReassignments;
 
     private final MappingReferences mappingReferences;
@@ -167,6 +168,13 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             BeanMappingOptions beanMapping = method.getOptions().getBeanMapping();
             SelectionParameters selectionParameters = beanMapping != null ? beanMapping.getSelectionParameters() : null;
+
+            // When the source type is a sealed hierarchy that is exhaustively covered by the declared
+            // @SubclassMappings, the else branch of the generated method is unreachable. In that case the return type
+            // must not be constructed there (which could create an object in an invalid state); the else branch should
+            // throw the configured exhaustive-strategy exception instead. See #3936.
+            boolean sourceTypeExhaustivelyMapped =
+                !method.getOptions().getSubclassMappings().isEmpty() && isCorrectlySealed();
 
             /* the return type that needs to be constructed (new or factorized), so for instance: */
             /*  1) the return type of a non-update method */
@@ -250,7 +258,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             this.unprocessedTargetProperties = new LinkedHashMap<>( accessors );
 
             boolean constructorAccessorHadError = false;
-            if ( !method.isUpdateMethod() && !hasFactoryMethod ) {
+            if ( !method.isUpdateMethod() && !hasFactoryMethod && !sourceTypeExhaustivelyMapped ) {
                 ConstructorAccessor constructorAccessor = getConstructorAccessor( resultTypeToMap );
                 if ( constructorAccessor != null && !constructorAccessor.hasError ) {
 
@@ -363,7 +371,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
             handleUnmappedConstructorProperties();
 
             // report errors on unmapped properties
-            if ( shouldHandledDefinedMappings ) {
+            if ( shouldHandledDefinedMappings && !sourceTypeExhaustivelyMapped ) {
                 reportErrorForUnmappedTargetPropertiesIfRequired( resultTypeToMap, constructorAccessorHadError );
                 reportErrorForUnmappedSourcePropertiesIfRequired();
             }
@@ -542,6 +550,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                 subclasses,
                 presenceChecksByParameter,
                 subclassExhaustiveExceptionType,
+                sourceTypeExhaustivelyMapped,
                 sourceParametersReassignments
             );
         }
@@ -2132,6 +2141,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                               List<SubclassMapping> subclassMappings,
                               Map<String, PresenceCheck> presenceChecksByParameter,
                               Type subclassExhaustiveException,
+                              boolean sourceTypeExhaustivelyMapped,
                               Map<String, Parameter> sourceParametersReassignments
     ) {
         super(
@@ -2149,6 +2159,7 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
         this.returnTypeBuilder = returnTypeBuilder;
         this.finalizerMethod = finalizerMethod;
         this.subclassExhaustiveException = subclassExhaustiveException;
+        this.sourceTypeExhaustivelyMapped = sourceTypeExhaustivelyMapped;
         if ( this.finalizerMethod != null ) {
             this.finalizedResultName =
                 Strings.getSafeVariableName( getResultName() + "Result", existingVariableNames );
@@ -2277,6 +2288,19 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
     public boolean isAbstractReturnType() {
         return getFactoryMethod() == null && returnTypeToConstruct != null
             && returnTypeToConstruct.isAbstract();
+    }
+
+    /**
+     * Whether the {@code else} branch of a {@code @SubclassMapping} based method should throw the configured
+     * exhaustive-strategy exception instead of trying to construct the return type.
+     * <p>
+     * This is the case when the return type is abstract (no concrete type to construct) or when the source type is a
+     * sealed hierarchy that is exhaustively covered by the declared {@code @SubclassMapping}s. In the latter case the
+     * {@code else} branch is unreachable, so constructing the target (possibly with invalid default values) must be
+     * avoided.
+     */
+    public boolean shouldThrowSubclassExhaustiveException() {
+        return isAbstractReturnType() || sourceTypeExhaustivelyMapped;
     }
 
     public boolean hasConstructorMappings() {
