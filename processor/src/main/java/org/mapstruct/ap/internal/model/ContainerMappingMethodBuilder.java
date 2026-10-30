@@ -86,8 +86,10 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             sourceElementType,
             new HashSet<>(),
             errorMessagePart,
-            // We do not support generic annotations yet. So pessimistic nullable
-            Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE )
+            Nullability.getPrimitiveNullability( sourceElementType.getTypeMirror() )
+                .orElse(  // We do not support generic annotations yet. So pessimistic nullable
+                        Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE )
+                )
         );
 
         SelectionCriteria criteria = SelectionCriteria.forMappingMethods( selectionParameters,
@@ -105,8 +107,10 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             positionHint,
             () -> forge( sourceRHS, sourceElementType,
                     TypeInstance.of( targetElementType,
-                            // We do not support generic annotations yet. So pessimistic nullable
-                            Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) ),
+                            Nullability.getPrimitiveNullability( targetElementType.getTypeMirror() )
+                                    .orElse( // We do not support generic annotations yet. So pessimistic nullable
+                                            Nullability.hardcodedNullability(
+                                                    Nullability.NullabilityState.NULLABLE ) ) ),
                     Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE )
         );
 
