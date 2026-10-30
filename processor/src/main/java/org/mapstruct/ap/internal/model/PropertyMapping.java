@@ -605,6 +605,12 @@ public class PropertyMapping extends ModelElement {
                 return true;
             }
 
+            if ( rhs.isSourceReferenceUnboxedInMethodCall() ) {
+                // A mapping method with a primitive parameter is invoked with a wrapped source value, i.e. the
+                // source is unboxed. A null check is needed to avoid a NullPointerException while unboxing (#3896).
+                return true;
+            }
+
             if ( hasDefaultValueOrDefaultExpression() ) {
                 // If there is default value defined then a check is needed
                 return true;

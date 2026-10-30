@@ -33,6 +33,22 @@ public interface Method {
     boolean matches(List<Type> sourceTypes, Type targetType );
 
     /**
+     * Same as {@link #matches(List, Type)}, but optionally relaxes the matching so that a source type is also
+     * considered to match a primitive parameter when it is the boxed equivalent of that primitive (e.g. a source
+     * {@code Integer} matching an {@code int} parameter). This is used as a fall-back for method selection, where
+     * the generated invocation performs the required null check before unboxing.
+     *
+     * @param sourceTypes the sourceTypes to match to the parameter
+     * @param targetType the targetType to match to the returnType
+     * @param relaxBoxedToPrimitive whether a boxed source type may match a primitive parameter
+     *
+     * @return true when match
+     */
+    default boolean matches(List<Type> sourceTypes, Type targetType, boolean relaxBoxedToPrimitive) {
+        return matches( sourceTypes, targetType );
+    }
+
+    /**
      * Returns the mapper type declaring this method if it is not declared by the mapper interface currently processed
      * but by another mapper imported via {@code Mapper#users()}.
      *

@@ -344,6 +344,20 @@ public class MethodReference extends ModelElement implements Assignment {
         return isUpdateMethod;
     }
 
+    @Override
+    public boolean isSourceReferenceUnboxedInMethodCall() {
+        if ( sourceParameters.size() == 1 ) {
+            Type sourceParameterType = sourceParameters.get( 0 ).getType();
+            Type sourceType = getSourceType();
+            if ( sourceParameterType.isPrimitive() && sourceType != null && !sourceType.isPrimitive() ) {
+                // the source value is a wrapper (e.g. Integer) and is unboxed when passed to the primitive parameter
+                return true;
+            }
+        }
+        // for chained / nested assignments delegate to the wrapped assignment
+        return assignment != null && assignment.isSourceReferenceUnboxedInMethodCall();
+    }
+
     public boolean isStatic() {
         return isStatic;
     }

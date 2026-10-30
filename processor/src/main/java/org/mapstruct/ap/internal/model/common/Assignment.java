@@ -155,4 +155,15 @@ public interface Assignment {
     AssignmentType getType();
 
     boolean isCallingUpdateMethod();
+
+    /**
+     * Whether this assignment invokes a method (or chain of methods) whose source argument is a primitive while the
+     * actual source value is its boxed equivalent, i.e. the source value is unboxed when passed to the method. In
+     * that case a null check must guard the invocation to avoid a {@link NullPointerException} while unboxing.
+     *
+     * @return {@code true} when the source value is unboxed when passed to a method
+     */
+    default boolean isSourceReferenceUnboxedInMethodCall() {
+        return false;
+    }
 }
