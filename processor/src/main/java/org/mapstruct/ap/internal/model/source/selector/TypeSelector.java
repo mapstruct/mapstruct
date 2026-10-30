@@ -40,6 +40,22 @@ public class TypeSelector implements MethodSelector {
             return methods;
         }
 
+        List<SelectedMethod<T>> result = getMatchingMethods( methods, context, false );
+
+        if ( result.isEmpty() ) {
+            // No method matched with strict type matching. As a fall-back we allow a boxed source type to match
+            // a primitive parameter (e.g. a nested source that is extracted as Integer matching an int parameter).
+            // This is only done when there is no strict match, so that an exact (e.g. Integer) method is always
+            // preferred over a boxed-to-primitive one (see #205 and #3896).
+            result = getMatchingMethods( methods, context, true );
+        }
+
+        return result;
+    }
+
+    private <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<SelectedMethod<T>> methods,
+            SelectionContext context, boolean relaxBoxedToPrimitive) {
+
         Type returnType = context.getReturnType();
 
         List<SelectedMethod<T>> result = new ArrayList<>();
@@ -52,7 +68,13 @@ public class TypeSelector implements MethodSelector {
 
             if ( parameterBindingPermutations != null ) {
                 SelectedMethod<T> matchingMethod =
-                    getMatchingParameterBinding( returnType, context, method, parameterBindingPermutations );
+                    getMatchingParameterBinding(
+                        returnType,
+                        context,
+                        method,
+                        parameterBindingPermutations,
+                        relaxBoxedToPrimitive
+                    );
 
                 if ( matchingMethod != null ) {
                     result.add( matchingMethod );
@@ -64,7 +86,7 @@ public class TypeSelector implements MethodSelector {
 
     private <T extends Method> SelectedMethod<T> getMatchingParameterBinding(Type returnType,
             SelectionContext context, SelectedMethod<T> selectedMethodInfo,
-            List<List<ParameterBinding>> parameterAssignmentVariants) {
+            List<List<ParameterBinding>> parameterAssignmentVariants, boolean relaxBoxedToPrimitive) {
 
         List<List<ParameterBinding>> matchingParameterAssignmentVariants = new ArrayList<>(
             parameterAssignmentVariants
@@ -74,7 +96,7 @@ public class TypeSelector implements MethodSelector {
 
         // remove all assignment variants that doesn't match the types from the method
         matchingParameterAssignmentVariants.removeIf( parameterAssignments ->
-            !selectedMethod.matches( extractTypes( parameterAssignments ), returnType )
+            !selectedMethod.matches( extractTypes( parameterAssignments ), returnType, relaxBoxedToPrimitive )
         );
 
         if ( matchingParameterAssignmentVariants.isEmpty() ) {
@@ -103,11 +125,14 @@ public class TypeSelector implements MethodSelector {
             // we had some matching assignments before, but when checking the parameter names we can't find an
             // appropriate one, in this case the user must chose identical parameter names for the mapping and lifecycle
             // method
-            messager.printMessage(
-                selectedMethod.getExecutable(),
-                Message.LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS,
-                context.getMappingMethod()
-            );
+            if ( !relaxBoxedToPrimitive ) {
+                // only report during the strict pass, otherwise the fall-back pass would duplicate the diagnostic
+                messager.printMessage(
+                    selectedMethod.getExecutable(),
+                    Message.LIFECYCLEMETHOD_AMBIGUOUS_PARAMETERS,
+                    context.getMappingMethod()
+                );
+            }
 
             return null;
         }

@@ -103,6 +103,11 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     }
 
     @Override
+    public boolean isSourceReferenceUnboxedInMethodCall() {
+        return decoratedAssignment.isSourceReferenceUnboxedInMethodCall();
+    }
+
+    @Override
     public String createUniqueVarName(String desiredName ) {
         return decoratedAssignment.createUniqueVarName( desiredName );
     }

@@ -521,8 +521,13 @@ public class SourceMethod implements Method {
 
     @Override
     public boolean matches(List<Type> sourceTypes, Type targetType) {
+        return matches( sourceTypes, targetType, false );
+    }
+
+    @Override
+    public boolean matches(List<Type> sourceTypes, Type targetType, boolean relaxBoxedToPrimitive) {
         MethodMatcher matcher = new MethodMatcher( typeUtils, typeFactory, this );
-        return matcher.matches( sourceTypes, targetType );
+        return matcher.matches( sourceTypes, targetType, relaxBoxedToPrimitive );
     }
 
     /**

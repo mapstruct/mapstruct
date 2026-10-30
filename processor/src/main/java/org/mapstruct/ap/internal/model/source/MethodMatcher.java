@@ -64,6 +64,10 @@ public class MethodMatcher {
      *         {@code false} otherwise.
      */
     boolean matches(List<Type> sourceTypes, Type targetType) {
+        return matches( sourceTypes, targetType, false );
+    }
+
+    boolean matches(List<Type> sourceTypes, Type targetType, boolean relaxBoxedToPrimitive) {
 
         GenericAnalyser analyser =
             new GenericAnalyser( typeFactory, typeUtils, candidateMethod, sourceTypes, targetType );
@@ -72,9 +76,21 @@ public class MethodMatcher {
         }
 
         for ( int i = 0; i < sourceTypes.size(); i++ ) {
+            Type sourceType = sourceTypes.get( i );
             Type candidateSourceParType = analyser.candidateParTypes.get( i );
-            if ( !sourceTypes.get( i ).isAssignableTo( candidateSourceParType )
-                || isPrimitiveToObject( sourceTypes.get( i ), candidateSourceParType ) ) {
+            if ( isPrimitiveToObject( sourceType, candidateSourceParType ) ) {
+                // The candidate parameter is a primitive (e.g. int) and the source is an object (e.g. Integer).
+                // By default this is not matched, because an unguarded unboxing could lead to a NullPointerException
+                // and type conversion should be preferred. When relaxation is requested (as a fall-back during
+                // method selection) such a method is matched when the source is the boxed equivalent of the
+                // primitive parameter; the generated invocation performs the required null check before unboxing
+                // (see #3896).
+                if ( !relaxBoxedToPrimitive
+                    || !sourceType.isAssignableTo( candidateSourceParType.getBoxedEquivalent() ) ) {
+                    return false;
+                }
+            }
+            else if ( !sourceType.isAssignableTo( candidateSourceParType ) ) {
                 return false;
             }
         }
