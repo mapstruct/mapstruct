@@ -20,6 +20,8 @@ import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
+import org.mapstruct.ap.internal.model.common.Type;
+
 /**
  * Resolver for JSpecify nullness annotations on elements, used to decide whether a null
  * check is required for a source-to-target property mapping.
@@ -126,35 +128,30 @@ public class NullabilityResolver {
         if ( element == null ) {
            return new Nullability( Nullability.NullabilityState.NULLABLE, Nullability.NullabilityCause.DEFAULT, null );
         }
-        Nullability componentTypeNullability = null;
 
         // JSpecify annotations are TYPE_USE annotations.
         // For getters: annotation is on the return type
         // For setter parameters / fields: annotation is on the variable type
+        TypeMirror typeMirror;
         if ( element instanceof ExecutableElement ) {
             // Getter method — check the return type annotations
-            TypeMirror returnType = ( (ExecutableElement) element ).getReturnType();
-            if ( returnType != null ) {
-                componentTypeNullability = getComponentTypeJSpecifyNullability( returnType, element );
-                if ( jSpecifyEnabled ) {
-                    JSpecifyNullability result = getNullabilityFromAnnotationMirrors(
-                            returnType.getAnnotationMirrors() );
-                    if ( result != JSpecifyNullability.UNKNOWN ) {
-                        return result.toNull( componentTypeNullability );
-                    }
-                }
-            }
+            typeMirror = ( (ExecutableElement) element ).getReturnType();
         }
         else if ( element instanceof VariableElement ) {
             // Setter parameter or field — check the variable type annotations
-            TypeMirror type = element.asType();
-            if ( type != null ) {
-                componentTypeNullability = getComponentTypeJSpecifyNullability( type, element );
-                if ( jSpecifyEnabled ) {
-                    JSpecifyNullability result = getNullabilityFromAnnotationMirrors( type.getAnnotationMirrors() );
-                    if ( result != JSpecifyNullability.UNKNOWN ) {
-                        return result.toNull( componentTypeNullability );
-                    }
+            typeMirror = element.asType();
+        }
+        else {
+            throw new IllegalArgumentException( "Unknown element type: " + element );
+        }
+
+        Nullability componentTypeNullability = null;
+        if ( typeMirror != null ) {
+            componentTypeNullability = getComponentTypeJSpecifyNullability( typeMirror, element );
+            if ( jSpecifyEnabled ) {
+                JSpecifyNullability result = getNullabilityFromAnnotationMirrors( typeMirror.getAnnotationMirrors() );
+                if ( result != JSpecifyNullability.UNKNOWN ) {
+                    return result.toNull( componentTypeNullability );
                 }
             }
         }
