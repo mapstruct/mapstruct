@@ -2035,6 +2035,14 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
     }
 
+    public List<Type> getEmptyList() {
+        return Collections.emptyList();
+    }
+
+    public List<Type> removeFirstType(List<Type> types) {
+        return types.size() > 1 ? types.subList( 1, types.size() ) : Collections.emptyList();
+    }
+
     private class KotlinMetadataImpl implements KotlinMetadata {
 
         private final KotlinClassMetadata.Class kotlinClassMetadata;

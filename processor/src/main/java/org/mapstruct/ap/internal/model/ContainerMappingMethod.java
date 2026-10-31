@@ -152,9 +152,10 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
         if ( getReturnType().isVoid() ) {
             return Nullability.voidNullability();
         }
+        Nullability returnTypeNullability = super.getReturnTypeNullability();
         if ( sourceParameterPresenceCheck == null ) {
-            return Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL );
+            return returnTypeNullability.knownNotNull();
         }
-        return super.getReturnTypeNullability().withIsReturnDefault( isMapNullToDefault() );
+        return returnTypeNullability.withIsReturnDefault( isMapNullToDefault() );
     }
 }

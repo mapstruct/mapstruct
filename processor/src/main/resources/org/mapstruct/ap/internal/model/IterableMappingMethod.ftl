@@ -70,7 +70,10 @@
                 break;
             }
             </#if>
-            <@includeModel object=elementAssignment targetWriteAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>
+            <@lib.handleVariableNullCheck elementAssignment.needsParameterNullCheck() loopVariableName>
+                <@includeModel object=elementAssignment targetWriteAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>
+            </@lib.handleVariableNullCheck>
+            <#-- Todo do we need to add null here? Or is filtering out okay? -->
             ${index1Name}++;
         }
     <#else>

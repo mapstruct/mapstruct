@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -39,7 +40,7 @@ public class Parameter extends ModelElement {
     private final boolean targetPropertyName;
     private final Nullability nullability;
     private final boolean varArgs;
-    private Type typeAnnotation = null;
+    private final List<Type> typeAnnotation = new ArrayList<>();
 
     private Parameter(Element element, Type type, Nullability nullability, boolean varArgs) {
         this.element = element;
@@ -136,8 +137,10 @@ public class Parameter extends ModelElement {
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> targetTypes = new HashSet<>( );
-        if ( typeAnnotation != null ) {
-            targetTypes.add( typeAnnotation );
+        for ( Type annotationType : typeAnnotation ) {
+            if ( annotationType != null ) {
+                targetTypes.add( annotationType );
+            }
         }
         targetTypes.add( type );
         return targetTypes;
@@ -163,17 +166,18 @@ public class Parameter extends ModelElement {
         return varArgs;
     }
 
-    public Type getTypeAnnotation() {
+    public List<Type> getTypeAnnotation() {
         return typeAnnotation;
     }
 
     /**
      * Added a type annotation to the method. When calling this after a {@link Mapper} is created requires manual
      * ensuring that the type is imported.
-     * @param typeAnnotation the annotation type to add to the method
+     * @param typeAnnotation the annotation type to add to the method parameter. Call multiple times for component
+     *                       types. null is allowed as a value
      */
-    public void setTypeAnnotation(Type typeAnnotation) {
-        this.typeAnnotation = typeAnnotation;
+    public void addTypeAnnotation(Type typeAnnotation) {
+        this.typeAnnotation.add( typeAnnotation );
     }
 
     public boolean isSourceParameter() {

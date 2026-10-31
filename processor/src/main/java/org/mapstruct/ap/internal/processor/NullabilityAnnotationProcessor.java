@@ -55,20 +55,33 @@ public class NullabilityAnnotationProcessor implements ModelElementProcessor<Map
                     }
                 }
                 Nullability returnTypeNullability = mappingMethod.getReturnTypeNullability();
-                if ( scopeForTypes.needsAnnotation( returnTypeNullability ) ) {
-                    createNullabilityAnnotationType( context, returnTypeNullability )
-                            .ifPresent( nullabilityAnnotation -> {
-                                mappingMethod.addTypeAnnotation( nullabilityAnnotation );
-                                mapper.addExtraImportedType( nullabilityAnnotation );
-                            } );
-                }
-                for ( Parameter parameter : mappingMethod.getParameters() ) {
-                    if ( scopeForTypes.needsAnnotation( parameter.getNullability() ) ) {
-                        createNullabilityAnnotationType( context, parameter.getNullability() )
+                while ( returnTypeNullability != null ) {
+                    if ( scopeForTypes.needsAnnotation( returnTypeNullability ) ) {
+                        createNullabilityAnnotationType( context, returnTypeNullability )
                                 .ifPresent( nullabilityAnnotation -> {
-                                    parameter.setTypeAnnotation( nullabilityAnnotation );
+                                    mappingMethod.addTypeAnnotation( nullabilityAnnotation );
                                     mapper.addExtraImportedType( nullabilityAnnotation );
                                 } );
+                    }
+                    else {
+                        mappingMethod.addTypeAnnotation( null );
+                    }
+                    returnTypeNullability = returnTypeNullability.getComponentTypeNullability();
+                }
+                for ( Parameter parameter : mappingMethod.getParameters() ) {
+                    Nullability parameterNullability = parameter.getNullability();
+                    while ( parameterNullability != null ) {
+                        if ( scopeForTypes.needsAnnotation( parameterNullability ) ) {
+                            createNullabilityAnnotationType( context, parameterNullability )
+                                    .ifPresent( nullabilityAnnotation -> {
+                                        parameter.addTypeAnnotation( nullabilityAnnotation );
+                                        mapper.addExtraImportedType( nullabilityAnnotation );
+                                    } );
+                        }
+                        else {
+                            parameter.addTypeAnnotation( null );
+                        }
+                        parameterNullability = parameterNullability.getComponentTypeNullability();
                     }
                 }
             }

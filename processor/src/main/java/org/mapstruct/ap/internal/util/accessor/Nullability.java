@@ -141,9 +141,14 @@ public class Nullability {
 
     public Nullability withIsReturnDefault(boolean isReturnDefault) {
         if ( isReturnDefault && this.state == NullabilityState.NULLABLE ) {
-            return new Nullability( NullabilityState.NON_NULL, NullabilityCause.RETURN_DEFAULT_VALUE );
+            return new Nullability( NullabilityState.NON_NULL, NullabilityCause.RETURN_DEFAULT_VALUE,
+                    componentTypeNullability );
         }
         return this;
+    }
+
+    public Nullability knownNotNull() {
+        return new Nullability( NullabilityState.NON_NULL, NullabilityCause.HARDCODED, componentTypeNullability );
     }
 
     public Nullability getComponentTypeNullability() {
