@@ -110,16 +110,19 @@ public class NullabilityResolver {
      * For setter parameters ({@link VariableElement}), this checks the parameter type's annotations.
      * For fields ({@link VariableElement}), this checks the field type's annotations.
      * <p>
-     * If no direct annotation is found, the method walks the enclosing element chain looking
-     * for a method-level {@code @NullMarked} / {@code @NullUnmarked}. If nothing is found there
-     * either, {@code resolveNullMarked} is consulted on the enclosing element — when it reports a
-     * {@code @NullMarked} scope, unannotated types are effectively {@code @NonNull}.
+     * If no direct annotation is found, {@code resolveElementScope} walks the enclosing element
+     * chain (declaring type, enclosing types, up to the package) for a
+     * {@code @NullMarked} / {@code @NullUnmarked} scope — within a {@code @NullMarked} scope
+     * unannotated types are effectively {@code @NonNull}, within a {@code @NullUnmarked} scope
+     * effectively {@code @Nullable}.
      * <p>
-     * When this resolver is disabled, {@link JSpecifyNullability#UNKNOWN} is returned without any
-     * inspection.
+     * When this resolver is disabled, direct annotations are ignored and a
+     * {@code (NULLABLE, DEFAULT)} nullability is returned (with a pessimistically-nullable
+     * component chain for array types).
      *
      * @param element the accessor element to inspect (getter method, setter parameter, or field);
-     *                may be {@code null} in which case {@link JSpecifyNullability#UNKNOWN} is returned
+     *                may be {@code null} in which case a {@code (NULLABLE, DEFAULT)} nullability
+     *                is returned
      * @return the nullability state
      */
     private Nullability getNullability(Element element) {
@@ -196,14 +199,14 @@ public class NullabilityResolver {
     }
 
     /**
-     * Walks from {@code element} up to (but not including) its declaring {@link TypeElement},
-     * checking for {@code @NullMarked} / {@code @NullUnmarked} on intermediate elements
-     * (e.g. the enclosing method of a parameter, or the element itself for a field / getter).
+     * Walks from {@code element} up the enclosing element chain (e.g. the enclosing method of a
+     * parameter, the element itself for a field / getter, the declaring types, up to the package),
+     * checking each for a {@code @NullMarked} / {@code @NullUnmarked} scope annotation. Results are
+     * cached in {@link #scopeCache}.
      *
-     * @return {@link JspecifyNullabilityScope#NULL_MARKED} when a closer {@code @NullMarked} is found,
-     * {@link JspecifyNullabilityScope#NULL_UNMARKED} when a closer {@code @NullUnmarked} is found, or
-     * {@link JspecifyNullabilityScope#UNKNOWN} when neither is present before the declaring type is
-     * reached (leaving the bean-type scope to decide).
+     * @return {@link JspecifyNullabilityScope#NULL_MARKED} when the nearest {@code @NullMarked} is found,
+     * {@link JspecifyNullabilityScope#NULL_UNMARKED} when a nearest {@code @NullUnmarked} is found, or
+     * {@link JspecifyNullabilityScope#UNKNOWN} when neither is present in the chain
      */
     private JspecifyNullabilityScope resolveElementScope(Element element) {
         List<Element> visited = new ArrayList<>();
