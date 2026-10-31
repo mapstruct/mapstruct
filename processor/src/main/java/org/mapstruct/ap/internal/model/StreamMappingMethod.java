@@ -17,8 +17,10 @@ import org.mapstruct.ap.internal.model.assignment.Java8FunctionWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -39,8 +41,9 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
-        protected Type getElementType(Type parameterType) {
-            return StreamMappingMethod.getElementType( parameterType );
+        protected TypeInstance getElementType(TypeInstance parameterType) {
+            return TypeInstance.of( StreamMappingMethod.getElementType( parameterType.getType() ),
+                    Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
         }
 
         @Override

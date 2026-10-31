@@ -75,8 +75,12 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         Type sourceParameterType = parameter.getType();
         Type resultType = method.getResultType();
 
-        Type sourceElementType = getElementType( sourceParameterType );
-        Type targetElementType = getElementType( resultType );
+        TypeInstance sourceElementTypeInstance = getElementType( TypeInstance.of( sourceParameterType,
+                parameter.getNullability() ) );
+        Type sourceElementType = sourceElementTypeInstance.getType();
+        TypeInstance targetElementTypeInstance = getElementType( TypeInstance.of( resultType,
+                method.getResultNullability() ) );
+        Type targetElementType = targetElementTypeInstance.getType();
 
         String loopVariableName =
             Strings.getSafeVariableName( sourceElementType.getName(), method.getParameterNames() );
@@ -86,10 +90,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             sourceElementType,
             new HashSet<>(),
             errorMessagePart,
-            Nullability.getPrimitiveNullability( sourceElementType.getTypeMirror() )
-                .orElse(  // We do not support generic annotations yet. So pessimistic nullable
-                        Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE )
-                )
+            sourceElementTypeInstance.getNullability()
         );
 
         SelectionCriteria criteria = SelectionCriteria.forMappingMethods( selectionParameters,
@@ -106,11 +107,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             sourceRHS,
             positionHint,
             () -> forge( sourceRHS, sourceElementType,
-                    TypeInstance.of( targetElementType,
-                            Nullability.getPrimitiveNullability( targetElementType.getTypeMirror() )
-                                    .orElse( // We do not support generic annotations yet. So pessimistic nullable
-                                            Nullability.hardcodedNullability(
-                                                    Nullability.NullabilityState.NULLABLE ) ) ),
+                    targetElementTypeInstance,
                     Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE )
         );
 
@@ -200,7 +197,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                                                   List<LifecycleCallbackMethodReference> afterMappingMethods,
         SelectionParameters selectionParameters, PresenceCheck sourceParameterPresenceCheck);
 
-    protected abstract Type getElementType(Type parameterType);
+    protected abstract TypeInstance getElementType(TypeInstance parameterType);
 
     protected abstract Assignment getWrapper(Assignment assignment, Method method);
 
