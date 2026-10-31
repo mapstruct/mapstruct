@@ -20,8 +20,6 @@ import org.mapstruct.ap.internal.util.accessor.NullabilityResolver;
 
 import static org.mapstruct.ap.internal.util.accessor.JSpecifyConstants.NON_NULL_FQN;
 import static org.mapstruct.ap.internal.util.accessor.JSpecifyConstants.NULLABLE_FQN;
-import static org.mapstruct.ap.internal.util.accessor.JSpecifyConstants.NULL_MARKED_FQN;
-import static org.mapstruct.ap.internal.util.accessor.JSpecifyConstants.NULL_UNMARKED_FQN;
 
 public class NullabilityAnnotationProcessor implements ModelElementProcessor<Mapper, Mapper> {
 
@@ -81,9 +79,7 @@ public class NullabilityAnnotationProcessor implements ModelElementProcessor<Map
     private static Annotation createNullabilityScopeAnnotation(ProcessorContext context,
                                                                NullabilityResolver.JspecifyNullabilityScope
                                                                        jspecifyNullabilityScope) {
-        return new Annotation( context.getTypeFactory().getType(
-                jspecifyNullabilityScope == NullabilityResolver.JspecifyNullabilityScope.NULL_MARKED
-                        ? NULL_MARKED_FQN : NULL_UNMARKED_FQN ) );
+        return new Annotation( context.getTypeFactory().getType( jspecifyNullabilityScope.fqn() ) );
     }
 
     private static Optional<Type> createNullabilityAnnotationType(ProcessorContext context, Nullability nullability) {
