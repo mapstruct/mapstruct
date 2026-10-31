@@ -359,6 +359,11 @@ public class ForgedMethod implements Method {
     }
 
     @Override
+    public Nullability getResultNullability() {
+        return mappingTargetParameter != null ? mappingTargetParameter.getNullability() : returnTypeNullability;
+    }
+
+    @Override
     public List<String> getParameterNames() {
         List<String> parameterNames = new ArrayList<>();
         for ( Parameter parameter : getParameters() ) {

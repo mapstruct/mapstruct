@@ -408,6 +408,11 @@ public class SourceMethod implements Method {
     }
 
     @Override
+    public Nullability getResultNullability() {
+        return mappingTargetParameter != null ? mappingTargetParameter.getNullability() : nullability;
+    }
+
+    @Override
     public Type getReturnType() {
         return returnType;
     }

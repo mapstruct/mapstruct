@@ -22,6 +22,7 @@ import org.mapstruct.ap.internal.model.source.MappingMethodOptions;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -237,6 +238,11 @@ public abstract class BuiltInMethod implements Method {
     @Override
     public Type getResultType() {
         return getReturnType();
+    }
+
+    @Override
+    public Nullability getResultNullability() {
+        return getReturnTypeNullability();
     }
 
     @Override

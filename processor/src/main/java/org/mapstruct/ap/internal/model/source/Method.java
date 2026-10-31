@@ -128,6 +128,14 @@ public interface Method {
     Type getResultType();
 
     /**
+     * Returns the {@link Nullability} of the result. The result is defined as the type of the parameter designated with
+     * {@link org.mapstruct.MappingTarget}, or in absence the return type.
+     *
+     * @return result {@link Nullability}
+     */
+    Nullability getResultNullability();
+
+    /**
      *
      * @return the names of the parameters of this mapping method
      */
