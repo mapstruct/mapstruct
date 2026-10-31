@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
@@ -188,18 +187,7 @@ public class NullabilityResolver {
                 scope = JspecifyNullabilityScope.UNKNOWN;
                 return scope;
             }
-            // Walk enclosing elements up to the declaring type to honor method-level
-            // @NullMarked / @NullUnmarked (e.g. a @NullUnmarked method inside a @NullMarked class
-            // must revert unannotated types back to unknown nullability).
             scope = resolveElementScope( element );
-            if ( scope != JspecifyNullabilityScope.UNKNOWN ) {
-                return scope;
-            }
-
-            // No element-level scope — consult the enclosing bean type's @NullMarked scope.
-            if ( resolveNullMarked( element.getEnclosingElement() ) == JspecifyNullabilityScope.NULL_MARKED ) {
-                scope = JspecifyNullabilityScope.NULL_MARKED;
-            }
             return scope;
         }
     }
@@ -242,7 +230,7 @@ public class NullabilityResolver {
      */
     private static JspecifyNullabilityScope resolveElementScope(Element element) {
         Element current = element;
-        while ( current != null && !isTypeElement( current ) ) {
+        while ( current != null ) {
             JspecifyNullabilityScope scope = findScopeAnnotation( current );
             if ( scope != JspecifyNullabilityScope.UNKNOWN ) {
                 return scope;
@@ -252,23 +240,18 @@ public class NullabilityResolver {
         return JspecifyNullabilityScope.UNKNOWN;
     }
 
-    private static boolean isTypeElement(Element element) {
-        ElementKind kind = element.getKind();
-        return kind.isClass() || kind.isInterface();
-    }
-
     public JspecifyNullabilityScope getPackageNullabilityScope(PackageElement packageElement) {
         if ( !jSpecifyEnabled ) {
             return JspecifyNullabilityScope.UNKNOWN;
         }
-        return resolveNullMarked( packageElement );
+        return resolveElementScope( packageElement );
     }
 
     public JspecifyNullabilityScope getParentTypeNullabilityScope(TypeElement typeElement) {
         if ( !jSpecifyEnabled ) {
             return JspecifyNullabilityScope.UNKNOWN;
         }
-        return resolveNullMarked( typeElement );
+        return resolveElementScope( typeElement );
     }
 
     public JspecifyNullabilityScope getMethodNullabilityScope(ExecutableElement executableElement) {
@@ -371,18 +354,4 @@ public class NullabilityResolver {
         return JSpecifyNullability.UNKNOWN;
     }
 
-    public static JspecifyNullabilityScope resolveNullMarked(Element typeElement) {
-        if ( typeElement == null ) {
-            return JspecifyNullabilityScope.UNKNOWN;
-        }
-        Element current = typeElement;
-        while ( current != null ) {
-            JspecifyNullabilityScope jspecifyNullabilityScope = findScopeAnnotation( current );
-            if (  jspecifyNullabilityScope != JspecifyNullabilityScope.UNKNOWN ) {
-                return jspecifyNullabilityScope;
-            }
-            current = current.getEnclosingElement();
-        }
-        return JspecifyNullabilityScope.UNKNOWN;
-    }
 }
