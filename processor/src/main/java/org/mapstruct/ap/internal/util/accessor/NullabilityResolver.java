@@ -82,7 +82,7 @@ public class NullabilityResolver {
         return jSpecifyEnabled;
     }
 
-    public Nullability getMethodeReturnTypeNullability(ExecutableElement executableElement) {
+    public Nullability getMethodReturnTypeNullability(ExecutableElement executableElement) {
         TypeMirror returnType = executableElement.getReturnType();
         TypeKind returnTypeKind = returnType.getKind();
         if ( returnTypeKind == TypeKind.VOID ) {

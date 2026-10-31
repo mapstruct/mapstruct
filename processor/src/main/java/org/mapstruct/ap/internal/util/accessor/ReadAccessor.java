@@ -42,7 +42,7 @@ public interface ReadAccessor extends Accessor {
     static ReadAccessor fromGetter(ExecutableElement element, TypeMirror accessedType,
                                    NullabilityResolver nullabilityResolver) {
         return new ReadDelegateAccessor( new ElementAccessor( element, accessedType, AccessorType.GETTER,
-                nullabilityResolver.getMethodeReturnTypeNullability( element )) ) {
+                nullabilityResolver.getMethodReturnTypeNullability( element )) ) {
             @Override
             public String getReadValueSource() {
                 return getSimpleName() + "()";

@@ -355,7 +355,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setPrototypeMethods( prototypeMethods )
             .setContextProvidedMethods( contextProvidedMethods )
             .setVerboseLogging( options.isVerbose() )
-            .setNullability( nullabilityResolver.getMethodeReturnTypeNullability( method ) )
+            .setNullability( nullabilityResolver.getMethodReturnTypeNullability( method ) )
             .build();
     }
 
@@ -413,7 +413,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             .setTypeFactory( typeFactory )
             .setConditionOptions( getConditionOptions( method, parameters ) )
             .setVerboseLogging( options.isVerbose() )
-            .setNullability( nullabilityResolver.getMethodeReturnTypeNullability( method ) )
+            .setNullability( nullabilityResolver.getMethodReturnTypeNullability( method ) )
             .build();
     }
 
