@@ -20,8 +20,6 @@ import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import org.mapstruct.ap.internal.model.common.Type;
-
 /**
  * Resolver for JSpecify nullness annotations on elements, used to decide whether a null
  * check is required for a source-to-target property mapping.
@@ -58,16 +56,16 @@ public class NullabilityResolver {
          */
         UNKNOWN;
 
-        public Nullability toNull(Nullability componentTypeNullability) {
+        public Nullability toNullability(Nullability componentTypeNullability) {
             if ( this == NON_NULL ) {
-                return new  Nullability( Nullability.NullabilityState.NON_NULL,
+                return new Nullability( Nullability.NullabilityState.NON_NULL,
                         Nullability.NullabilityCause.JSPECIFY, componentTypeNullability );
             }
             if ( this == NULLABLE ) {
-                return new  Nullability( Nullability.NullabilityState.NULLABLE,
+                return new Nullability( Nullability.NullabilityState.NULLABLE,
                         Nullability.NullabilityCause.JSPECIFY, componentTypeNullability );
             }
-            return new  Nullability( Nullability.NullabilityState.NULLABLE,
+            return new Nullability( Nullability.NullabilityState.NULLABLE,
                     Nullability.NullabilityCause.DEFAULT, componentTypeNullability );
         }
     }
@@ -151,7 +149,7 @@ public class NullabilityResolver {
             if ( jSpecifyEnabled ) {
                 JSpecifyNullability result = getNullabilityFromAnnotationMirrors( typeMirror.getAnnotationMirrors() );
                 if ( result != JSpecifyNullability.UNKNOWN ) {
-                    return result.toNull( componentTypeNullability );
+                    return result.toNullability( componentTypeNullability );
                 }
             }
         }
@@ -165,11 +163,11 @@ public class NullabilityResolver {
         // surface JSpecify TYPE_USE annotations on the element rather than the type mirror.
         JSpecifyNullability fromElement = getNullabilityFromAnnotationMirrors( element.getAnnotationMirrors() );
         if ( fromElement != JSpecifyNullability.UNKNOWN ) {
-            return fromElement.toNull( componentTypeNullability );
+            return fromElement.toNullability( componentTypeNullability );
         }
 
         // Check if we are in JSpecify scope
-        return resolveElementScope( element ).toJSpecifyNullability().toNull( componentTypeNullability );
+        return resolveElementScope( element ).toJSpecifyNullability().toNullability( componentTypeNullability );
     }
 
     private Nullability getComponentTypeJSpecifyNullability(TypeMirror typeMirror, Element outerElement) {
@@ -187,7 +185,7 @@ public class NullabilityResolver {
                     nullabilityFromAnnotationMirrors = resolveElementScope( outerElement ).toJSpecifyNullability();
                 }
                 componentTypeNullability = nullabilityFromAnnotationMirrors
-                        .toNull( componentTypeNullability );
+                        .toNullability( componentTypeNullability );
             }
             else {
                 componentTypeNullability = new Nullability( Nullability.NullabilityState.NULLABLE,
