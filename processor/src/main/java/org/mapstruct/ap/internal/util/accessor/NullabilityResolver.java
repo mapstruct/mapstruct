@@ -36,7 +36,7 @@ import javax.lang.model.type.TypeMirror;
  */
 public class NullabilityResolver {
 
-     /**
+    /**
      * Represents the effective nullability of a source or target element.
      */
     public enum JSpecifyNullability {
@@ -263,7 +263,7 @@ public class NullabilityResolver {
             if ( this == JspecifyNullabilityScope.NULL_UNMARKED ) {
                 return JSpecifyNullability.NULLABLE;
             }
-            return  JSpecifyNullability.UNKNOWN;
+            return JSpecifyNullability.UNKNOWN;
         }
 
         public boolean needsScopeAnnotation(JspecifyNullabilityScope innerScope) {
@@ -271,7 +271,7 @@ public class NullabilityResolver {
                 default:
                 case UNKNOWN:
                 case NULL_UNMARKED:
-                    return innerScope ==  NULL_MARKED;
+                    return innerScope == NULL_MARKED;
                 case NULL_MARKED:
                     return innerScope == NULL_UNMARKED;
             }
