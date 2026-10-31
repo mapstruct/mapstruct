@@ -23,7 +23,6 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
-import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
