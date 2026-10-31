@@ -39,22 +39,33 @@ public class NullabilityResolver {
     /**
      * Represents the effective nullability of a source or target element.
      */
-    public enum JSpecifyNullability {
+    public enum JSpecifyNullability implements Fqned {
         /**
          * The element is effectively non-null — either directly annotated {@code @NonNull},
          * or within a {@code @NullMarked} scope without a closer {@code @NullUnmarked} or
          * {@code @Nullable} override.
          */
-        NON_NULL,
+        NON_NULL( JSpecifyConstants.NON_NULL_FQN ),
         /**
          * The element is explicitly annotated {@code @Nullable}.
          */
-        NULLABLE,
+        NULLABLE( JSpecifyConstants.NULLABLE_FQN ),
         /**
          * Nullability is unspecified — no annotation applies and the element is not within
          * an applicable {@code @NullMarked} scope (or JSpecify support is disabled).
          */
-        UNKNOWN;
+        UNKNOWN( null );
+
+        private final String fqn;
+
+        JSpecifyNullability( String fqn ) {
+            this.fqn = fqn;
+        }
+
+        @Override
+        public String fqn() {
+            return fqn;
+        }
 
         public Nullability toNullability(Nullability componentTypeNullability) {
             if ( this == NON_NULL ) {
@@ -254,10 +265,21 @@ public class NullabilityResolver {
         return resolveElementScope( executableElement );
     }
 
-    public enum JspecifyNullabilityScope {
-        UNKNOWN,
-        NULL_MARKED,
-        NULL_UNMARKED;
+    public enum JspecifyNullabilityScope implements Fqned {
+        UNKNOWN( null ),
+        NULL_MARKED( JSpecifyConstants.NULL_MARKED_FQN ),
+        NULL_UNMARKED( JSpecifyConstants.NULL_UNMARKED_FQN );
+
+        private final String fqn;
+
+        JspecifyNullabilityScope( String fqn ) {
+            this.fqn = fqn;
+        }
+
+        @Override
+        public String fqn() {
+            return fqn;
+        }
 
         private JSpecifyNullability toJSpecifyNullability() {
             if ( this == JspecifyNullabilityScope.NULL_MARKED ) {
@@ -296,55 +318,66 @@ public class NullabilityResolver {
         }
     }
 
-    private static JspecifyNullabilityScope findScopeAnnotation(Element element) {
-        boolean nullMarked = false;
-        boolean nullUnmarked = false;
-        for ( AnnotationMirror mirror : element.getAnnotationMirrors() ) {
+    /**
+     * Determines which of two {@link Fqned} enum constants is present exclusively in the given
+     * annotation mirrors, matched against their fully qualified annotation names. Both constants
+     * being present cancels them out (e.g. {@code @NonNull} + {@code @Nullable}, or
+     * {@code @NullMarked} + {@code @NullUnmarked}).
+     *
+     * @param exclusive1 the constant returned when its annotation is the only one of the pair
+     *                   present
+     * @param exclusive2 the constant returned when its annotation is the only one of the pair
+     *                   present
+     * @param neither    the constant returned when neither, or both, annotations are present
+     * @param mirrors    the annotation mirrors to inspect
+     * @return {@code exclusive1}, {@code exclusive2}, or {@code neither}
+     */
+    private static <E extends Enum<E> & Fqned> E exclusive(
+            E exclusive1, E exclusive2, E neither, List<? extends AnnotationMirror> mirrors ) {
+        boolean exclusive1Present = false;
+        boolean exclusive2Present = false;
+        for ( AnnotationMirror mirror : mirrors ) {
             Element annotationElement = mirror.getAnnotationType().asElement();
             if ( !( annotationElement instanceof TypeElement ) ) {
-                // Defensive: unresolved annotations (e.g. ErrorType during incremental
-                // builds) can produce a non-TypeElement. Skip instead of crashing.
+                // Defensive: unresolved annotations (e.g. ErrorType during incremental builds) can
+                // produce a non-TypeElement. Skip instead of failing with a CCE.
                 continue;
             }
             String fqn = ( (TypeElement) annotationElement ).getQualifiedName().toString();
-            if ( JSpecifyConstants.NULL_MARKED_FQN.equals( fqn ) ) {
-                nullMarked = true;
+            if ( exclusive1.fqn().equals( fqn ) ) {
+                exclusive1Present = true;
             }
-            if ( JSpecifyConstants.NULL_UNMARKED_FQN.equals( fqn ) ) {
-                nullUnmarked = true;
+            else if ( exclusive2.fqn().equals( fqn ) ) {
+                exclusive2Present = true;
             }
         }
-        if ( nullMarked != nullUnmarked ) {
-            // If only one is set
-            return nullMarked ? JspecifyNullabilityScope.NULL_MARKED : JspecifyNullabilityScope.NULL_UNMARKED;
+        if ( exclusive1Present != exclusive2Present ) {
+            return exclusive1Present ? exclusive1 : exclusive2;
         }
-        return JspecifyNullabilityScope.UNKNOWN;
+        return neither;
     }
 
-    private static JSpecifyNullability getNullabilityFromAnnotationMirrors(
-        List<? extends AnnotationMirror> annotationMirrors) {
-        boolean nonNull = false;
-        boolean nullable = false;
-        for ( AnnotationMirror mirror : annotationMirrors ) {
-            Element annotationElement = mirror.getAnnotationType().asElement();
-            if ( !( annotationElement instanceof TypeElement ) ) {
-                // Defensive: during incremental builds the annotation may be an ErrorType
-                // whose element is not a TypeElement. Skip instead of failing with a CCE.
-                continue;
-            }
-            String fqn = ( (TypeElement) annotationElement ).getQualifiedName().toString();
-            // No direct return, because @NonNull and @Nullable can be used together and cancel each other out
-            if ( JSpecifyConstants.NON_NULL_FQN.equals( fqn ) ) {
-                nonNull = true;
-            }
-            if ( JSpecifyConstants.NULLABLE_FQN.equals( fqn ) ) {
-                nullable = true;
-            }
-        }
-        if ( nonNull != nullable ) {
-            return nonNull ? JSpecifyNullability.NON_NULL : JSpecifyNullability.NULLABLE;
-        }
-        return JSpecifyNullability.UNKNOWN;
+    private static JspecifyNullabilityScope findScopeAnnotation(Element element) {
+        return exclusive( JspecifyNullabilityScope.NULL_MARKED, JspecifyNullabilityScope.NULL_UNMARKED,
+                JspecifyNullabilityScope.UNKNOWN, element.getAnnotationMirrors() );
+    }
+
+    private static JSpecifyNullability getNullabilityFromAnnotationMirrors(List<? extends AnnotationMirror> mirrors) {
+        return exclusive( JSpecifyNullability.NON_NULL, JSpecifyNullability.NULLABLE,
+                JSpecifyNullability.UNKNOWN, mirrors );
+    }
+
+    /**
+     * Contract for enums that carry the fully qualified annotation name of their annotated state,
+     * for use with {@link #exclusive}.
+     */
+    private interface Fqned {
+
+        /**
+         * @return the fully qualified name of the annotation this constant represents, or
+         *         {@code null} for constants without an annotation (e.g. {@code UNKNOWN})
+         */
+        String fqn();
     }
 
 }
