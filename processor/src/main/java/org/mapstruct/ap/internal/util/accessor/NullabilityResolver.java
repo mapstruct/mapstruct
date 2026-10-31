@@ -124,7 +124,7 @@ public class NullabilityResolver {
      */
     private Nullability getNullability(Element element) {
         if ( element == null ) {
-           return new Nullability( Nullability.NullabilityState.NULLABLE, Nullability.NullabilityCause.DEFAULT, null );
+            return new Nullability( Nullability.NullabilityState.NULLABLE, Nullability.NullabilityCause.DEFAULT, null );
         }
 
         // JSpecify annotations are TYPE_USE annotations.
