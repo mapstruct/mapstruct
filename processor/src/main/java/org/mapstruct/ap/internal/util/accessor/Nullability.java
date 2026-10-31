@@ -40,10 +40,16 @@ public class Nullability {
 
     private final NullabilityState state;
     private final NullabilityCause cause;
+    private final Nullability componentTypeNullability;
 
-    Nullability(NullabilityState state, NullabilityCause cause) {
+    private Nullability(NullabilityState state, NullabilityCause cause) {
+        this( state, cause, null );
+    }
+
+    Nullability(NullabilityState state, NullabilityCause cause, Nullability componentTypeNullability) {
         this.state = state;
         this.cause = cause;
+        this.componentTypeNullability = componentTypeNullability;
     }
 
     public static Nullability hardcodedNullability(NullabilityState state) {
@@ -138,6 +144,10 @@ public class Nullability {
             return new Nullability( NullabilityState.NON_NULL, NullabilityCause.RETURN_DEFAULT_VALUE );
         }
         return this;
+    }
+
+    public Nullability getComponentTypeNullability() {
+        return componentTypeNullability;
     }
 
     @Override
