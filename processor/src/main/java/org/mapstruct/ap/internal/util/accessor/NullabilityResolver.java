@@ -211,13 +211,14 @@ public class NullabilityResolver {
      * reached (leaving the bean-type scope to decide).
      */
     private JspecifyNullabilityScope resolveElementScope(Element element) {
-        JspecifyNullabilityScope cached = scopeCache.get( element );
-        if ( cached != null ) {
-            return cached;
-        }
         List<Element> visited = new ArrayList<>();
         Element current = element;
         while ( current != null ) {
+            JspecifyNullabilityScope cached = scopeCache.get( current );
+            if ( cached != null ) {
+                fillScopeCache( visited, cached );
+                return cached;
+            }
             visited.add( current );
             JspecifyNullabilityScope scope = findScopeAnnotation( current );
             if ( scope != JspecifyNullabilityScope.UNKNOWN ) {
