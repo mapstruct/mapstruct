@@ -243,7 +243,7 @@ public class ForgedMethod implements Method {
         this.thrownTypes = forgedMethod.thrownTypes;
         this.history = forgedMethod.history;
 
-        this.sourceParameters = Parameter.getSourceParameters( parameters );
+        this.sourceParameters = existingMappingMethod.getSourceParameters();
         this.contextParameters = Parameter.getContextParameters( parameters );
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
         this.mappingReferences = forgedMethod.mappingReferences;
