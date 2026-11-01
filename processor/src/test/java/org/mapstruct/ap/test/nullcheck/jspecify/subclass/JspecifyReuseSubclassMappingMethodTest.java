@@ -5,14 +5,13 @@
  */
 package org.mapstruct.ap.test.nullcheck.jspecify.subclass;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
-
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJSpecify;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithJSpecify
 public class JspecifyReuseSubclassMappingMethodTest {

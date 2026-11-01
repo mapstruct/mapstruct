@@ -14,7 +14,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface ReuseMapper {
 
-    ReuseMapper INSTANCE = Mappers.getMapper(ReuseMapper.class);
+    ReuseMapper INSTANCE = Mappers.getMapper( ReuseMapper.class );
 
     @BeanMapping(subclassExhaustiveStrategy = SubclassExhaustiveStrategy.RUNTIME_EXCEPTION)
     @SubclassMapping(source = Source1.class, target = Target1.class)
