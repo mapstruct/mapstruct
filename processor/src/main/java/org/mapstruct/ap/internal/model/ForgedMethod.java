@@ -236,10 +236,10 @@ public class ForgedMethod implements Method {
      * @param name the new name
      * @param forgedMethod existing forge method
      */
-    public ForgedMethod(String name, ForgedMethod forgedMethod) {
-        this.parameters = forgedMethod.parameters;
+    public ForgedMethod(String name, ForgedMethod forgedMethod, MappingMethod existingMappingMethod) {
+        this.parameters = existingMappingMethod.getParameters();
         this.returnType = forgedMethod.returnType;
-        this.returnTypeNullability = forgedMethod.returnTypeNullability;
+        this.returnTypeNullability = existingMappingMethod.getReturnTypeNullability();
         this.thrownTypes = forgedMethod.thrownTypes;
         this.history = forgedMethod.history;
 
