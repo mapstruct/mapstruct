@@ -1,0 +1,383 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.mapstruct.ap.internal.util.accessor;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+
+/**
+ * Resolver for JSpecify nullness annotations on elements, used to decide whether a null
+ * check is required for a source-to-target property mapping.
+ * <p>
+ * A single instance is created per annotation-processor run and carries the
+ * {@link #jSpecifyEnabled} flag derived from the {@code mapstruct.disableJSpecify} option. When
+ * disabled, the {@code get*Nullability} methods still return
+ * {@link Nullability#voidNullability()} and {@link Nullability#getPrimitiveNullability(TypeMirror)}
+ * where applicable, but fall back to {@code (NULLABLE, DEFAULT)} otherwise; the {@code get*Scope}
+ * methods return {@link JspecifyNullabilityScope#UNKNOWN}. This causes downstream callers to fall
+ * back to the pre-JSpecify {@code NullValueCheckStrategy}-based behavior.
+ *
+ * @author Filip Hrisafov
+ */
+public class NullabilityResolver {
+
+    /**
+     * Represents the effective nullability of a source or target element.
+     */
+    public enum JSpecifyNullability implements Fqned {
+        /**
+         * The element is effectively non-null — either directly annotated {@code @NonNull},
+         * or within a {@code @NullMarked} scope without a closer {@code @NullUnmarked} or
+         * {@code @Nullable} override.
+         */
+        NON_NULL( JSpecifyConstants.NON_NULL_FQN ),
+        /**
+         * The element is explicitly annotated {@code @Nullable}.
+         */
+        NULLABLE( JSpecifyConstants.NULLABLE_FQN ),
+        /**
+         * Nullability is unspecified — no annotation applies and the element is not within
+         * an applicable {@code @NullMarked} scope (or JSpecify support is disabled).
+         */
+        UNKNOWN( null );
+
+        private final String fqn;
+
+        JSpecifyNullability( String fqn ) {
+            this.fqn = fqn;
+        }
+
+        @Override
+        public String fqn() {
+            return fqn;
+        }
+
+        public Nullability toNullability(Nullability componentTypeNullability) {
+            if ( this == NON_NULL ) {
+                return new Nullability( Nullability.NullabilityState.NON_NULL,
+                        Nullability.NullabilityCause.JSPECIFY, componentTypeNullability );
+            }
+            if ( this == NULLABLE ) {
+                return new Nullability( Nullability.NullabilityState.NULLABLE,
+                        Nullability.NullabilityCause.JSPECIFY, componentTypeNullability );
+            }
+            return new Nullability( Nullability.NullabilityState.NULLABLE,
+                    Nullability.NullabilityCause.DEFAULT, componentTypeNullability );
+        }
+    }
+
+    private final Map<Element, JspecifyNullabilityScope> scopeCache = new HashMap<>();
+
+    private final boolean jSpecifyEnabled;
+
+    public NullabilityResolver(boolean jSpecifyEnabled) {
+        this.jSpecifyEnabled = jSpecifyEnabled;
+    }
+
+    public boolean isJSpecifyEnabled() {
+        return jSpecifyEnabled;
+    }
+
+    public Nullability getMethodReturnTypeNullability(ExecutableElement executableElement) {
+        TypeMirror returnType = executableElement.getReturnType();
+        TypeKind returnTypeKind = returnType.getKind();
+        if ( returnTypeKind == TypeKind.VOID ) {
+            return Nullability.voidNullability();
+        }
+        return Nullability.getPrimitiveNullability( returnType )
+                .orElseGet( () -> getNullability( executableElement ) );
+    }
+
+    public Nullability getParameterNullability(VariableElement variableElement) {
+        return Nullability.getPrimitiveNullability( variableElement.asType() )
+                .orElseGet( () -> getNullability( variableElement ) );
+    }
+
+    public Nullability getFieldNullability(VariableElement field) {
+        return Nullability.getPrimitiveNullability( field.asType() )
+                .orElseGet( () -> getNullability( field ) );
+    }
+
+    /**
+     * Determines the nullability of an accessor element based on JSpecify annotations.
+     * <p>
+     * For getter methods ({@link ExecutableElement}), this checks the return type's annotations
+     * since JSpecify annotations are {@code TYPE_USE} annotations placed on the return type.
+     * For setter parameters ({@link VariableElement}), this checks the parameter type's annotations.
+     * For fields ({@link VariableElement}), this checks the field type's annotations.
+     * <p>
+     * If no direct annotation is found, {@code resolveElementScope} walks the enclosing element
+     * chain (declaring type, enclosing types, up to the package) for a
+     * {@code @NullMarked} / {@code @NullUnmarked} scope — within a {@code @NullMarked} scope
+     * unannotated types are effectively {@code @NonNull}, within a {@code @NullUnmarked} scope
+     * effectively {@code @Nullable}.
+     * <p>
+     * When this resolver is disabled, direct annotations are ignored and a
+     * {@code (NULLABLE, DEFAULT)} nullability is returned (with a pessimistically-nullable
+     * component chain for array types).
+     *
+     * @param element the accessor element to inspect (getter method, setter parameter, or field);
+     *                may be {@code null} in which case a {@code (NULLABLE, DEFAULT)} nullability
+     *                is returned
+     * @return the nullability state
+     */
+    private Nullability getNullability(Element element) {
+        if ( element == null ) {
+            return new Nullability( Nullability.NullabilityState.NULLABLE, Nullability.NullabilityCause.DEFAULT, null );
+        }
+
+        // JSpecify annotations are TYPE_USE annotations.
+        // For getters: annotation is on the return type
+        // For setter parameters / fields: annotation is on the variable type
+        TypeMirror typeMirror;
+        if ( element instanceof ExecutableElement ) {
+            // Getter method — check the return type annotations
+            typeMirror = ( (ExecutableElement) element ).getReturnType();
+        }
+        else if ( element instanceof VariableElement ) {
+            // Setter parameter or field — check the variable type annotations
+            typeMirror = element.asType();
+        }
+        else {
+            throw new IllegalArgumentException( "Unknown element type: " + element );
+        }
+
+        Nullability componentTypeNullability = null;
+        if ( typeMirror != null ) {
+            componentTypeNullability = getComponentTypeJSpecifyNullability( typeMirror, element );
+            if ( jSpecifyEnabled ) {
+                JSpecifyNullability result = getNullabilityFromAnnotationMirrors( typeMirror.getAnnotationMirrors() );
+                if ( result != JSpecifyNullability.UNKNOWN ) {
+                    return result.toNullability( componentTypeNullability );
+                }
+            }
+        }
+
+        if ( !jSpecifyEnabled ) {
+            return new Nullability( Nullability.NullabilityState.NULLABLE, Nullability.NullabilityCause.DEFAULT,
+                    componentTypeNullability );
+        }
+
+        // Fallback: check declaration-level annotation mirrors. Some compilers (notably ECJ)
+        // surface JSpecify TYPE_USE annotations on the element rather than the type mirror.
+        JSpecifyNullability fromElement = getNullabilityFromAnnotationMirrors( element.getAnnotationMirrors() );
+        if ( fromElement != JSpecifyNullability.UNKNOWN ) {
+            return fromElement.toNullability( componentTypeNullability );
+        }
+
+        // Check if we are in JSpecify scope
+        return resolveElementScope( element ).toJSpecifyNullability().toNullability( componentTypeNullability );
+    }
+
+    private Nullability getComponentTypeJSpecifyNullability(TypeMirror typeMirror, Element outerElement) {
+        Nullability componentTypeNullability = null;
+        while ( typeMirror.getKind() == TypeKind.ARRAY ) {
+            typeMirror = ( (ArrayType) typeMirror ).getComponentType();
+            Optional<Nullability> primitiveNullability = Nullability.getPrimitiveNullability( typeMirror );
+            if ( primitiveNullability.isPresent() ) {
+                componentTypeNullability = primitiveNullability.get();
+            }
+            else if ( jSpecifyEnabled ) {
+                JSpecifyNullability nullabilityFromAnnotationMirrors =
+                        getNullabilityFromAnnotationMirrors( typeMirror.getAnnotationMirrors() );
+                if ( nullabilityFromAnnotationMirrors == JSpecifyNullability.UNKNOWN ) {
+                    nullabilityFromAnnotationMirrors = resolveElementScope( outerElement ).toJSpecifyNullability();
+                }
+                componentTypeNullability = nullabilityFromAnnotationMirrors
+                        .toNullability( componentTypeNullability );
+            }
+            else {
+                componentTypeNullability = new Nullability( Nullability.NullabilityState.NULLABLE,
+                        Nullability.NullabilityCause.DEFAULT, componentTypeNullability );
+            }
+        }
+        return componentTypeNullability;
+    }
+
+    /**
+     * Walks from {@code element} up the enclosing element chain (e.g. the enclosing method of a
+     * parameter, the element itself for a field / getter, the declaring types, up to the package),
+     * checking each for a {@code @NullMarked} / {@code @NullUnmarked} scope annotation. Results are
+     * cached in {@link #scopeCache}.
+     *
+     * @return {@link JspecifyNullabilityScope#NULL_MARKED} when the nearest {@code @NullMarked} is found,
+     * {@link JspecifyNullabilityScope#NULL_UNMARKED} when a nearest {@code @NullUnmarked} is found, or
+     * {@link JspecifyNullabilityScope#UNKNOWN} when neither is present in the chain
+     */
+    private JspecifyNullabilityScope resolveElementScope(Element element) {
+        List<Element> visited = new ArrayList<>();
+        Element current = element;
+        while ( current != null ) {
+            JspecifyNullabilityScope cached = scopeCache.get( current );
+            if ( cached != null ) {
+                fillScopeCache( visited, cached );
+                return cached;
+            }
+            visited.add( current );
+            JspecifyNullabilityScope scope = findScopeAnnotation( current );
+            if ( scope != JspecifyNullabilityScope.UNKNOWN ) {
+                fillScopeCache( visited, scope );
+                return scope;
+            }
+            current = current.getEnclosingElement();
+        }
+        fillScopeCache( visited, JspecifyNullabilityScope.UNKNOWN );
+        return JspecifyNullabilityScope.UNKNOWN;
+    }
+
+    private void fillScopeCache(List<Element> visited, JspecifyNullabilityScope scope) {
+        visited.forEach( visitedElement -> scopeCache.put( visitedElement, scope ) );
+    }
+
+    public JspecifyNullabilityScope getPackageNullabilityScope(PackageElement packageElement) {
+        if ( !jSpecifyEnabled ) {
+            return JspecifyNullabilityScope.UNKNOWN;
+        }
+        return resolveElementScope( packageElement );
+    }
+
+    public JspecifyNullabilityScope getParentTypeNullabilityScope(TypeElement typeElement) {
+        if ( !jSpecifyEnabled ) {
+            return JspecifyNullabilityScope.UNKNOWN;
+        }
+        return resolveElementScope( typeElement );
+    }
+
+    public JspecifyNullabilityScope getMethodNullabilityScope(ExecutableElement executableElement) {
+        if ( !jSpecifyEnabled || executableElement == null ) {
+            return JspecifyNullabilityScope.UNKNOWN;
+        }
+        return resolveElementScope( executableElement );
+    }
+
+    public enum JspecifyNullabilityScope implements Fqned {
+        UNKNOWN( null ),
+        NULL_MARKED( JSpecifyConstants.NULL_MARKED_FQN ),
+        NULL_UNMARKED( JSpecifyConstants.NULL_UNMARKED_FQN );
+
+        private final String fqn;
+
+        JspecifyNullabilityScope( String fqn ) {
+            this.fqn = fqn;
+        }
+
+        @Override
+        public String fqn() {
+            return fqn;
+        }
+
+        private JSpecifyNullability toJSpecifyNullability() {
+            if ( this == JspecifyNullabilityScope.NULL_MARKED ) {
+                return JSpecifyNullability.NON_NULL;
+            }
+            if ( this == JspecifyNullabilityScope.NULL_UNMARKED ) {
+                return JSpecifyNullability.NULLABLE;
+            }
+            return JSpecifyNullability.UNKNOWN;
+        }
+
+        public boolean needsScopeAnnotation(JspecifyNullabilityScope innerScope) {
+            switch ( this ) {
+                default:
+                case UNKNOWN:
+                case NULL_UNMARKED:
+                    return innerScope == NULL_MARKED;
+                case NULL_MARKED:
+                    return innerScope == NULL_UNMARKED;
+            }
+        }
+
+        public boolean needsAnnotation(Nullability nullability) {
+            if ( nullability.getCause() == Nullability.NullabilityCause.PRIMITIVE
+                 || nullability.getCause() == Nullability.NullabilityCause.VOID ) {
+                return false;
+            }
+            switch ( this ) {
+                default:
+                case UNKNOWN:
+                case NULL_UNMARKED:
+                    return nullability.isNonNullable();
+                case NULL_MARKED:
+                    return nullability.isNullable();
+            }
+        }
+    }
+
+    /**
+     * Determines which of two {@link Fqned} enum constants is present exclusively in the given
+     * annotation mirrors, matched against their fully qualified annotation names. Both constants
+     * being present cancels them out (e.g. {@code @NonNull} + {@code @Nullable}, or
+     * {@code @NullMarked} + {@code @NullUnmarked}).
+     *
+     * @param exclusive1 the constant returned when its annotation is the only one of the pair
+     *                   present
+     * @param exclusive2 the constant returned when its annotation is the only one of the pair
+     *                   present
+     * @param neither    the constant returned when neither, or both, annotations are present
+     * @param mirrors    the annotation mirrors to inspect
+     * @return {@code exclusive1}, {@code exclusive2}, or {@code neither}
+     */
+    private static <E extends Enum<E> & Fqned> E exclusive(
+            E exclusive1, E exclusive2, E neither, List<? extends AnnotationMirror> mirrors ) {
+        boolean exclusive1Present = false;
+        boolean exclusive2Present = false;
+        for ( AnnotationMirror mirror : mirrors ) {
+            Element annotationElement = mirror.getAnnotationType().asElement();
+            if ( !( annotationElement instanceof TypeElement ) ) {
+                // Defensive: unresolved annotations (e.g. ErrorType during incremental builds) can
+                // produce a non-TypeElement. Skip instead of failing with a CCE.
+                continue;
+            }
+            String fqn = ( (TypeElement) annotationElement ).getQualifiedName().toString();
+            if ( exclusive1.fqn().equals( fqn ) ) {
+                exclusive1Present = true;
+            }
+            else if ( exclusive2.fqn().equals( fqn ) ) {
+                exclusive2Present = true;
+            }
+        }
+        if ( exclusive1Present != exclusive2Present ) {
+            return exclusive1Present ? exclusive1 : exclusive2;
+        }
+        return neither;
+    }
+
+    private static JspecifyNullabilityScope findScopeAnnotation(Element element) {
+        return exclusive( JspecifyNullabilityScope.NULL_MARKED, JspecifyNullabilityScope.NULL_UNMARKED,
+                JspecifyNullabilityScope.UNKNOWN, element.getAnnotationMirrors() );
+    }
+
+    private static JSpecifyNullability getNullabilityFromAnnotationMirrors(List<? extends AnnotationMirror> mirrors) {
+        return exclusive( JSpecifyNullability.NON_NULL, JSpecifyNullability.NULLABLE,
+                JSpecifyNullability.UNKNOWN, mirrors );
+    }
+
+    /**
+     * Contract for enums that carry the fully qualified annotation name of their annotated state,
+     * for use with {@link #exclusive}.
+     */
+    private interface Fqned {
+
+        /**
+         * @return the fully qualified name of the annotation this constant represents, or
+         *         {@code null} for constants without an annotation (e.g. {@code UNKNOWN})
+         */
+        String fqn();
+    }
+
+}

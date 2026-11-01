@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.destination;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,6 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christophe Labouisse on 27/05/2015.
  */
 @IssueKey( "556" )
+// Todo remove disableJSpecify.
+// eclipse 1.6 has a problem when resolving a none existing package and creating it afterward.
+@ProcessorOption(name = "mapstruct.disableJSpecify", value = "true")
 @WithClasses( Target.class )
 public class DestinationPackageNameTest {
     @ProcessorTest

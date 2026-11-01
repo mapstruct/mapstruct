@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
@@ -28,9 +27,10 @@ import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
-import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.Services;
 import org.mapstruct.ap.internal.util.TypeUtils;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
+import org.mapstruct.ap.internal.util.accessor.NullabilityResolver;
 import org.mapstruct.ap.internal.version.VersionInformation;
 import org.mapstruct.ap.spi.EnumMappingStrategy;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
@@ -211,21 +211,6 @@ public class MappingBuilderContext {
     }
 
     /**
-     * Resolves the JSpecify nullability of an element declared directly on the mapper (e.g. a mapping method's
-     * return type or one of its source parameters), using the mapper type's {@code @NullMarked} scope as the
-     * enclosing scope for unannotated elements.
-     *
-     * @param element the element declared on the mapper to inspect
-     *
-     * @return the resolved nullability ({@link NullabilityResolver.Nullability#UNKNOWN} when JSpecify is disabled)
-     */
-    public NullabilityResolver.Nullability getNullabilityInMapperScope(Element element) {
-        return nullabilityResolver.getNullability(
-            element,
-            () -> typeFactory.getType( mapperTypeElement.asType() ).isNullMarked() );
-    }
-
-    /**
      * Whether the return type of the given mapping method is JSpecify {@code @NonNull} (directly or via a
      * {@code @NullMarked} scope). When it is, a mapping method must not generate {@code return null}, so callers
      * force {@link org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem#RETURN_DEFAULT} semantics.
@@ -241,7 +226,9 @@ public class MappingBuilderContext {
             return false;
         }
 
-        return getNullabilityInMapperScope( method.getExecutable() ) == NullabilityResolver.Nullability.NON_NULL;
+        Nullability returnTypeNullability = method.getReturnTypeNullability();
+        return returnTypeNullability.getCause() == Nullability.NullabilityCause.JSPECIFY
+                && returnTypeNullability.isNonNullable();
     }
 
     public EnumMappingStrategy getEnumMappingStrategy() {

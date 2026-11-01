@@ -10,7 +10,7 @@
 <#list annotations as annotation>
     <#nt><@includeModel object=annotation/>
 </#list>
-<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+<#lt>${accessibility.keyword} <@includeModel object=returnType typeAnnotation=typeAnnotation/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#--TODO does it even make sense to do a callback if the result is a Stream, as they are immutable-->
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
     	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
@@ -179,7 +179,8 @@
 <#macro streamMapSupplier>
     <@compress>
         <#if !elementAssignment.directAssignment?? || !elementAssignment.directAssignment>
-            .map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> )
+            <#-- Todo just filter null out? -->
+            <#if elementAssignment.needsParameterNullCheck()>.filter( resultName -> resultName != null )</#if>.map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> )
         </#if>
     </@compress>
 </#macro>

@@ -17,6 +17,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
@@ -69,11 +70,16 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
 
     @Override
     public final M build() {
-        Type sourceParameterType = first( method.getSourceParameters() ).getType();
+        Parameter parameter = first( method.getSourceParameters() );
+        Type sourceParameterType = parameter.getType();
         Type resultType = method.getResultType();
 
-        Type sourceElementType = getElementType( sourceParameterType );
-        Type targetElementType = getElementType( resultType );
+        TypeInstance sourceElementTypeInstance = getElementType( TypeInstance.of( sourceParameterType,
+                parameter.getNullability() ) );
+        Type sourceElementType = sourceElementTypeInstance.getType();
+        TypeInstance targetElementTypeInstance = getElementType( TypeInstance.of( resultType,
+                method.getResultNullability() ) );
+        Type targetElementType = targetElementTypeInstance.getType();
 
         String loopVariableName =
             Strings.getSafeVariableName( sourceElementType.getName(), method.getParameterNames() );
@@ -82,7 +88,8 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             loopVariableName,
             sourceElementType,
             new HashSet<>(),
-            errorMessagePart
+            errorMessagePart,
+            sourceElementTypeInstance.getNullability()
         );
 
         SelectionCriteria criteria = SelectionCriteria.forMappingMethods( selectionParameters,
@@ -98,7 +105,9 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             criteria,
             sourceRHS,
             positionHint,
-            () -> forge( sourceRHS, sourceElementType, targetElementType )
+            () -> forge( sourceRHS, sourceElementType,
+                    targetElementTypeInstance,
+                    Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE )
         );
 
         if ( assignment == null ) {
@@ -180,14 +189,6 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         );
     }
 
-    private Assignment forge(SourceRHS sourceRHS, Type sourceType, Type targetType) {
-        Assignment assignment = super.forgeMapping( sourceRHS, sourceType, targetType );
-        if ( assignment != null ) {
-            ctx.getMessager().note( 2, Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE, assignment );
-        }
-        return assignment;
-    }
-
     protected abstract M instantiateMappingMethod(Method method, Collection<String> existingVariables,
                                                   Assignment assignment, MethodReference factoryMethod,
                                                   boolean mapNullToDefault, String loopVariableName,
@@ -195,7 +196,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                                                   List<LifecycleCallbackMethodReference> afterMappingMethods,
         SelectionParameters selectionParameters, PresenceCheck sourceParameterPresenceCheck);
 
-    protected abstract Type getElementType(Type parameterType);
+    protected abstract TypeInstance getElementType(TypeInstance parameterType);
 
     protected abstract Assignment getWrapper(Assignment assignment, Method method);
 

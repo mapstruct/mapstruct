@@ -12,6 +12,7 @@ import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * This interface makes available common method properties and a matching method There are 2 known implementors:
@@ -127,6 +128,14 @@ public interface Method {
     Type getResultType();
 
     /**
+     * Returns the {@link Nullability} of the result. The result is defined as the type of the parameter designated with
+     * {@link org.mapstruct.MappingTarget}, or in absence the return type.
+     *
+     * @return result {@link Nullability}
+     */
+    Nullability getResultNullability();
+
+    /**
      *
      * @return the names of the parameters of this mapping method
      */
@@ -200,4 +209,6 @@ public interface Method {
      * @return the formal type parameters, or an empty list if there are none
      */
     List<Type> getTypeParameters();
+
+    Nullability getReturnTypeNullability();
 }

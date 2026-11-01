@@ -37,6 +37,7 @@ import org.mapstruct.ap.internal.model.HelperMethod;
 import org.mapstruct.ap.internal.model.MapperReference;
 import org.mapstruct.ap.internal.model.MappingBuilderContext.MappingResolver;
 import org.mapstruct.ap.internal.model.MethodReference;
+import org.mapstruct.ap.internal.model.NullSafe2StepMappingMethod;
 import org.mapstruct.ap.internal.model.SupportingField;
 import org.mapstruct.ap.internal.model.SupportingMappingMethod;
 import org.mapstruct.ap.internal.model.common.Assignment;
@@ -44,9 +45,12 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.DefaultConversionContext;
 import org.mapstruct.ap.internal.model.common.FieldReference;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMappingMethods;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
@@ -62,6 +66,7 @@ import org.mapstruct.ap.internal.util.MessageConstants;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.TypeUtils;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 import static org.mapstruct.ap.internal.util.Collections.firstKey;
@@ -878,17 +883,69 @@ public class MappingResolverImpl implements MappingResolver {
 
             // get result, there should be one entry left with only one value
             if ( xCandidates.size() == 1 && firstValue( xCandidates ).size() == 1 ) {
-                Assignment methodRefY = yCreate.apply( first( firstValue( xCandidates ) ) );
-                Assignment methodRefX = xCreate.apply( firstKey( xCandidates ) );
-                methodRefY.setAssignment( methodRefX );
-                methodRefX.setAssignment( attempt.sourceRHS );
-                result = methodRefY;
+                SelectedMethod<T2> selectedMethodY = first( firstValue( xCandidates ) );
+                Assignment methodRefY = yCreate.apply( selectedMethodY );
+                SelectedMethod<T1> selectedMethodX = firstKey( xCandidates );
+                Assignment methodRefX = xCreate.apply( selectedMethodX );
+                Parameter parameter1 = first( selectedMethodY.getMethod().getSourceParameters() );
+                if ( methodRefX.getSourceNullability().isNullable() && parameter1.getNullability().isNonNullable() ) {
+                    // the source parameter is the only non-context parameter, but context parameters may
+                    // be declared before or after it
+                    T1 methodX = selectedMethodX.getMethod();
+                    Parameter parameter = first( methodX.getSourceParameters() );
+                    List<ParameterBinding> parameterBindings = selectedMethodX.getParameterBindings();
+                    String paramName = parameter.getName();
+                    HashSet<String> existingVariableNames = new HashSet<>();
+                    existingVariableNames.add( paramName );
+                    methodRefX.setAssignment( new SourceRHS( paramName, sourceType,
+                            existingVariableNames, "",
+                            Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) ) );
+                    String secondVariableName =  methodRefX.createUniqueVarName(
+                            Strings.decapitalize( sourceType.getName() ) );
+                    methodRefY.setAssignment( new SourceRHS( secondVariableName,
+                            sourceType, existingVariableNames, "",
+                            methodRefX.getSourceNullability() ) );
+                    String methodName = methodX.getName() + "To"
+                            + targetType.getName();
+                    Nullability returnTypNullability = Nullability.getPrimitiveNullability(
+                                    targetType.getTypeMirror() )
+                            .orElse( Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
+                    // the helper must declare the method's context parameters in addition to the source
+                    // parameter, otherwise the helper's call to the method cannot resolve them
+                    List<Parameter> parameters = get2StepParameters( methodX, parameter,
+                            parameterBindings );
+                    NullSafe2StepMappingMethod nullSafe2StepMappingMethod = new NullSafe2StepMappingMethod(
+                            existingVariableNames, methodRefX, parameters,
+                            methodRefY, parameter1.getType(),
+                            TypeInstance.of( targetType, returnTypNullability ),
+                            secondVariableName, methodName );
+                    this.attempt.supportingMethodCandidates.add( nullSafe2StepMappingMethod );
+                    result = MethodReference.forNullSafe2StepMethod( nullSafe2StepMappingMethod );
+                    result.setAssignment( attempt.sourceRHS );
+                }
+                else {
+                    methodRefY.setAssignment( methodRefX );
+                    methodRefX.setAssignment( attempt.sourceRHS );
+                    result = methodRefY;
+                }
             }
             else  {
                 reportAmbiguousError( xCandidates, targetType );
             }
             return this;
 
+        }
+
+        private static <M extends Method> List<Parameter> get2StepParameters(M methodX, Parameter parameter,
+                                                                             List<ParameterBinding>parameterBindings) {
+            List<Parameter> contextParameters = methodX.getContextParameters();
+            List<Parameter> twoStepParameters = new ArrayList<>( contextParameters.size() + 1 );
+            List<Parameter> methodXParameters = methodX.getParameters();
+            twoStepParameters.add( new Parameter( parameter.getName(),
+                    parameterBindings.get( methodXParameters.indexOf( parameter ) ).getType(),
+                    parameter.getNullability() ) );
+            twoStepParameters.addAll( contextParameters );
+            return twoStepParameters;
         }
 
         void reportAmbiguousError(Map<SelectedMethod<T1>, List<SelectedMethod<T2>>> xCandidates, Type target) {
@@ -994,8 +1051,8 @@ public class MappingResolverImpl implements MappingResolver {
                 Assignment methodRefY = create.apply( first( firstValue( xRefCandidates ) ) );
                 ConversionAssignment conversionRefX = firstKey( xRefCandidates );
                 conversionRefX.reportMessageWhenNarrowing( attempt.messager, attempt );
-                methodRefY.setAssignment( conversionRefX.assignment );
                 conversionRefX.assignment.setAssignment( attempt.sourceRHS );
+                methodRefY.setAssignment( conversionRefX.assignment );
                 result = methodRefY;
             }
             else  {
@@ -1108,12 +1165,50 @@ public class MappingResolverImpl implements MappingResolver {
 
             // get result, there should be one entry left with only one value
             if ( yRefCandidates.size() == 1 && firstValue( yRefCandidates ).size() == 1 ) {
-                Assignment methodRefX = create.apply( first( firstValue( yRefCandidates ) ) );
+                SelectedMethod<T> selectedMethodX = first( firstValue( yRefCandidates ) );
+                Assignment methodRefX = create.apply( selectedMethodX );
                 ConversionAssignment conversionRefY = firstKey( yRefCandidates );
                 conversionRefY.reportMessageWhenNarrowing( attempt.messager, attempt );
-                methodRefX.setAssignment( attempt.sourceRHS );
-                conversionRefY.assignment.setAssignment( methodRefX );
-                result = conversionRefY.assignment;
+                if ( methodRefX.getSourceNullability().isNullable() ) {
+                    // the source parameter is the only non-context parameter, but context parameters may
+                    // be declared before or after it
+                    T methodX = selectedMethodX.getMethod();
+                    Parameter parameter = first( methodX.getSourceParameters() );
+                    List<ParameterBinding> parameterBindings = selectedMethodX.getParameterBindings();
+                    String paramName = parameter.getName();
+                    HashSet<String> existingVariableNames = new HashSet<>();
+                    existingVariableNames.add( paramName );
+                    methodRefX.setAssignment( new SourceRHS( paramName, conversionRefY.sourceType,
+                            existingVariableNames, "",
+                            Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) ) );
+                    String secondVariableName =  methodRefX.createUniqueVarName(
+                            Strings.decapitalize( conversionRefY.sourceType.getName() ) );
+                    conversionRefY.assignment.setAssignment( new SourceRHS( secondVariableName,
+                            conversionRefY.sourceType, existingVariableNames, "",
+                            methodRefX.getSourceNullability() ) );
+                    String methodName = methodX.getName() + "To"
+                            + conversionRefY.targetType.getName();
+                    Nullability returnTypNullability = Nullability.getPrimitiveNullability(
+                            conversionRefY.targetType.getTypeMirror() )
+                            .orElse( Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
+                    // the helper must declare the method's context parameters in addition to the source
+                    // parameter, otherwise the helper's call to the method cannot resolve them
+                    List<Parameter> parameters = MethodMethod.get2StepParameters( methodX, parameter,
+                            parameterBindings );
+                    NullSafe2StepMappingMethod nullSafe2StepMappingMethod = new NullSafe2StepMappingMethod(
+                             existingVariableNames, methodRefX, parameters,
+                             conversionRefY.assignment, conversionRefY.sourceType,
+                             TypeInstance.of( conversionRefY.targetType, returnTypNullability ),
+                             secondVariableName, methodName );
+                    this.attempt.supportingMethodCandidates.add( nullSafe2StepMappingMethod );
+                    result = MethodReference.forNullSafe2StepMethod( nullSafe2StepMappingMethod );
+                    result.setAssignment( attempt.sourceRHS );
+                }
+                else {
+                    methodRefX.setAssignment( attempt.sourceRHS );
+                    conversionRefY.assignment.setAssignment( methodRefX );
+                    result = conversionRefY.assignment;
+                }
             }
             else  {
                 reportAmbiguousError( yRefCandidates, targetType );

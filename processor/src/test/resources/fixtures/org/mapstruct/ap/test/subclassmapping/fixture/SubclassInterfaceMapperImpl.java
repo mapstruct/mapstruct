@@ -32,9 +32,6 @@ public class SubclassInterfaceMapperImpl implements SubclassInterfaceMapper {
     }
 
     protected SubTarget subSourceToSubTarget(SubSource subSource) {
-        if ( subSource == null ) {
-            return null;
-        }
 
         SubTarget subTarget = new SubTarget();
 
@@ -46,9 +43,6 @@ public class SubclassInterfaceMapperImpl implements SubclassInterfaceMapper {
     }
 
     protected SubTargetOther subSourceOtherToSubTargetOther(SubSourceOther subSourceOther) {
-        if ( subSourceOther == null ) {
-            return null;
-        }
 
         String finalValue = null;
 

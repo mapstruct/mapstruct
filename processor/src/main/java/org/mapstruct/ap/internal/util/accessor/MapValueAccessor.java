@@ -57,4 +57,9 @@ public class MapValueAccessor implements ReadAccessor {
     public String getReadValueSource() {
         return "get( \"" + getSimpleName() + "\" )";
     }
+
+    @Override
+    public Nullability getNullability() {
+        return Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE );
+    }
 }

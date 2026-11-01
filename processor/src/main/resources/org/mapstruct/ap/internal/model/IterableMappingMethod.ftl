@@ -10,7 +10,7 @@
 <#list annotations as annotation>
     <#nt><@includeModel object=annotation/>
 </#list>
-<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+<#lt>${accessibility.keyword} <@includeModel object=returnType typeAnnotation=typeAnnotation/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
     	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     	<#if !callback_has_next>
@@ -70,12 +70,18 @@
                 break;
             }
             </#if>
-            <@includeModel object=elementAssignment targetWriteAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>
+            <@lib.handleVariableNullCheck elementAssignment.needsParameterNullCheck() loopVariableName>
+                <@includeModel object=elementAssignment targetWriteAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>
+            </@lib.handleVariableNullCheck>
+            <#-- Todo do we need to add null here? Or is filtering out okay? -->
             ${index1Name}++;
         }
     <#else>
         for ( <@includeModel object=sourceElementType/> ${loopVariableName} : ${sourceParameter.name} ) {
-            <@includeModel object=elementAssignment targetBeanName=resultName targetWriteAccessorName="add" targetType=resultElementType/>
+            <@lib.handleVariableNullCheck elementAssignment.needsParameterNullCheck() loopVariableName>
+                <@includeModel object=elementAssignment targetBeanName=resultName targetWriteAccessorName="add" targetType=resultElementType/>
+            </@lib.handleVariableNullCheck>
+            <#-- Todo do we need to add null here? Or is filtering out okay? -->
         }
     </#if>
     <#list afterMappingReferences as callback>

@@ -8,16 +8,19 @@ package org.mapstruct.ap.test.nullcheck.jspecify;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
     date = "2026-05-15T00:03:32+0200",
     comments = "version: , compiler: javac, environment: Java 25 (Eclipse Adoptium)"
 )
+@NullMarked
 public class JSpecifyNonNullReturnMapMapperImpl implements JSpecifyNonNullReturnMapMapper {
 
     @Override
-    public Map<String, NullMarkedTargetBean> mapAll(Map<String, NullMarkedSourceBean> sources) {
+    public Map<String, NullMarkedTargetBean> mapAll(@Nullable Map<String, NullMarkedSourceBean> sources) {
         if ( sources == null ) {
             return new LinkedHashMap<>();
         }
@@ -26,8 +29,10 @@ public class JSpecifyNonNullReturnMapMapperImpl implements JSpecifyNonNullReturn
 
         for ( java.util.Map.Entry<String, NullMarkedSourceBean> entry : sources.entrySet() ) {
             String key = entry.getKey();
-            NullMarkedTargetBean value = map( entry.getValue() );
-            map.put( key, value );
+            if ( entry.getValue() != null ) {
+                NullMarkedTargetBean value = map( entry.getValue() );
+                map.put( key, value );
+            }
         }
 
         return map;

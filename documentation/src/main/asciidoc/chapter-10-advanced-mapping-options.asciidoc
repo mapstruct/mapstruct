@@ -338,9 +338,19 @@ When the return type of a mapping method is `@NonNull` (directly or via a `@Null
 
 If a property mapping would assign a potentially `null` source value to a `@NonNull` constructor parameter, MapStruct raises a *compilation error*. Neither inserting a null check (which would leave the variable at `null` and violate the contract) nor passing the value through is safe. Provide a `defaultValue` or `defaultExpression` on the `@Mapping` to satisfy the parameter when the source is absent.
 
+==== Generated code
+
+When JSpecify is available on the compile classpath, MapStruct adds JSpecify nullness annotations to the generated code:
+
+* `@NonNull` on parameters and return types whose nullability is known to be non-null — either because the source code declares it (an explicit `@NonNull` annotation or a `@NullMarked` scope) or because MapStruct guarantees it for the generated method (for example the parameters of built-in conversion methods, or the return type of a method that returns a non-null default value when `NullValueMappingStrategy.RETURN_DEFAULT` applies)
+* `@Nullable` on parameters and return types whose nullability is known to be nullable, when the generated code lies within a `@NullMarked` scope
+* `@NullMarked` or `@NullUnmarked` on the generated class or method, where the corresponding scope annotation is used in the source code
+
+This applies to every generated method, including generated helper methods, built-in conversion methods and methods that return a default value. Because it only depends on JSpecify being on the compile classpath, it also applies to mappers that do not use JSpecify themselves (for example when JSpecify arrives transitively via Guava or Spring 7). If JSpecify is not on the compile classpath, no JSpecify annotations are added to the generated code. See `Disabling JSpecify support` below for how to suppress this and all other JSpecify-driven behavior.
+
 ==== Disabling JSpecify support
 
-All JSpecify-driven inference can be turned off by setting the processor option `-Amapstruct.disableJSpecify=true`. With the option enabled, MapStruct ignores every JSpecify annotation (`@NonNull`, `@Nullable`, `@NullMarked`, `@NullUnmarked`) and the compilation error for nullable sources mapped to `@NonNull` constructor parameters is not raised. Null-check generation falls back to the pre-JSpecify behavior driven by `NullValueCheckStrategy`. Use this flag when you need to freeze MapStruct's null-handling behavior while JSpecify annotations exist elsewhere on the classpath.
+All JSpecify-driven behavior can be turned off by setting the processor option `-Amapstruct.disableJSpecify=true`. With the option enabled, MapStruct ignores every JSpecify annotation (`@NonNull`, `@Nullable`, `@NullMarked`, `@NullUnmarked`), the compilation error for nullable sources mapped to `@NonNull` constructor parameters is not raised and no JSpecify annotations are added to the generated code. Null-check generation falls back to the pre-JSpecify behavior driven by `NullValueCheckStrategy`. Use this flag when you need to freeze MapStruct's null-handling behavior while JSpecify annotations exist elsewhere on the classpath.
 
 [[source-presence-check]]
 === Source presence checking

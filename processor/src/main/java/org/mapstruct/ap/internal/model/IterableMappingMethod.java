@@ -14,8 +14,10 @@ import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -34,9 +36,12 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
-        protected Type getElementType(Type parameterType) {
-            return parameterType.isArrayType() ? parameterType.getComponentType() : first(
-                parameterType.determineTypeArguments( Iterable.class ) ).getTypeBound();
+        protected TypeInstance getElementType(TypeInstance parameterTypeInstance) {
+            Type parameterType = parameterTypeInstance.getType();
+            return parameterType.isArrayType() ? TypeInstance.of( parameterType.getComponentType(),
+                    parameterTypeInstance.getNullability().getComponentTypeNullability() )
+                    : TypeInstance.of( first( parameterType.determineTypeArguments( Iterable.class ) ).getTypeBound(),
+                    Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
         }
 
         @Override

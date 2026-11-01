@@ -5,11 +5,16 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
 import org.mapstruct.ap.internal.model.source.builtin.NewDatatypeFactoryConstructorFragment;
 
@@ -34,8 +39,8 @@ public class SupportingMappingMethod extends MappingMethod {
     private final Map<String, Object> templateParameter;
 
     public SupportingMappingMethod(BuiltInMethod method, Set<Field> existingFields) {
-        super( method );
-        this.importTypes = method.getImportTypes();
+        super( method, method.getSignatureParameters() );
+        this.importTypes = new HashSet<>(method.getImportTypes());
         this.templateName = getTemplateNameForClass( method.getClass() );
         this.templateParameter = null;
         this.supportingField = SupportingField.getSafeField( this, method.getFieldReference(), existingFields );
@@ -52,6 +57,17 @@ public class SupportingMappingMethod extends MappingMethod {
         this.templateParameter = null;
         this.supportingField = null;
         this.supportingConstructorFragment = null;
+    }
+
+    protected SupportingMappingMethod(Collection<String> existingVariableNames, List<Type> thrownTypes,
+                                      Set<Type> importTypes, TypeInstance returnType,
+                                      List<Parameter> parameters, String name) {
+        super( existingVariableNames, thrownTypes, returnType, parameters, name );
+        this.templateName = getTemplateNameForClass( this.getClass() );
+        this.templateParameter = null;
+        this.supportingConstructorFragment = null;
+        this.supportingField = null;
+        this.importTypes = importTypes;
     }
 
     @Override

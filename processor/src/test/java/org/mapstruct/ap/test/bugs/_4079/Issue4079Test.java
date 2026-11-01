@@ -5,7 +5,6 @@
  */
 package org.mapstruct.ap.test.bugs._4079;
 
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -13,14 +12,10 @@ import org.mapstruct.ap.testutil.WithJSpecify;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
-import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 @IssueKey( "4079" )
 @WithJSpecify
 public class Issue4079Test {
-
-    @RegisterExtension
-    final GeneratedSource generatedSource = new GeneratedSource();
 
     @ProcessorTest
     @WithClasses( { ErroneousIssue4079Mapper.class, Source.class, Target.class } )

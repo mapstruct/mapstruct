@@ -12,6 +12,7 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * Base class for decorators (wrappers). Decorator pattern is used to decorate assignments.
@@ -105,6 +106,16 @@ public abstract class AssignmentWrapper extends ModelElement implements Assignme
     @Override
     public String createUniqueVarName(String desiredName ) {
         return decoratedAssignment.createUniqueVarName( desiredName );
+    }
+
+    @Override
+    public Nullability getSourceNullability() {
+        return decoratedAssignment.getSourceNullability();
+    }
+
+    @Override
+    public boolean needsParameterNullCheck() {
+        return decoratedAssignment.needsParameterNullCheck();
     }
 
     /**

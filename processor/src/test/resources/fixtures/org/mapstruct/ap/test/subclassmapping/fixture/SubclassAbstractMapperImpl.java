@@ -52,9 +52,6 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
     }
 
     protected SubTarget subSourceToSubTarget(SubSource subSource) {
-        if ( subSource == null ) {
-            return null;
-        }
 
         SubTarget subTarget = new SubTarget();
 
@@ -66,9 +63,6 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
     }
 
     protected SubTargetOther subSourceOtherToSubTargetOther(SubSourceOther subSourceOther) {
-        if ( subSourceOther == null ) {
-            return null;
-        }
 
         String finalValue = null;
 
@@ -83,9 +77,6 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
     }
 
     protected SubSourceSeparate subTargetSeparateToSubSourceSeparate(SubTargetSeparate subTargetSeparate) {
-        if ( subTargetSeparate == null ) {
-            return null;
-        }
 
         String separateValue = null;
 
@@ -100,9 +91,6 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
     }
 
     protected SubSourceOverride subTargetOtherToSubSourceOverride(SubTargetOther subTargetOther) {
-        if ( subTargetOther == null ) {
-            return null;
-        }
 
         String finalValue = null;
 
@@ -117,9 +105,6 @@ public class SubclassAbstractMapperImpl implements SubclassAbstractMapper {
     }
 
     protected SubSource subTargetToSubSource(SubTarget subTarget) {
-        if ( subTarget == null ) {
-            return null;
-        }
 
         SubSource subSource = new SubSource();
 

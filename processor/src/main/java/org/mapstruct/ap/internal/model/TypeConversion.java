@@ -13,6 +13,7 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * An inline conversion between source and target type of a mapping.
@@ -27,6 +28,7 @@ public class TypeConversion extends ModelElement implements Assignment {
     private final List<Type> thrownTypes;
     private final String openExpression;
     private final String closeExpression;
+    private final Type targetType;
 
     /**
      * A reference to mapping method in case this is a two-step mapping, e.g. from
@@ -37,7 +39,7 @@ public class TypeConversion extends ModelElement implements Assignment {
 
     public TypeConversion( Set<Type> importTypes,
                            List<Type> exceptionTypes,
-                           String expression ) {
+                           String expression, Type targetType ) {
         this.importTypes = new HashSet<>( importTypes );
         this.importTypes.addAll( exceptionTypes );
         this.thrownTypes = exceptionTypes;
@@ -45,6 +47,7 @@ public class TypeConversion extends ModelElement implements Assignment {
         int patternIndex = expression.indexOf( SOURCE_REFERENCE_PATTERN );
         this.openExpression = expression.substring( 0, patternIndex );
         this.closeExpression = expression.substring( patternIndex + 8 );
+        this.targetType = targetType;
     }
 
     @Override
@@ -140,6 +143,17 @@ public class TypeConversion extends ModelElement implements Assignment {
     @Override
     public boolean isCallingUpdateMethod() {
         return false;
+    }
+
+    @Override
+    public Nullability getSourceNullability() {
+        return Nullability.getPrimitiveNullability( targetType.getTypeMirror() )
+                .orElse( Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL ) );
+    }
+
+    @Override
+    public boolean needsParameterNullCheck() {
+        return assignment.needsParameterNullCheck() || assignment.getSourceNullability().isNullable();
     }
 
     @Override

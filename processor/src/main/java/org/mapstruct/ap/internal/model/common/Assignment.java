@@ -8,6 +8,8 @@ package org.mapstruct.ap.internal.model.common;
 import java.util.List;
 import java.util.Set;
 
+import org.mapstruct.ap.internal.util.accessor.Nullability;
+
 /**
  * Assignment represents all kind of manners a source can be assigned to a target.
  *
@@ -17,32 +19,26 @@ public interface Assignment {
 
     enum AssignmentType {
         /** assignment is direct */
-        DIRECT( true, false ),
+        DIRECT( true ),
         /** assignment is type converted */
-        TYPE_CONVERTED( false, true ),
+        TYPE_CONVERTED( false ),
         /** assignment is mapped (builtin/custom) */
-        MAPPED( false, false ),
+        MAPPED( false ),
         /** 2 mapping methods (builtin/custom) are applied to get the target */
-        MAPPED_TWICE( false, false ),
+        MAPPED_TWICE( false ),
         /** assignment is first mapped (builtin/custom), then the result is type converted */
-        MAPPED_TYPE_CONVERTED( false, true ),
+        MAPPED_TYPE_CONVERTED( false ),
         /** assignment is first type converted, and then mapped (builtin/custom) */
-        TYPE_CONVERTED_MAPPED( false, true );
+        TYPE_CONVERTED_MAPPED( false );
 
         private final boolean direct;
-        private final boolean converted;
 
-        AssignmentType( boolean isDirect, boolean isConverted ) {
+        AssignmentType( boolean isDirect ) {
             this.direct = isDirect;
-            this.converted = isConverted;
         }
 
         public boolean isDirect() {
             return direct;
-        }
-
-        public boolean isConverted() {
-            return converted;
         }
 
     }
@@ -155,4 +151,20 @@ public interface Assignment {
     AssignmentType getType();
 
     boolean isCallingUpdateMethod();
+
+    /**
+     * Returns the nullability when this assignment is used as a source.
+     *
+     * @return the {@link Nullability} resulting from this Assignment.
+     */
+    Nullability getSourceNullability();
+
+    /**
+     * Returns whether the first input parameter needs a null-check. In other words, whether the source expression
+     * could be {@code null} and the assignment would fail if it were.
+     *
+     * @return {@code true} if the first input parameter does not accept null and null must be checked before passing it
+     * to this assignment; {@code false} otherwise
+     */
+    boolean needsParameterNullCheck();
 }

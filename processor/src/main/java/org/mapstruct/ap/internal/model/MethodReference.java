@@ -24,7 +24,7 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.builtin.BuiltInMethod;
-import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * Represents a reference to another method, e.g. used to map a bean property from source to target type or to
@@ -63,6 +63,7 @@ public class MethodReference extends ModelElement implements Assignment {
     private final boolean isStatic;
     private final boolean isConstructor;
     private final boolean isMethodChaining;
+    private final Nullability sourceNullability;
 
     /**
      * Creates a new reference to the given method.
@@ -100,6 +101,7 @@ public class MethodReference extends ModelElement implements Assignment {
         this.isConstructor = false;
         this.methodsToChain = Collections.emptyList();
         this.isMethodChaining = false;
+        this.sourceNullability = method.getReturnTypeNullability();
    }
 
     private MethodReference(BuiltInMethod method, ConversionContext contextParam) {
@@ -118,6 +120,27 @@ public class MethodReference extends ModelElement implements Assignment {
         this.isConstructor = false;
         this.methodsToChain = Collections.emptyList();
         this.isMethodChaining = false;
+        this.sourceNullability = method.getReturnTypeNullability();
+    }
+
+    private MethodReference(NullSafe2StepMappingMethod method) {
+        this.sourceParameters = Parameter.getSourceParameters( method.getParameters() );
+        this.returnType = method.getReturnType();
+        this.declaringMapper = null;
+        this.providingParameter = null;
+        this.contextParam = null;
+        this.importTypes = Collections.emptySet();
+        this.thrownTypes = method.getThrownTypes();
+        this.definingType = null;
+        this.isUpdateMethod = false;
+        this.parameterBindings = ParameterBinding.fromParameters( method.getParameters() );
+        this.isStatic = false;
+        this.name = method.getName();
+        this.isConstructor = false;
+        this.methodsToChain = Collections.emptyList();
+        this.isMethodChaining = false;
+
+        this.sourceNullability = method.getReturnTypeNullability();
     }
 
     private MethodReference(String name, Type definingType, boolean isStatic) {
@@ -136,6 +159,9 @@ public class MethodReference extends ModelElement implements Assignment {
         this.isConstructor = false;
         this.methodsToChain = Collections.emptyList();
         this.isMethodChaining = false;
+        // Currently only used for builders. Here we assume that they are NON_NULL. If we decide to support NULLABLE
+        // builder or use this constructor for something else this should be revisited.
+        this.sourceNullability = Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL );
     }
 
     private MethodReference(Type definingType, List<ParameterBinding> parameterBindings) {
@@ -153,6 +179,7 @@ public class MethodReference extends ModelElement implements Assignment {
         this.isConstructor = true;
         this.methodsToChain = Collections.emptyList();
         this.isMethodChaining = false;
+        this.sourceNullability = Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL );
 
         if ( parameterBindings.isEmpty() ) {
             this.importTypes = Collections.emptySet();
@@ -186,6 +213,15 @@ public class MethodReference extends ModelElement implements Assignment {
         this.isConstructor = false;
         this.methodsToChain = Arrays.asList( references );
         this.isMethodChaining = true;
+        Nullability chainSourceNullability = Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL );
+        for ( MethodReference reference : references ) {
+            Nullability nullability = reference.getSourceNullability();
+            if ( nullability.isNullable() ) {
+                chainSourceNullability = nullability;
+                break;
+            }
+        }
+        this.sourceNullability = chainSourceNullability;
     }
 
     public MapperReference getDeclaringMapper() {
@@ -344,6 +380,21 @@ public class MethodReference extends ModelElement implements Assignment {
         return isUpdateMethod;
     }
 
+    @Override
+    public Nullability getSourceNullability() {
+        return sourceNullability;
+    }
+
+    @Override
+    public boolean needsParameterNullCheck() {
+        if ( sourceParameters.size() != 1 ) {
+            // Currently we don't support null checking for mapping with more than one sourceParameters
+            return false;
+        }
+        return assignment.needsParameterNullCheck() || ( sourceParameters.get( 0 ).getNullability().isNonNullable()
+                && assignment.getSourceNullability().isNullable() );
+    }
+
     public boolean isStatic() {
         return isStatic;
     }
@@ -408,6 +459,10 @@ public class MethodReference extends ModelElement implements Assignment {
         return new MethodReference( method, contextParam );
     }
 
+    public static MethodReference forNullSafe2StepMethod( NullSafe2StepMappingMethod nullSafe2StepMappingMethod) {
+        return new MethodReference( nullSafe2StepMappingMethod );
+    }
+
     public static MethodReference forForgedMethod(Method method, List<ParameterBinding> parameterBindings) {
         return new MethodReference( method, null, null, parameterBindings );
     }
@@ -444,10 +499,10 @@ public class MethodReference extends ModelElement implements Assignment {
         String argument = getAssignment() != null ? getAssignment().toString() :
                         ( getSourceReference() != null ? getSourceReference() : "" );
         String returnTypeAsString = returnType != null ? returnType.toString() : "";
-        List<String> arguments = sourceParameters.stream()
+        String arguments = sourceParameters.stream()
             .map( p -> p.isMappingContext() || p.isMappingTarget() || p.isTargetType() ? p.getName() : argument )
-            .collect( Collectors.toList() );
+            .collect( Collectors.joining( ",", "(", ")" ) );
 
-        return returnTypeAsString + " " + mapper + "#" + name + "(" + Strings.join( arguments, "," ) + ")";
+        return returnTypeAsString + " " + mapper + "#" + name + arguments;
     }
 }

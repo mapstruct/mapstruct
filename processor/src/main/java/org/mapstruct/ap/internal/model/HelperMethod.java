@@ -19,6 +19,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * A non mapping method to be generated.
@@ -202,6 +203,11 @@ public abstract class HelperMethod implements Method {
     @Override
     public Type getResultType() {
         return getReturnType();
+    }
+
+    @Override
+    public Nullability getResultNullability() {
+        return getReturnTypeNullability();
     }
 
     @Override

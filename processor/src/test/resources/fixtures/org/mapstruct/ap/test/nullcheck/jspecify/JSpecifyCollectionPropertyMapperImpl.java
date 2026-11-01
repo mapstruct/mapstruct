@@ -6,12 +6,14 @@
 package org.mapstruct.ap.test.nullcheck.jspecify;
 
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
     date = "2026-05-14T23:05:10+0200",
     comments = "version: , compiler: javac, environment: Java 25 (Eclipse Adoptium)"
 )
+@NullMarked
 public class JSpecifyCollectionPropertyMapperImpl implements JSpecifyCollectionPropertyMapper {
 
     @Override

@@ -6,7 +6,10 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.NestedPropertyMappingMethod" -->
-<#lt>private <@includeModel object=returnType.typeBound/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+<#list annotations as annotation>
+    <#nt><@includeModel object=annotation/>
+</#list>
+<#lt>private <@includeModel object=returnType.typeBound typeAnnotation=typeAnnotation/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
 <#list propertyEntries as entry>
     <#if entry.presenceChecker?? >
     if ( <@includeModel object=entry.presenceChecker /> ) {

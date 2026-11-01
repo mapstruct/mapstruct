@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
@@ -22,7 +23,8 @@ class JaxbElemToValue extends BuiltInMethod {
     private final Set<Type> importTypes;
 
     JaxbElemToValue(Type type) {
-        this.parameter = new Parameter( "element", type );
+        this.parameter = new Parameter( "element", type,
+                Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
         this.returnType = type.getTypeParameters().get( 0 );
         this.importTypes = asSet( parameter.getType() );
     }
@@ -49,5 +51,10 @@ class JaxbElemToValue extends BuiltInMethod {
     @Override
     public Set<Type> getImportTypes() {
         return importTypes;
+    }
+
+    @Override
+    public Nullability getReturnTypeNullability() {
+        return Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE );
     }
 }

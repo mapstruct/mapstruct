@@ -9,6 +9,7 @@ import org.joda.time.LocalDate;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJSpecify;
 import org.mapstruct.ap.testutil.WithJoda;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,5 +35,10 @@ public class Issue1425Test {
 
         assertThat( target ).isNotNull();
         assertThat( target.getValue() ).isEqualTo( "2018-04-18" );
+    }
+
+    @ProcessorTest
+    @WithJSpecify
+    public void shouldNotFailWithJspecify() {
     }
 }

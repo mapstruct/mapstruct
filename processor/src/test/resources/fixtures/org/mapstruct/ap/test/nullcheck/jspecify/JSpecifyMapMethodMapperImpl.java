@@ -8,12 +8,14 @@ package org.mapstruct.ap.test.nullcheck.jspecify;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
     date = "2026-05-14T23:30:08+0200",
     comments = "version: , compiler: Eclipse JDT (Batch) 3.20.0.v20191203-2131, environment: Java 25 (Eclipse Adoptium)"
 )
+@NullMarked
 public class JSpecifyMapMethodMapperImpl implements JSpecifyMapMethodMapper {
 
     @Override
@@ -23,8 +25,10 @@ public class JSpecifyMapMethodMapperImpl implements JSpecifyMapMethodMapper {
 
         for ( java.util.Map.Entry<String, NullMarkedSourceBean> entry : sources.entrySet() ) {
             String key = entry.getKey();
-            NullMarkedTargetBean value = map( entry.getValue() );
-            map.put( key, value );
+            if ( entry.getValue() != null ) {
+                NullMarkedTargetBean value = map( entry.getValue() );
+                map.put( key, value );
+            }
         }
 
         return map;

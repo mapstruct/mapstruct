@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * Decorates the assignment as a Map or Collection constructor
@@ -56,5 +57,10 @@ public class ArrayCopyWrapper extends AssignmentWrapper {
 
     public boolean isSetExplicitlyToDefault() {
         return setExplicitlyToDefault;
+    }
+
+    @Override
+    public Nullability getSourceNullability() {
+        return Nullability.voidNullability();
     }
 }

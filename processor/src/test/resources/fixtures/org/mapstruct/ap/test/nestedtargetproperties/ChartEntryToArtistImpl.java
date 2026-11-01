@@ -73,7 +73,10 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
         chartEntry.setArtistName( chartSongArtistName( chart ) );
         chartEntry.setRecordedAt( chartSongArtistLabelStudioName( chart ) );
         chartEntry.setCity( chartSongArtistLabelStudioCity( chart ) );
-        chartEntry.setPosition( mapPosition( chartSongPositions( chart ) ) );
+        Integer positions = mapPosition( chartSongPositions( chart ) );
+        if ( positions != null ) {
+            chartEntry.setPosition( positions );
+        }
 
         return chartEntry;
     }

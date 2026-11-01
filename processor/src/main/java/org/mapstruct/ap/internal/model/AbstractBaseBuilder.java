@@ -122,8 +122,9 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
             ctx.getMappingsToGenerate().add( mappingMethod );
         }
         else {
-            String existingName = ctx.getExistingMappingMethod( mappingMethod ).getName();
-            methodRef = new ForgedMethod( existingName, methodRef );
+            MappingMethod existingMappingMethod = ctx.getExistingMappingMethod( mappingMethod );
+            String existingName = existingMappingMethod.getName();
+            methodRef = new ForgedMethod( existingName, methodRef, existingMappingMethod );
         }
 
         return createAssignment( source, methodRef );
@@ -135,7 +136,6 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
             ParameterBinding.fromParameters( methodRef.getParameters() )
         );
         assignment.setAssignment( source );
-
         return assignment;
     }
 

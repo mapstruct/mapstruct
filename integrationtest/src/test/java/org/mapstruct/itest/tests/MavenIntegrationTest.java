@@ -200,6 +200,12 @@ public class MavenIntegrationTest {
 
     }
 
+    @ProcessorTest(baseDir = "moduleNullMarkedTest")
+    @EnabledForJreRange(min = JRE.JAVA_11)
+    void moduleNullMarkedTest() {
+
+    }
+
     /**
      * Tests usage of MapStruct with another processor that generates the uses type of a mapper.
      */
