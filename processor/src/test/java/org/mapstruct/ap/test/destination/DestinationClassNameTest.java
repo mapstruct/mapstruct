@@ -11,7 +11,7 @@ import org.mapstruct.ap.testutil.WithJavaxInject;
 import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * @author Christophe Labouisse on 27/05/2015.
@@ -31,15 +31,10 @@ public class DestinationClassNameTest {
     public void shouldNotGenerateSpi() throws Exception {
 
         Class<DestinationClassNameWithJsr330Mapper> clazz = DestinationClassNameWithJsr330Mapper.class;
-        try {
-            Mappers.getMapper( clazz );
-            fail( "Should have thrown an ClassNotFoundException" );
-        }
-        catch ( RuntimeException e ) {
-            assertThat( e.getCause() ).isNotNull()
-                    .isExactlyInstanceOf( ClassNotFoundException.class )
-                    .hasMessage( "Cannot find implementation for " + clazz.getName() );
-        }
+        assertThatThrownBy( () -> Mappers.getMapper( clazz ) )
+                .isInstanceOf( RuntimeException.class )
+                .hasCauseExactlyInstanceOf( ClassNotFoundException.class )
+                .hasRootCauseMessage( "Cannot find implementation for " + clazz.getName() );
 
         DestinationClassNameWithJsr330Mapper instance = (DestinationClassNameWithJsr330Mapper) Class
                 .forName( clazz.getName() + "Jsr330Impl" ).newInstance();
