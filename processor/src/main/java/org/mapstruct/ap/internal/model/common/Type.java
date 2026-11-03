@@ -165,6 +165,8 @@ public class Type extends ModelElement implements Comparable<Type> {
     private KotlinMetadata kotlinMetadata;
     private boolean kotlinMetadataInitialized;
 
+    private List<Type> directSupertypes = null;
+
     private final Filters filters;
 
     //CHECKSTYLE:OFF
@@ -1608,10 +1610,14 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return the direct supertypes, or an empty list if none
      */
     public List<Type> getDirectSuperTypes() {
-        return typeUtils.directSupertypes( typeMirror )
+        if ( directSupertypes != null ) {
+            return directSupertypes;
+        }
+        directSupertypes = typeUtils.directSupertypes( typeMirror )
             .stream()
             .map( typeFactory::getType )
             .collect( Collectors.toList() );
+        return directSupertypes;
     }
 
     /**
@@ -1625,9 +1631,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             return getTypeParameters();
         }
 
-        List<? extends TypeMirror> directSupertypes = typeUtils.directSupertypes( typeMirror );
-        for ( TypeMirror supertypemirror : directSupertypes ) {
-            Type supertype = typeFactory.getType( supertypemirror );
+        for ( Type supertype : getDirectSuperTypes() ) {
             List<Type> supertypeTypeArguments = supertype.determineTypeArguments( superclass );
             if ( supertypeTypeArguments != null ) {
                 return supertypeTypeArguments;
