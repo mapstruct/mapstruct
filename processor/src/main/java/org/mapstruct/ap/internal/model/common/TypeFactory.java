@@ -391,6 +391,24 @@ public class TypeFactory {
     }
 
     /**
+     * Returns the Type that represents {@code Iterable<type>}. For primitive types, the boxed class will be used.
+     *
+     * @param type the element type
+     * @return the type representing {@code Iterable<type>}.
+     */
+    public Type iterableTypeOf(Type type) {
+        TypeMirror typeToUse;
+        if ( type.isPrimitive() ) {
+            typeToUse = typeUtils.boxedClass( (PrimitiveType) type.getTypeMirror() ).asType();
+        }
+        else {
+            typeToUse = type.getTypeMirror();
+        }
+
+        return getType( typeUtils.getDeclaredType( elementUtils.getTypeElement( "java.lang.Iterable" ), typeToUse ) );
+    }
+
+    /**
      * Get the ExecutableType for given method as part of usedMapper. Possibly parameterized types in method declaration
      * will be evaluated to concrete types then.
      *
