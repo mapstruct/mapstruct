@@ -1160,7 +1160,11 @@ public class PropertyMapping extends ModelElement {
 
             if ( assignment != null ) {
 
-                if ( targetWriteAccessor.getAccessorType() == AccessorType.SETTER  ||
+                if ( targetWriteAccessorType == AccessorType.ADDER ) {
+                    // adder, so add the constant as a single element
+                    assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );
+                }
+                else if ( targetWriteAccessor.getAccessorType() == AccessorType.SETTER  ||
                 targetWriteAccessor.getAccessorType().isFieldAssignment() ) {
 
                     // target accessor is setter, so decorate assignment as setter
@@ -1274,20 +1278,36 @@ public class PropertyMapping extends ModelElement {
         }
 
         public PropertyMapping build() {
-            Assignment assignment = new SourceRHS( javaExpression, null, existingVariableNames, "" );
+            Assignment assignment;
 
-            if ( targetWriteAccessor.getAccessorType() == AccessorType.SETTER  ||
-                            targetWriteAccessor.getAccessorType().isFieldAssignment() ) {
-                // setter, so wrap in setter
-                assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );
+            if ( targetWriteAccessorType == AccessorType.ADDER ) {
+                // adder, so iterate over the expression and add each element
+                Type iterableType = ctx.getTypeFactory().iterableTypeOf( targetType );
+                assignment = new SourceRHS( javaExpression, iterableType, existingVariableNames, "" );
+                assignment.setSourceLocalVarName( assignment.createUniqueVarName( targetPropertyName ) );
+                assignment = new AdderWrapper(
+                    assignment,
+                    method.getThrownTypes(),
+                    isFieldAssignment(),
+                    targetPropertyName
+                );
             }
             else {
-                // target accessor is getter, so wrap the setter in getter map/ collection handling
-                assignment = new GetterWrapperForCollectionsAndMaps( assignment,
-                                                                     method.getThrownTypes(),
-                                                                     targetType,
-                                                                     isFieldAssignment()
-                                                                   );
+                assignment = new SourceRHS( javaExpression, null, existingVariableNames, "" );
+
+                if ( targetWriteAccessor.getAccessorType() == AccessorType.SETTER  ||
+                                targetWriteAccessor.getAccessorType().isFieldAssignment() ) {
+                    // setter, so wrap in setter
+                    assignment = new SetterWrapper( assignment, method.getThrownTypes(), isFieldAssignment() );
+                }
+                else {
+                    // target accessor is getter, so wrap the setter in getter map/ collection handling
+                    assignment = new GetterWrapperForCollectionsAndMaps( assignment,
+                                                                         method.getThrownTypes(),
+                                                                         targetType,
+                                                                         isFieldAssignment()
+                                                                       );
+                }
             }
 
             return new PropertyMapping(
