@@ -135,16 +135,26 @@ abstract class XmlElementDeclSelector implements MethodSelector {
         while ( currentElement != null ) {
             /*
              * Inner loop tries to find a field with the targetPropertyName and assumes that where the XmlElementRef is
-             * set
+             * set. The name of a generated field can differ in case from the property (field xyName, accessors
+             * getXYName and setXYName, so property XYName), so a field that only differs in case is used as a fallback.
              */
+            XmlElementRefInfo caseInsensitiveMatch = null;
             for ( Element enclosed : currentElement.getEnclosedElements() ) {
                 if ( enclosed.getKind().equals( ElementKind.FIELD )
-                    && enclosed.getSimpleName().contentEquals( targetPropertyName ) ) {
+                    && enclosed.getSimpleName().toString().equalsIgnoreCase( targetPropertyName ) ) {
                     XmlElementRefInfo xmlElementRefInfo = getXmlElementRefInfo( enclosed );
                     if ( xmlElementRefInfo != null ) {
-                        return new XmlElementRefInfo( xmlElementRefInfo.nameValue(), currentMirror );
+                        if ( enclosed.getSimpleName().contentEquals( targetPropertyName ) ) {
+                            return new XmlElementRefInfo( xmlElementRefInfo.nameValue(), currentMirror );
+                        }
+                        if ( caseInsensitiveMatch == null ) {
+                            caseInsensitiveMatch = xmlElementRefInfo;
+                        }
                     }
                 }
+            }
+            if ( caseInsensitiveMatch != null ) {
+                return new XmlElementRefInfo( caseInsensitiveMatch.nameValue(), currentMirror );
             }
             currentMirror = currentElement.getSuperclass();
             currentElement = (TypeElement) typeUtils.asElement( currentMirror );
