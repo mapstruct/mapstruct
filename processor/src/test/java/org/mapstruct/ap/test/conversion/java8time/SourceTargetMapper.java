@@ -25,18 +25,26 @@ public interface SourceTargetMapper {
 
     String LOCAL_TIME_FORMAT = "HH:mm";
 
+    String OFFSET_DATE_TIME_FORMAT = "dd.MM.yyyy HH:mm xxx";
+
+    String OFFSET_TIME_FORMAT = "HH:mm xxx";
+
     SourceTargetMapper INSTANCE = Mappers.getMapper( SourceTargetMapper.class );
 
     @Mappings( { @Mapping( target = "zonedDateTime", dateFormat = DATE_TIME_FORMAT ),
                     @Mapping( target = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT ),
                     @Mapping( target = "localDate", dateFormat = LOCAL_DATE_FORMAT ),
-                    @Mapping( target = "localTime", dateFormat = LOCAL_TIME_FORMAT ) } )
+                    @Mapping( target = "localTime", dateFormat = LOCAL_TIME_FORMAT ),
+                    @Mapping( target = "offsetDateTime", dateFormat = OFFSET_DATE_TIME_FORMAT ),
+                    @Mapping( target = "offsetTime", dateFormat = OFFSET_TIME_FORMAT ) } )
     Target sourceToTarget(Source source);
 
     @Mappings( { @Mapping( target = "zonedDateTime", dateFormat = DATE_TIME_FORMAT ),
                     @Mapping( target = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT ),
                     @Mapping( target = "localDate", dateFormat = LOCAL_DATE_FORMAT ),
-                    @Mapping( target = "localTime", dateFormat = LOCAL_TIME_FORMAT ) } )
+                    @Mapping( target = "localTime", dateFormat = LOCAL_TIME_FORMAT ),
+                    @Mapping( target = "offsetDateTime", dateFormat = OFFSET_DATE_TIME_FORMAT ),
+                    @Mapping( target = "offsetTime", dateFormat = OFFSET_TIME_FORMAT ) } )
     Target sourceToTargetDefaultMapping(Source source);
 
     @Mapping( target = "zonedDateTime", dateFormat = DATE_TIME_FORMAT )
@@ -54,7 +62,9 @@ public interface SourceTargetMapper {
     @Mappings( { @Mapping( target = "zonedDateTime", dateFormat = DATE_TIME_FORMAT ),
                     @Mapping( target = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT ),
                     @Mapping( target = "localDate", dateFormat = LOCAL_DATE_FORMAT ),
-                    @Mapping( target = "localTime", dateFormat = LOCAL_TIME_FORMAT ) } )
+                    @Mapping( target = "localTime", dateFormat = LOCAL_TIME_FORMAT ),
+                    @Mapping( target = "offsetDateTime", dateFormat = OFFSET_DATE_TIME_FORMAT ),
+                    @Mapping( target = "offsetTime", dateFormat = OFFSET_TIME_FORMAT ) } )
     Source targetToSource(Target target);
 
     @Mapping( target = "zonedDateTime", dateFormat = DATE_TIME_FORMAT )

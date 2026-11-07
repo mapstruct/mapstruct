@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -233,6 +234,8 @@ public class Conversions {
         register( LocalDate.class, String.class, new JavaLocalDateToStringConversion() );
         register( LocalDateTime.class, String.class, new JavaLocalDateTimeToStringConversion() );
         register( LocalTime.class, String.class, new JavaLocalTimeToStringConversion() );
+        register( OffsetDateTime.class, String.class, new JavaOffsetDateTimeToStringConversion() );
+        register( OffsetTime.class, String.class, new JavaOffsetTimeToStringConversion() );
         register( Instant.class, String.class, new StaticParseToStringConversion() );
         register( Period.class, String.class, new StaticParseToStringConversion() );
         register( Duration.class, String.class, new StaticParseToStringConversion() );

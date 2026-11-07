@@ -10,6 +10,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.Optional;
@@ -24,6 +26,10 @@ public class OptionalSource {
     private Optional<LocalDate> localDate = Optional.empty();
 
     private Optional<LocalTime> localTime = Optional.empty();
+
+    private Optional<OffsetDateTime> offsetDateTime = Optional.empty();
+
+    private Optional<OffsetTime> offsetTime = Optional.empty();
 
     private Optional<ZonedDateTime> forCalendarConversion = Optional.empty();
 
@@ -75,6 +81,22 @@ public class OptionalSource {
 
     public void setLocalTime(Optional<LocalTime> localTime) {
         this.localTime = localTime;
+    }
+
+    public Optional<OffsetDateTime> getOffsetDateTime() {
+        return offsetDateTime;
+    }
+
+    public void setOffsetDateTime(Optional<OffsetDateTime> offsetDateTime) {
+        this.offsetDateTime = offsetDateTime;
+    }
+
+    public Optional<OffsetTime> getOffsetTime() {
+        return offsetTime;
+    }
+
+    public void setOffsetTime(Optional<OffsetTime> offsetTime) {
+        this.offsetTime = offsetTime;
     }
 
     public Optional<ZonedDateTime> getForCalendarConversion() {
