@@ -10,6 +10,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -31,6 +33,8 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
     private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242 = DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" );
     private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_11900521056 = DateTimeFormatter.ofPattern( "dd.MM.yyyy" );
     private final DateTimeFormatter dateTimeFormatter_HH_mm_168697690 = DateTimeFormatter.ofPattern( "HH:mm" );
+    private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_HH_mm_xxx_1372191474 = DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm xxx" );
+    private final DateTimeFormatter dateTimeFormatter_HH_mm_xxx_01496457550 = DateTimeFormatter.ofPattern( "HH:mm xxx" );
 
     @Override
     public Target sourceToTarget(Source source) {
@@ -51,6 +55,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( source.getLocalTime() != null ) {
             target.setLocalTime( dateTimeFormatter_HH_mm_168697690.format( source.getLocalTime() ) );
+        }
+        if ( source.getOffsetDateTime() != null ) {
+            target.setOffsetDateTime( dateTimeFormatter_dd_MM_yyyy_HH_mm_xxx_1372191474.format( source.getOffsetDateTime() ) );
+        }
+        if ( source.getOffsetTime() != null ) {
+            target.setOffsetTime( dateTimeFormatter_HH_mm_xxx_01496457550.format( source.getOffsetTime() ) );
         }
         target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion() ) );
         if ( source.getForDateConversionWithZonedDateTime() != null ) {
@@ -104,6 +114,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( source.getLocalTime() != null ) {
             target.setLocalTime( dateTimeFormatter_HH_mm_168697690.format( source.getLocalTime() ) );
         }
+        if ( source.getOffsetDateTime() != null ) {
+            target.setOffsetDateTime( dateTimeFormatter_dd_MM_yyyy_HH_mm_xxx_1372191474.format( source.getOffsetDateTime() ) );
+        }
+        if ( source.getOffsetTime() != null ) {
+            target.setOffsetTime( dateTimeFormatter_HH_mm_xxx_01496457550.format( source.getOffsetTime() ) );
+        }
         target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion() ) );
         if ( source.getForDateConversionWithZonedDateTime() != null ) {
             target.setForDateConversionWithZonedDateTime( Date.from( source.getForDateConversionWithZonedDateTime().toInstant() ) );
@@ -155,6 +171,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( source.getLocalTime() != null ) {
             target.setLocalTime( DateTimeFormatter.ISO_LOCAL_TIME.format( source.getLocalTime() ) );
+        }
+        if ( source.getOffsetDateTime() != null ) {
+            target.setOffsetDateTime( DateTimeFormatter.ISO_OFFSET_DATE_TIME.format( source.getOffsetDateTime() ) );
+        }
+        if ( source.getOffsetTime() != null ) {
+            target.setOffsetTime( DateTimeFormatter.ISO_OFFSET_TIME.format( source.getOffsetTime() ) );
         }
         target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion() ) );
         if ( source.getForDateConversionWithZonedDateTime() != null ) {
@@ -208,6 +230,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( source.getLocalTime() != null ) {
             target.setLocalTime( DateTimeFormatter.ISO_LOCAL_TIME.format( source.getLocalTime() ) );
         }
+        if ( source.getOffsetDateTime() != null ) {
+            target.setOffsetDateTime( DateTimeFormatter.ISO_OFFSET_DATE_TIME.format( source.getOffsetDateTime() ) );
+        }
+        if ( source.getOffsetTime() != null ) {
+            target.setOffsetTime( DateTimeFormatter.ISO_OFFSET_TIME.format( source.getOffsetTime() ) );
+        }
         target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion() ) );
         if ( source.getForDateConversionWithZonedDateTime() != null ) {
             target.setForDateConversionWithZonedDateTime( Date.from( source.getForDateConversionWithZonedDateTime().toInstant() ) );
@@ -259,6 +287,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( source.getLocalTime() != null ) {
             target.setLocalTime( DateTimeFormatter.ISO_LOCAL_TIME.format( source.getLocalTime() ) );
+        }
+        if ( source.getOffsetDateTime() != null ) {
+            target.setOffsetDateTime( DateTimeFormatter.ISO_OFFSET_DATE_TIME.format( source.getOffsetDateTime() ) );
+        }
+        if ( source.getOffsetTime() != null ) {
+            target.setOffsetTime( DateTimeFormatter.ISO_OFFSET_TIME.format( source.getOffsetTime() ) );
         }
         target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion() ) );
         if ( source.getForDateConversionWithZonedDateTime() != null ) {
@@ -312,6 +346,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( source.getLocalDate() != null ) {
             target.setLocalDate( DateTimeFormatter.ISO_LOCAL_DATE.format( source.getLocalDate() ) );
         }
+        if ( source.getOffsetDateTime() != null ) {
+            target.setOffsetDateTime( DateTimeFormatter.ISO_OFFSET_DATE_TIME.format( source.getOffsetDateTime() ) );
+        }
+        if ( source.getOffsetTime() != null ) {
+            target.setOffsetTime( DateTimeFormatter.ISO_OFFSET_TIME.format( source.getOffsetTime() ) );
+        }
         target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion() ) );
         if ( source.getForDateConversionWithZonedDateTime() != null ) {
             target.setForDateConversionWithZonedDateTime( Date.from( source.getForDateConversionWithZonedDateTime().toInstant() ) );
@@ -363,6 +403,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( target.getLocalTime() != null ) {
             source.setLocalTime( LocalTime.parse( target.getLocalTime(), dateTimeFormatter_HH_mm_168697690 ) );
+        }
+        if ( target.getOffsetDateTime() != null ) {
+            source.setOffsetDateTime( OffsetDateTime.parse( target.getOffsetDateTime(), dateTimeFormatter_dd_MM_yyyy_HH_mm_xxx_1372191474 ) );
+        }
+        if ( target.getOffsetTime() != null ) {
+            source.setOffsetTime( OffsetTime.parse( target.getOffsetTime(), dateTimeFormatter_HH_mm_xxx_01496457550 ) );
         }
         source.setForCalendarConversion( calendarToZonedDateTime( target.getForCalendarConversion() ) );
         if ( target.getForDateConversionWithZonedDateTime() != null ) {
@@ -416,6 +462,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( target.getLocalTime() != null ) {
             source.setLocalTime( LocalTime.parse( target.getLocalTime() ) );
         }
+        if ( target.getOffsetDateTime() != null ) {
+            source.setOffsetDateTime( OffsetDateTime.parse( target.getOffsetDateTime() ) );
+        }
+        if ( target.getOffsetTime() != null ) {
+            source.setOffsetTime( OffsetTime.parse( target.getOffsetTime() ) );
+        }
         source.setForCalendarConversion( calendarToZonedDateTime( target.getForCalendarConversion() ) );
         if ( target.getForDateConversionWithZonedDateTime() != null ) {
             source.setForDateConversionWithZonedDateTime( ZonedDateTime.ofInstant( target.getForDateConversionWithZonedDateTime().toInstant(), ZoneId.systemDefault() ) );
@@ -467,6 +519,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( target.getLocalTime() != null ) {
             source.setLocalTime( LocalTime.parse( target.getLocalTime() ) );
+        }
+        if ( target.getOffsetDateTime() != null ) {
+            source.setOffsetDateTime( OffsetDateTime.parse( target.getOffsetDateTime() ) );
+        }
+        if ( target.getOffsetTime() != null ) {
+            source.setOffsetTime( OffsetTime.parse( target.getOffsetTime() ) );
         }
         source.setForCalendarConversion( calendarToZonedDateTime( target.getForCalendarConversion() ) );
         if ( target.getForDateConversionWithZonedDateTime() != null ) {
@@ -520,6 +578,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( target.getLocalTime() != null ) {
             source.setLocalTime( LocalTime.parse( target.getLocalTime() ) );
         }
+        if ( target.getOffsetDateTime() != null ) {
+            source.setOffsetDateTime( OffsetDateTime.parse( target.getOffsetDateTime() ) );
+        }
+        if ( target.getOffsetTime() != null ) {
+            source.setOffsetTime( OffsetTime.parse( target.getOffsetTime() ) );
+        }
         source.setForCalendarConversion( calendarToZonedDateTime( target.getForCalendarConversion() ) );
         if ( target.getForDateConversionWithZonedDateTime() != null ) {
             source.setForDateConversionWithZonedDateTime( ZonedDateTime.ofInstant( target.getForDateConversionWithZonedDateTime().toInstant(), ZoneId.systemDefault() ) );
@@ -572,6 +636,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( target.getLocalDate() != null ) {
             source.setLocalDate( LocalDate.parse( target.getLocalDate() ) );
         }
+        if ( target.getOffsetDateTime() != null ) {
+            source.setOffsetDateTime( OffsetDateTime.parse( target.getOffsetDateTime() ) );
+        }
+        if ( target.getOffsetTime() != null ) {
+            source.setOffsetTime( OffsetTime.parse( target.getOffsetTime() ) );
+        }
         source.setForCalendarConversion( calendarToZonedDateTime( target.getForCalendarConversion() ) );
         if ( target.getForDateConversionWithZonedDateTime() != null ) {
             source.setForDateConversionWithZonedDateTime( ZonedDateTime.ofInstant( target.getForDateConversionWithZonedDateTime().toInstant(), ZoneId.systemDefault() ) );
@@ -623,6 +693,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( target.getLocalTime() != null ) {
             source.setLocalTime( LocalTime.parse( target.getLocalTime(), dateTimeFormatter_HH_mm_168697690 ) );
+        }
+        if ( target.getOffsetDateTime() != null ) {
+            source.setOffsetDateTime( OffsetDateTime.parse( target.getOffsetDateTime(), dateTimeFormatter_dd_MM_yyyy_HH_mm_xxx_1372191474 ) );
+        }
+        if ( target.getOffsetTime() != null ) {
+            source.setOffsetTime( OffsetTime.parse( target.getOffsetTime(), dateTimeFormatter_HH_mm_xxx_01496457550 ) );
         }
         source.setForCalendarConversion( calendarToZonedDateTime( target.getForCalendarConversion() ) );
         if ( target.getForDateConversionWithZonedDateTime() != null ) {

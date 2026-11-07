@@ -10,6 +10,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -32,6 +34,8 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
     private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242 = DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" );
     private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_11900521056 = DateTimeFormatter.ofPattern( "dd.MM.yyyy" );
     private final DateTimeFormatter dateTimeFormatter_HH_mm_168697690 = DateTimeFormatter.ofPattern( "HH:mm" );
+    private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_HH_mm_xxx_1372191474 = DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm xxx" );
+    private final DateTimeFormatter dateTimeFormatter_HH_mm_xxx_01496457550 = DateTimeFormatter.ofPattern( "HH:mm xxx" );
 
     @Override
     public Target sourceToTarget(OptionalSource source) {
@@ -52,6 +56,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         }
         if ( source.getLocalTime().isPresent() ) {
             target.setLocalTime( dateTimeFormatter_HH_mm_168697690.format( source.getLocalTime().get() ) );
+        }
+        if ( source.getOffsetDateTime().isPresent() ) {
+            target.setOffsetDateTime( dateTimeFormatter_dd_MM_yyyy_HH_mm_xxx_1372191474.format( source.getOffsetDateTime().get() ) );
+        }
+        if ( source.getOffsetTime().isPresent() ) {
+            target.setOffsetTime( dateTimeFormatter_HH_mm_xxx_01496457550.format( source.getOffsetTime().get() ) );
         }
         if ( source.getForCalendarConversion().isPresent() ) {
             target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion().get() ) );
@@ -107,6 +117,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         if ( source.getLocalTime().isPresent() ) {
             target.setLocalTime( dateTimeFormatter_HH_mm_168697690.format( source.getLocalTime().get() ) );
         }
+        if ( source.getOffsetDateTime().isPresent() ) {
+            target.setOffsetDateTime( dateTimeFormatter_dd_MM_yyyy_HH_mm_xxx_1372191474.format( source.getOffsetDateTime().get() ) );
+        }
+        if ( source.getOffsetTime().isPresent() ) {
+            target.setOffsetTime( dateTimeFormatter_HH_mm_xxx_01496457550.format( source.getOffsetTime().get() ) );
+        }
         if ( source.getForCalendarConversion().isPresent() ) {
             target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion().get() ) );
         }
@@ -160,6 +176,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         }
         if ( source.getLocalTime().isPresent() ) {
             target.setLocalTime( DateTimeFormatter.ISO_LOCAL_TIME.format( source.getLocalTime().get() ) );
+        }
+        if ( source.getOffsetDateTime().isPresent() ) {
+            target.setOffsetDateTime( DateTimeFormatter.ISO_OFFSET_DATE_TIME.format( source.getOffsetDateTime().get() ) );
+        }
+        if ( source.getOffsetTime().isPresent() ) {
+            target.setOffsetTime( DateTimeFormatter.ISO_OFFSET_TIME.format( source.getOffsetTime().get() ) );
         }
         if ( source.getForCalendarConversion().isPresent() ) {
             target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion().get() ) );
@@ -215,6 +237,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         if ( source.getLocalTime().isPresent() ) {
             target.setLocalTime( DateTimeFormatter.ISO_LOCAL_TIME.format( source.getLocalTime().get() ) );
         }
+        if ( source.getOffsetDateTime().isPresent() ) {
+            target.setOffsetDateTime( DateTimeFormatter.ISO_OFFSET_DATE_TIME.format( source.getOffsetDateTime().get() ) );
+        }
+        if ( source.getOffsetTime().isPresent() ) {
+            target.setOffsetTime( DateTimeFormatter.ISO_OFFSET_TIME.format( source.getOffsetTime().get() ) );
+        }
         if ( source.getForCalendarConversion().isPresent() ) {
             target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion().get() ) );
         }
@@ -268,6 +296,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         }
         if ( source.getLocalTime().isPresent() ) {
             target.setLocalTime( DateTimeFormatter.ISO_LOCAL_TIME.format( source.getLocalTime().get() ) );
+        }
+        if ( source.getOffsetDateTime().isPresent() ) {
+            target.setOffsetDateTime( DateTimeFormatter.ISO_OFFSET_DATE_TIME.format( source.getOffsetDateTime().get() ) );
+        }
+        if ( source.getOffsetTime().isPresent() ) {
+            target.setOffsetTime( DateTimeFormatter.ISO_OFFSET_TIME.format( source.getOffsetTime().get() ) );
         }
         if ( source.getForCalendarConversion().isPresent() ) {
             target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion().get() ) );
@@ -323,6 +357,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         if ( source.getLocalDate().isPresent() ) {
             target.setLocalDate( DateTimeFormatter.ISO_LOCAL_DATE.format( source.getLocalDate().get() ) );
         }
+        if ( source.getOffsetDateTime().isPresent() ) {
+            target.setOffsetDateTime( DateTimeFormatter.ISO_OFFSET_DATE_TIME.format( source.getOffsetDateTime().get() ) );
+        }
+        if ( source.getOffsetTime().isPresent() ) {
+            target.setOffsetTime( DateTimeFormatter.ISO_OFFSET_TIME.format( source.getOffsetTime().get() ) );
+        }
         if ( source.getForCalendarConversion().isPresent() ) {
             target.setForCalendarConversion( zonedDateTimeToCalendar( source.getForCalendarConversion().get() ) );
         }
@@ -376,6 +416,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         }
         if ( target.getLocalTime() != null ) {
             optionalSource.setLocalTime( Optional.of( LocalTime.parse( target.getLocalTime(), dateTimeFormatter_HH_mm_168697690 ) ) );
+        }
+        if ( target.getOffsetDateTime() != null ) {
+            optionalSource.setOffsetDateTime( Optional.of( OffsetDateTime.parse( target.getOffsetDateTime(), dateTimeFormatter_dd_MM_yyyy_HH_mm_xxx_1372191474 ) ) );
+        }
+        if ( target.getOffsetTime() != null ) {
+            optionalSource.setOffsetTime( Optional.of( OffsetTime.parse( target.getOffsetTime(), dateTimeFormatter_HH_mm_xxx_01496457550 ) ) );
         }
         if ( target.getForCalendarConversion() != null ) {
             optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( target.getForCalendarConversion() ) ) );
@@ -431,6 +477,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         if ( target.getLocalTime() != null ) {
             optionalSource.setLocalTime( Optional.of( LocalTime.parse( target.getLocalTime() ) ) );
         }
+        if ( target.getOffsetDateTime() != null ) {
+            optionalSource.setOffsetDateTime( Optional.of( OffsetDateTime.parse( target.getOffsetDateTime() ) ) );
+        }
+        if ( target.getOffsetTime() != null ) {
+            optionalSource.setOffsetTime( Optional.of( OffsetTime.parse( target.getOffsetTime() ) ) );
+        }
         if ( target.getForCalendarConversion() != null ) {
             optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( target.getForCalendarConversion() ) ) );
         }
@@ -484,6 +536,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         }
         if ( target.getLocalTime() != null ) {
             optionalSource.setLocalTime( Optional.of( LocalTime.parse( target.getLocalTime() ) ) );
+        }
+        if ( target.getOffsetDateTime() != null ) {
+            optionalSource.setOffsetDateTime( Optional.of( OffsetDateTime.parse( target.getOffsetDateTime() ) ) );
+        }
+        if ( target.getOffsetTime() != null ) {
+            optionalSource.setOffsetTime( Optional.of( OffsetTime.parse( target.getOffsetTime() ) ) );
         }
         if ( target.getForCalendarConversion() != null ) {
             optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( target.getForCalendarConversion() ) ) );
@@ -539,6 +597,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         if ( target.getLocalTime() != null ) {
             optionalSource.setLocalTime( Optional.of( LocalTime.parse( target.getLocalTime() ) ) );
         }
+        if ( target.getOffsetDateTime() != null ) {
+            optionalSource.setOffsetDateTime( Optional.of( OffsetDateTime.parse( target.getOffsetDateTime() ) ) );
+        }
+        if ( target.getOffsetTime() != null ) {
+            optionalSource.setOffsetTime( Optional.of( OffsetTime.parse( target.getOffsetTime() ) ) );
+        }
         if ( target.getForCalendarConversion() != null ) {
             optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( target.getForCalendarConversion() ) ) );
         }
@@ -593,6 +657,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         if ( target.getLocalDate() != null ) {
             optionalSource.setLocalDate( Optional.of( LocalDate.parse( target.getLocalDate() ) ) );
         }
+        if ( target.getOffsetDateTime() != null ) {
+            optionalSource.setOffsetDateTime( Optional.of( OffsetDateTime.parse( target.getOffsetDateTime() ) ) );
+        }
+        if ( target.getOffsetTime() != null ) {
+            optionalSource.setOffsetTime( Optional.of( OffsetTime.parse( target.getOffsetTime() ) ) );
+        }
         if ( target.getForCalendarConversion() != null ) {
             optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( target.getForCalendarConversion() ) ) );
         }
@@ -646,6 +716,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
         }
         if ( target.getLocalTime() != null ) {
             optionalSource.setLocalTime( Optional.of( LocalTime.parse( target.getLocalTime(), dateTimeFormatter_HH_mm_168697690 ) ) );
+        }
+        if ( target.getOffsetDateTime() != null ) {
+            optionalSource.setOffsetDateTime( Optional.of( OffsetDateTime.parse( target.getOffsetDateTime(), dateTimeFormatter_dd_MM_yyyy_HH_mm_xxx_1372191474 ) ) );
+        }
+        if ( target.getOffsetTime() != null ) {
+            optionalSource.setOffsetTime( Optional.of( OffsetTime.parse( target.getOffsetTime(), dateTimeFormatter_HH_mm_xxx_01496457550 ) ) );
         }
         if ( target.getForCalendarConversion() != null ) {
             optionalSource.setForCalendarConversion( Optional.of( calendarToZonedDateTime( target.getForCalendarConversion() ) ) );

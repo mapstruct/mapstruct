@@ -10,6 +10,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.Period;
 import java.time.ZonedDateTime;
 
@@ -25,6 +27,10 @@ public class Source {
     private LocalDate localDate;
 
     private LocalTime localTime;
+
+    private OffsetDateTime offsetDateTime;
+
+    private OffsetTime offsetTime;
 
     private ZonedDateTime forCalendarConversion;
 
@@ -76,6 +82,22 @@ public class Source {
 
     public void setLocalTime(LocalTime localTime) {
         this.localTime = localTime;
+    }
+
+    public OffsetDateTime getOffsetDateTime() {
+        return offsetDateTime;
+    }
+
+    public void setOffsetDateTime(OffsetDateTime offsetDateTime) {
+        this.offsetDateTime = offsetDateTime;
+    }
+
+    public OffsetTime getOffsetTime() {
+        return offsetTime;
+    }
+
+    public void setOffsetTime(OffsetTime offsetTime) {
+        this.offsetTime = offsetTime;
     }
 
     public ZonedDateTime getForCalendarConversion() {

@@ -10,8 +10,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -148,6 +151,75 @@ public class Java8TimeConversionTest {
         Source src = SourceTargetMapper.INSTANCE.targetToSourceLocalTimeMapped( target );
         assertThat( src ).isNotNull();
         assertThat( src.getLocalTime() ).isEqualTo( sourceTime );
+    }
+
+    @ProcessorTest
+    @IssueKey("3076")
+    public void testOffsetDateTimeToString() {
+        Source src = new Source();
+        src.setOffsetDateTime( OffsetDateTime.of( 2014, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours( 3 ) ) );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( src );
+        assertThat( target ).isNotNull();
+        assertThat( target.getOffsetDateTime() ).isEqualTo( "01.01.2014 00:00 +03:00" );
+    }
+
+    @ProcessorTest
+    @IssueKey("3076")
+    public void testOffsetTimeToString() {
+        Source src = new Source();
+        src.setOffsetTime( OffsetTime.of( 0, 0, 0, 0, ZoneOffset.ofHours( 3 ) ) );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( src );
+        assertThat( target ).isNotNull();
+        assertThat( target.getOffsetTime() ).isEqualTo( "00:00 +03:00" );
+    }
+
+    @ProcessorTest
+    @IssueKey("3076")
+    public void testOffsetDateTimeAndOffsetTimeToStringWithDefaultFormat() {
+        Source src = new Source();
+        src.setOffsetDateTime( OffsetDateTime.of( 2014, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours( 3 ) ) );
+        src.setOffsetTime( OffsetTime.of( 0, 0, 0, 0, ZoneOffset.ofHours( 3 ) ) );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTargetLocalDateMapped( src );
+        assertThat( target ).isNotNull();
+        assertThat( target.getOffsetDateTime() ).isEqualTo( "2014-01-01T00:00:00+03:00" );
+        assertThat( target.getOffsetTime() ).isEqualTo( "00:00:00+03:00" );
+    }
+
+    @ProcessorTest
+    @IssueKey("3076")
+    public void testStringToOffsetDateTime() {
+        Target target = new Target();
+        target.setOffsetDateTime( "01.01.2014 00:00 +03:00" );
+
+        Source src = SourceTargetMapper.INSTANCE.targetToSource( target );
+        assertThat( src ).isNotNull();
+        assertThat( src.getOffsetDateTime() )
+            .isEqualTo( OffsetDateTime.of( 2014, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours( 3 ) ) );
+    }
+
+    @ProcessorTest
+    @IssueKey("3076")
+    public void testStringToOffsetTime() {
+        Target target = new Target();
+        target.setOffsetTime( "00:00 +03:00" );
+
+        Source src = SourceTargetMapper.INSTANCE.targetToSource( target );
+        assertThat( src ).isNotNull();
+        assertThat( src.getOffsetTime() ).isEqualTo( OffsetTime.of( 0, 0, 0, 0, ZoneOffset.ofHours( 3 ) ) );
+    }
+
+    @ProcessorTest
+    @IssueKey("3076")
+    public void testStringToOffsetDateTimeAndOffsetTimeWithDefaultFormat() {
+        Target target = new Target();
+        target.setOffsetDateTime( "2014-01-01T00:00:00+03:00" );
+        target.setOffsetTime( "00:00:00+03:00" );
+
+        Source src = SourceTargetMapper.INSTANCE.targetToSourceLocalDateMapped( target );
+        assertThat( src ).isNotNull();
+        assertThat( src.getOffsetDateTime() )
+            .isEqualTo( OffsetDateTime.of( 2014, 1, 1, 0, 0, 0, 0, ZoneOffset.ofHours( 3 ) ) );
+        assertThat( src.getOffsetTime() ).isEqualTo( OffsetTime.of( 0, 0, 0, 0, ZoneOffset.ofHours( 3 ) ) );
     }
 
     @ProcessorTest

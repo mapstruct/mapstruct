@@ -15,6 +15,8 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -223,6 +225,28 @@ public final class ConversionUtils {
      */
     public static String zonedDateTime(ConversionContext conversionContext) {
         return typeReferenceName( conversionContext, ZonedDateTime.class );
+    }
+
+    /**
+     * Name for {@link java.time.OffsetDateTime}.
+     *
+     * @param conversionContext Conversion context
+     *
+     * @return Name or fully-qualified name.
+     */
+    public static String offsetDateTime(ConversionContext conversionContext) {
+        return typeReferenceName( conversionContext, OffsetDateTime.class );
+    }
+
+    /**
+     * Name for {@link java.time.OffsetTime}.
+     *
+     * @param conversionContext Conversion context
+     *
+     * @return Name or fully-qualified name.
+     */
+    public static String offsetTime(ConversionContext conversionContext) {
+        return typeReferenceName( conversionContext, OffsetTime.class );
     }
 
     /**

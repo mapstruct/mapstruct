@@ -22,6 +22,10 @@ public class Target {
 
     private String localTime;
 
+    private String offsetDateTime;
+
+    private String offsetTime;
+
     private Calendar forCalendarConversion;
 
     private Date forDateConversionWithZonedDateTime;
@@ -72,6 +76,22 @@ public class Target {
 
     public void setLocalTime(String localTime) {
         this.localTime = localTime;
+    }
+
+    public String getOffsetDateTime() {
+        return offsetDateTime;
+    }
+
+    public void setOffsetDateTime(String offsetDateTime) {
+        this.offsetDateTime = offsetDateTime;
+    }
+
+    public String getOffsetTime() {
+        return offsetTime;
+    }
+
+    public void setOffsetTime(String offsetTime) {
+        this.offsetTime = offsetTime;
     }
 
     public Calendar getForCalendarConversion() {

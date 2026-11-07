@@ -21,18 +21,26 @@ public interface OptionalSourceTargetMapper {
 
     String LOCAL_TIME_FORMAT = "HH:mm";
 
+    String OFFSET_DATE_TIME_FORMAT = "dd.MM.yyyy HH:mm xxx";
+
+    String OFFSET_TIME_FORMAT = "HH:mm xxx";
+
     OptionalSourceTargetMapper INSTANCE = Mappers.getMapper( OptionalSourceTargetMapper.class );
 
     @Mapping(target = "zonedDateTime", dateFormat = DATE_TIME_FORMAT)
     @Mapping(target = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT)
     @Mapping(target = "localDate", dateFormat = LOCAL_DATE_FORMAT)
     @Mapping(target = "localTime", dateFormat = LOCAL_TIME_FORMAT)
+    @Mapping(target = "offsetDateTime", dateFormat = OFFSET_DATE_TIME_FORMAT)
+    @Mapping(target = "offsetTime", dateFormat = OFFSET_TIME_FORMAT)
     Target sourceToTarget(OptionalSource source);
 
     @Mapping(target = "zonedDateTime", dateFormat = DATE_TIME_FORMAT)
     @Mapping(target = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT)
     @Mapping(target = "localDate", dateFormat = LOCAL_DATE_FORMAT)
     @Mapping(target = "localTime", dateFormat = LOCAL_TIME_FORMAT)
+    @Mapping(target = "offsetDateTime", dateFormat = OFFSET_DATE_TIME_FORMAT)
+    @Mapping(target = "offsetTime", dateFormat = OFFSET_TIME_FORMAT)
     Target sourceToTargetDefaultMapping(OptionalSource source);
 
     @Mapping(target = "zonedDateTime", dateFormat = DATE_TIME_FORMAT)
@@ -51,6 +59,8 @@ public interface OptionalSourceTargetMapper {
     @Mapping(target = "localDateTime", dateFormat = LOCAL_DATE_TIME_FORMAT)
     @Mapping(target = "localDate", dateFormat = LOCAL_DATE_FORMAT)
     @Mapping(target = "localTime", dateFormat = LOCAL_TIME_FORMAT)
+    @Mapping(target = "offsetDateTime", dateFormat = OFFSET_DATE_TIME_FORMAT)
+    @Mapping(target = "offsetTime", dateFormat = OFFSET_TIME_FORMAT)
     OptionalSource targetToSource(Target target);
 
     @Mapping(target = "zonedDateTime", dateFormat = DATE_TIME_FORMAT)
