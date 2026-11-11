@@ -1020,8 +1020,9 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
 
             // The rules for picking a constructor are the following:
             // 1. Constructor annotated with @Default (from any package) has highest precedence
-            // 2. If there is a single public constructor then it would be used to construct the object
-            // 3. If a parameterless constructor exists then it would be used to construct the object, and the other
+            // 2. A deprecated parameterless constructor is ignored
+            // 3. If there is a single public constructor then it would be used to construct the object
+            // 4. If a parameterless constructor exists then it would be used to construct the object, and the other
             // constructors will be ignored
             ExecutableElement defaultAnnotatedConstructor = null;
             ExecutableElement parameterLessConstructor = null;
@@ -1037,6 +1038,12 @@ public class BeanMappingMethod extends NormalTypeMappingMethod {
                     // We found a constructor annotated with @Default everything else is irrelevant
                     defaultAnnotatedConstructor = constructor;
                     break;
+                }
+
+                if ( constructor.getParameters().isEmpty() && ctx.getElementUtils().isDeprecated( constructor ) ) {
+                    // The Kotlin no-arg plugin generates such a constructor, for example for JPA entities (#3960).
+                    // If no other constructor is accessible, the mapper still uses it.
+                    continue;
                 }
 
                 if ( constructor.getParameters().isEmpty() ) {
