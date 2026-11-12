@@ -11,6 +11,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.ZonedDateTime;
 
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
@@ -90,6 +92,8 @@ final class DateFormatValidatorFactory {
                         LocalDate.class.getCanonicalName(),
                         LocalTime.class.getCanonicalName(),
                         LocalDateTime.class.getCanonicalName(),
+                        OffsetDateTime.class.getCanonicalName(),
+                        OffsetTime.class.getCanonicalName(),
                         ZonedDateTime.class.getCanonicalName()
         );
     }

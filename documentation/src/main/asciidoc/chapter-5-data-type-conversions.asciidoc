@@ -95,7 +95,7 @@ public interface CarMapper {
 
 * Between `java.time.LocalDate`, `java.time.LocalDateTime` and `javax.xml.datatype.XMLGregorianCalendar`.
 
-* Between `java.time.ZonedDateTime`, `java.time.LocalDateTime`, `java.time.LocalDate`, `java.time.LocalTime` from Java 8 Date-Time package and `String`. A format string as understood by `java.text.SimpleDateFormat` can be specified via the `dateFormat` option (see above).
+* Between `java.time.ZonedDateTime`, `java.time.LocalDateTime`, `java.time.LocalDate`, `java.time.LocalTime`, `java.time.OffsetDateTime`, and `java.time.OffsetTime` from Java 8 Date-Time package and `String`. A format string as understood by `java.time.format.DateTimeFormatter` can be specified via the `dateFormat` option (see above).
 
 * Between `java.time.Instant`, `java.time.Duration`, `java.time.Period` from Java 8 Date-Time package and `String` using the `parse` method in each class to map from `String` and using `toString` to map into `String`.
 
