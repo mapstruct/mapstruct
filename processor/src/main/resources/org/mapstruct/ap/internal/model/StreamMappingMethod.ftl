@@ -179,8 +179,18 @@
 <#macro streamMapSupplier>
     <@compress>
         <#if !elementAssignment.directAssignment?? || !elementAssignment.directAssignment>
-            <#-- Todo just filter null out? -->
-            <#if elementAssignment.needsParameterNullCheck()>.filter( resultName -> resultName != null )</#if>.map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> )
+            <#-- When the element assignment needs a null check, either map null source elements to null (set-to-null)
+                if the target element is nullable, or filter out null source elements if it is non-null. -->
+            <#if elementAssignment.needsParameterNullCheck()>
+                <#assign lambdaVar><#if elementAssignment.sourceLocalVarName?? >${elementAssignment.sourceLocalVarName}<#else>${elementAssignment.sourceReference}</#if></#assign>
+                <#if defaultElementAssignment??>
+                    .map( ${lambdaVar} -> ${lambdaVar} == null ? null : <@includeModel object=elementAssignment.assignment targetBeanName=resultName targetType=resultElementType/> )
+                <#else>
+                    .filter( ${lambdaVar} -> ${lambdaVar} != null ).map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> )
+                </#if>
+            <#else>
+                .map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> )
+            </#if>
         </#if>
     </@compress>
 </#macro>

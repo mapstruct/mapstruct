@@ -24,7 +24,7 @@ public class JSpecifyReturnDefaultStreamMapperImpl implements JSpecifyReturnDefa
             return Stream.empty();
         }
 
-        return sources.filter( resultName -> resultName != null ).map( nullMarkedSourceBean -> map( nullMarkedSourceBean ) );
+        return sources.map( nullMarkedSourceBean -> nullMarkedSourceBean == null ? null : map( nullMarkedSourceBean ) );
     }
 
     @Override
