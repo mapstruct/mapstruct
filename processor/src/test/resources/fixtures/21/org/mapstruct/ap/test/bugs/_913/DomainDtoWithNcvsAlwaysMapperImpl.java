@@ -209,6 +209,9 @@ public class DomainDtoWithNcvsAlwaysMapperImpl implements DomainDtoWithNcvsAlway
             if ( string != null ) {
                 set.add( Long.parseLong( string ) );
             }
+            else {
+                set.add( null );
+            }
         }
 
         return set;

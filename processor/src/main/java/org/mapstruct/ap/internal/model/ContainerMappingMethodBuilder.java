@@ -23,6 +23,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -133,6 +134,18 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                 forgedMethod.addThrownTypes( assignment.getThrownTypes() );
             }
         }
+        Set<String> existingVariables = new HashSet<>( method.getParameterNames() );
+        existingVariables.add( loopVariableName );
+
+        // If the element assignment needs a null check and the target element is nullable, null source elements are
+        // explicitly assigned to the target element instead of being filtered out.
+        Assignment defaultElementAssignment = null;
+        if ( assignment != null && assignment.needsParameterNullCheck()
+                && targetElementTypeInstance.getNullability().isNullable() ) {
+            defaultElementAssignment = getWrapper( new SourceRHS( targetElementType.getNull(), targetElementType,
+                    existingVariables, "container set to null",
+                    Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) ), method );
+        }
         assignment = getWrapper( assignment, method );
 
         // mapNullToDefault — a JSpecify @NonNull return forces RETURN_DEFAULT to avoid generating `return null`.
@@ -153,9 +166,6 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         if ( !method.isUpdateMethod() ) {
             factoryMethod = ObjectFactoryMethodResolver.getFactoryMethod( method, null, ctx );
         }
-
-        Set<String> existingVariables = new HashSet<>( method.getParameterNames() );
-        existingVariables.add( loopVariableName );
 
         List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleMethodResolver.beforeMappingMethods(
             method,
@@ -179,6 +189,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             method,
             existingVariables,
             assignment,
+            defaultElementAssignment,
             factoryMethod,
             mapNullToDefault,
             loopVariableName,
@@ -189,12 +200,15 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         );
     }
 
+    //CHECKSTYLE:OFF
     protected abstract M instantiateMappingMethod(Method method, Collection<String> existingVariables,
-                                                  Assignment assignment, MethodReference factoryMethod,
+                                                  Assignment assignment, Assignment defaultElementAssignment,
+                                                  MethodReference factoryMethod,
                                                   boolean mapNullToDefault, String loopVariableName,
                                                   List<LifecycleCallbackMethodReference> beforeMappingMethods,
                                                   List<LifecycleCallbackMethodReference> afterMappingMethods,
         SelectionParameters selectionParameters, PresenceCheck sourceParameterPresenceCheck);
+    //CHECKSTYLE:ON
 
     protected abstract TypeInstance getElementType(TypeInstance parameterType);
 

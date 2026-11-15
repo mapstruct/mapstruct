@@ -209,6 +209,9 @@ public class DomainDtoWithPresenceCheckMapperImpl implements DomainDtoWithPresen
             if ( string != null ) {
                 set.add( Long.parseLong( string ) );
             }
+            else {
+                set.add( null );
+            }
         }
 
         return set;

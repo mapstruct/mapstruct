@@ -30,6 +30,9 @@ public class JSpecifyReturnNullOverrideIterableMapperImpl implements JSpecifyRet
             if ( nullMarkedSourceBean != null ) {
                 list.add( map( nullMarkedSourceBean ) );
             }
+            else {
+                list.add( null );
+            }
         }
 
         return list;

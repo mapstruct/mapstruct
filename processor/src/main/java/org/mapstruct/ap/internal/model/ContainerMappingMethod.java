@@ -28,6 +28,7 @@ import org.mapstruct.ap.internal.util.accessor.Nullability;
  */
 public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
     private final Assignment elementAssignment;
+    private final Assignment defaultElementAssignment;
     private final String loopVariableName;
     private final SelectionParameters selectionParameters;
     private final String index1Name;
@@ -39,7 +40,8 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
     //CHECKSTYLE:OFF
     ContainerMappingMethod(Method method, List<Annotation> annotations,
                            Collection<String> existingVariables, Assignment parameterAssignment,
-        MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+        Assignment defaultElementAssignment, MethodReference factoryMethod,
+        boolean mapNullToDefault, String loopVariableName,
         List<LifecycleCallbackMethodReference> beforeMappingReferences,
         List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters, PresenceCheck sourceParameterPresenceCheck) {
@@ -67,7 +69,7 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
 
         this.sourceParameter = sourceParameter;
         this.sourceParameterPresenceCheck = sourceParameterPresenceCheck;
-
+        this.defaultElementAssignment = defaultElementAssignment;
     }
 
     public Parameter getSourceParameter() {
@@ -157,5 +159,9 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
             return returnTypeNullability.knownNotNull();
         }
         return returnTypeNullability.withIsReturnDefault( isMapNullToDefault() );
+    }
+
+    public Assignment getDefaultElementAssignment() {
+        return defaultElementAssignment;
     }
 }

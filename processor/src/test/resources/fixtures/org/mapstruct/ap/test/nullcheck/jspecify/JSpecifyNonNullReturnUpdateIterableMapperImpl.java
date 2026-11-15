@@ -29,6 +29,9 @@ public class JSpecifyNonNullReturnUpdateIterableMapperImpl implements JSpecifyNo
             if ( nullMarkedSourceBean != null ) {
                 target.add( map( nullMarkedSourceBean ) );
             }
+            else {
+                target.add( null );
+            }
         }
 
         return target;

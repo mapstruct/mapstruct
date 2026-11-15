@@ -150,6 +150,9 @@ public class BuildInMapperImpl implements BuildInMapper {
             if ( xMLGregorianCalendar != null ) {
                 list1.add( xmlGregorianCalendarToString( xMLGregorianCalendar, null ) );
             }
+            else {
+                list1.add( null );
+            }
         }
 
         return list1;

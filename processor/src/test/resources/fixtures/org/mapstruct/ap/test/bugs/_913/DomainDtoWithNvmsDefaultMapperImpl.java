@@ -264,6 +264,9 @@ public class DomainDtoWithNvmsDefaultMapperImpl implements DomainDtoWithNvmsDefa
             if ( string != null ) {
                 set.add( Long.parseLong( string ) );
             }
+            else {
+                set.add( null );
+            }
         }
 
         return set;

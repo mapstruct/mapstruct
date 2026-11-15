@@ -243,6 +243,9 @@ public class DomainDtoWithNvmsNullMapperImpl implements DomainDtoWithNvmsNullMap
             if ( string != null ) {
                 set.add( Long.parseLong( string ) );
             }
+            else {
+                set.add( null );
+            }
         }
 
         return set;

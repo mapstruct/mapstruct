@@ -57,16 +57,20 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
+        //CHECKSTYLE:OFF
         protected IterableMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
-            Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+            Assignment assignment, Assignment defaultElementAssignment, MethodReference factoryMethod,
+            boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
             List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
             PresenceCheck sourceParameterPresenceCheck) {
+            //CHECKSTYLE:ON
             return new IterableMappingMethod(
                 method,
                 getMethodAnnotations(),
                 existingVariables,
                 assignment,
+                defaultElementAssignment,
                 factoryMethod,
                 mapNullToDefault,
                 loopVariableName,
@@ -81,7 +85,8 @@ public class IterableMappingMethod extends ContainerMappingMethod {
     //CHECKSTYLE:OFF
     private IterableMappingMethod(Method method, List<Annotation> annotations,
                                   Collection<String> existingVariables, Assignment parameterAssignment,
-                                  MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+                                  Assignment defaultElementAssignment, MethodReference factoryMethod,
+                                  boolean mapNullToDefault, String loopVariableName,
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters, PresenceCheck sourceParameterPresenceCheck) {
@@ -91,6 +96,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             annotations,
             existingVariables,
             parameterAssignment,
+            defaultElementAssignment,
             factoryMethod,
             mapNullToDefault,
             loopVariableName,

@@ -362,6 +362,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             if ( float1 != null ) {
                 list.add( new DecimalFormat( "##.00" ).format( float1 ) );
             }
+            else {
+                list.add( null );
+            }
         }
 
         return list;
@@ -383,6 +386,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
                     throw new RuntimeException( e );
                 }
             }
+            else {
+                list.add( null );
+            }
         }
 
         return list;
@@ -398,6 +404,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         for ( BigDecimal bigDecimal : source ) {
             if ( bigDecimal != null ) {
                 list.add( createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).format( bigDecimal ) );
+            }
+            else {
+                list.add( null );
             }
         }
 
@@ -419,6 +428,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
                 catch ( ParseException e ) {
                     throw new RuntimeException( e );
                 }
+            }
+            else {
+                list.add( null );
             }
         }
 

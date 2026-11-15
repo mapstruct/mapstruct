@@ -30,6 +30,9 @@ public class JSpecifyNonNullReturnIterableMapperImpl implements JSpecifyNonNullR
             if ( nullMarkedSourceBean != null ) {
                 list.add( map( nullMarkedSourceBean ) );
             }
+            else {
+                list.add( null );
+            }
         }
 
         return list;

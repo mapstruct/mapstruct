@@ -52,11 +52,14 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
+        //CHECKSTYLE:OFF
         protected StreamMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
-            Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+            Assignment assignment, Assignment defaultElementAssignment, MethodReference factoryMethod,
+            boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
             List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
             PresenceCheck sourceParameterPresenceCheck) {
+            //CHECKSTYLE:ON
 
             Set<Type> helperImports = new HashSet<>();
             if ( method.getResultType().isIterableType() ) {
@@ -73,6 +76,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
                 getMethodAnnotations(),
                 existingVariables,
                 assignment,
+                defaultElementAssignment,
                 factoryMethod,
                 mapNullToDefault,
                 loopVariableName,
@@ -87,7 +91,8 @@ public class StreamMappingMethod extends ContainerMappingMethod {
     //CHECKSTYLE:OFF
     private StreamMappingMethod(Method method, List<Annotation> annotations,
                                 Collection<String> existingVariables, Assignment parameterAssignment,
-                                MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+                                Assignment defaultElementAssignment, MethodReference factoryMethod,
+                                boolean mapNullToDefault, String loopVariableName,
                                 List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                 List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters, Set<Type> helperImports, PresenceCheck sourceParameterPresenceCheck) {
@@ -96,6 +101,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             annotations,
             existingVariables,
             parameterAssignment,
+            defaultElementAssignment,
             factoryMethod,
             mapNullToDefault,
             loopVariableName,

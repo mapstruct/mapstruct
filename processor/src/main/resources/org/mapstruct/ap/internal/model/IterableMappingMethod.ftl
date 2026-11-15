@@ -70,10 +70,10 @@
                 break;
             }
             </#if>
+            <#-- Array elements are already null by default, so null source elements are skipped instead of being assigned -->
             <@lib.handleVariableNullCheck elementAssignment.needsParameterNullCheck() loopVariableName>
                 <@includeModel object=elementAssignment targetWriteAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>
             </@lib.handleVariableNullCheck>
-            <#-- Todo do we need to add null here? Or is filtering out okay? -->
             ${index1Name}++;
         }
     <#else>
@@ -81,7 +81,11 @@
             <@lib.handleVariableNullCheck elementAssignment.needsParameterNullCheck() loopVariableName>
                 <@includeModel object=elementAssignment targetBeanName=resultName targetWriteAccessorName="add" targetType=resultElementType/>
             </@lib.handleVariableNullCheck>
-            <#-- Todo do we need to add null here? Or is filtering out okay? -->
+            <#if elementAssignment.needsParameterNullCheck() && defaultElementAssignment??>
+                else {
+                    <@includeModel object=defaultElementAssignment targetBeanName=resultName targetWriteAccessorName="add" targetType=resultElementType/>
+                }
+            </#if>
         }
     </#if>
     <#list afterMappingReferences as callback>

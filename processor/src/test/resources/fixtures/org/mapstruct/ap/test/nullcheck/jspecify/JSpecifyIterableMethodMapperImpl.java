@@ -26,6 +26,9 @@ public class JSpecifyIterableMethodMapperImpl implements JSpecifyIterableMethodM
             if ( nullMarkedSourceBean != null ) {
                 list.add( map( nullMarkedSourceBean ) );
             }
+            else {
+                list.add( null );
+            }
         }
 
         return list;
