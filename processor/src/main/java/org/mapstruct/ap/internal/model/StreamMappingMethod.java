@@ -62,7 +62,9 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             //CHECKSTYLE:ON
 
             Set<Type> helperImports = new HashSet<>();
-            if ( method.getResultType().isIterableType() ) {
+            // Arrays are reported as iterable types, but the array branch of the template uses .toArray() instead
+            // of Collectors, so only genuine (non-array) iterable results need the import.
+            if ( method.getResultType().isIterableType() && !method.getResultType().isArrayType() ) {
                 helperImports.add( ctx.getTypeFactory().getType( Collectors.class ) );
             }
 
