@@ -28,12 +28,27 @@ class OptionalNullCheckAlwaysTest {
     }
 
     @ProcessorTest
+    @WithClasses(OptionalDefaultNullCheckMapper.class)
+    void generatedCodeWithDefaultNullValueCheckStrategy() {
+        generatedSource.addComparisonToFixtureFor( OptionalDefaultNullCheckMapper.class );
+    }
+
+    @ProcessorTest
+    void optionalToOptionalWhenNull() {
+        Source source = new Source();
+        source.setOptionalToOptional( null );
+
+        Target target = OptionalNullCheckAlwaysMapper.INSTANCE.toTarget( source );
+        assertThat( target.isOptionalToOptionalCalled() ).isFalse();
+    }
+
+    @ProcessorTest
     void optionalToOptionalWhenEmpty() {
         Source source = new Source();
         source.setOptionalToOptional( Optional.empty() );
 
         Target target = OptionalNullCheckAlwaysMapper.INSTANCE.toTarget( source );
-        assertThat( target.isOptionalToOptionalCalled() ).isFalse();
+        assertThat( target.isOptionalToOptionalCalled() ).isTrue();
     }
 
     @ProcessorTest
@@ -43,6 +58,45 @@ class OptionalNullCheckAlwaysTest {
 
         Target target = OptionalNullCheckAlwaysMapper.INSTANCE.toTarget( source );
         assertThat( target.isOptionalToOptionalCalled() ).isTrue();
+    }
+
+    @ProcessorTest
+    void updateOptionalToOptionalWhenNull() {
+        Source source = new Source();
+        source.setOptionalToOptional( null );
+
+        Target target = new Target();
+        OptionalNullCheckAlwaysMapper.INSTANCE.update( target, source );
+        assertThat( target.isOptionalToOptionalCalled() ).isFalse();
+    }
+
+    @ProcessorTest
+    void updateOptionalToOptionalWhenEmpty() {
+        Source source = new Source();
+        source.setOptionalToOptional( Optional.empty() );
+
+        Target target = new Target();
+        OptionalNullCheckAlwaysMapper.INSTANCE.update( target, source );
+        assertThat( target.isOptionalToOptionalCalled() ).isFalse();
+    }
+
+    @ProcessorTest
+    void updateOptionalToOptionalWhenPresent() {
+        Source source = new Source();
+        source.setOptionalToOptional( Optional.of( "some value" ) );
+
+        Target target = new Target();
+        OptionalNullCheckAlwaysMapper.INSTANCE.update( target, source );
+        assertThat( target.isOptionalToOptionalCalled() ).isTrue();
+    }
+
+    @ProcessorTest
+    void optionalToNonOptionalWhenNull() {
+        Source source = new Source();
+        source.setOptionalToNonOptional( null );
+
+        Target target = OptionalNullCheckAlwaysMapper.INSTANCE.toTarget( source );
+        assertThat( target.isOptionalToNonOptionalCalled() ).isFalse();
     }
 
     @ProcessorTest

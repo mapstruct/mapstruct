@@ -932,7 +932,43 @@ public class PropertyMapping extends ModelElement {
                     }
                 }
             }
+
+            if ( sourcePresenceChecker == null ) {
+                sourcePresenceChecker = getNullSafeOptionalPresenceCheck( sourceReference, sourceRHS );
+            }
+
             return sourcePresenceChecker;
+        }
+
+        /**
+         * With {@link org.mapstruct.NullValueCheckStrategy#ALWAYS} a {@code null} {@code Optional} source must not
+         * be dereferenced. Outside update methods an {@code Optional} target receives the source as is, so
+         * {@code Optional.empty()} is kept; update methods leave empty to {@code NullValuePropertyMappingStrategy}.
+         */
+        private PresenceCheck getNullSafeOptionalPresenceCheck(SourceReference sourceReference, SourceRHS sourceRHS) {
+            if ( nvcs != ALWAYS || sourceReference.isNested() || sourceReference.getPropertyEntries().isEmpty() ) {
+                // Only a direct property read can be safely repeated within the presence check
+                return null;
+            }
+
+            Type sourceType = sourceRHS.getSourceType();
+            if ( sourceType == null || !sourceType.isOptionalType() ) {
+                return null;
+            }
+
+            if ( getSourceJSpecifyNullability() == NullabilityResolver.Nullability.NON_NULL ) {
+                // JSpecify annotations take precedence over NullValueCheckStrategy
+                return null;
+            }
+
+            String reference = sourceRHS.getSourceReference();
+            if ( !method.isUpdateMethod() && targetType != null && targetType.isOptionalType() ) {
+                return new NullPresenceCheck( reference );
+            }
+            return new AllPresenceChecksPresenceCheck( Arrays.asList(
+                new NullPresenceCheck( reference ),
+                new OptionalPresenceCheck( reference, ctx.getVersionInformation() )
+            ) );
         }
 
         private Assignment forgeStreamMapping(Type sourceType, Type targetType, SourceRHS source) {
