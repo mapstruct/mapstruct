@@ -72,12 +72,12 @@ public class ReferencedAccessibilityTest {
 
     @ProcessorTest
     @IssueKey( "206" )
-    @WithClasses( { AbstractSourceTargetMapperProtected.class, SourceTargetmapperProtectedBase.class } )
+    @WithClasses( { AbstractSourceTargetMapperProtected.class, SourceTargetMapperProtectedBase.class } )
     public void shouldBeAbleToAccessProtectedMethodInBase() { }
 
     @ProcessorTest
     @IssueKey("206")
-    @WithClasses({ AbstractSourceTargetMapperPrivate.class, SourceTargetmapperPrivateBase.class })
+    @WithClasses({ AbstractSourceTargetMapperPrivate.class, SourceTargetMapperPrivateBase.class })
     @ExpectedCompilationOutcome(
         value = CompilationResult.SUCCEEDED,
         diagnostics = {

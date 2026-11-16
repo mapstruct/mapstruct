@@ -5,14 +5,14 @@
  */
 package org.mapstruct.ap.internal.model.source.selector;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * Selects on inheritance distance, e.g. the amount of inheritance steps from the parameter type.
@@ -22,26 +22,22 @@ import org.mapstruct.ap.internal.model.source.Method;
 public class InheritanceSelector implements MethodSelector {
 
     @Override
-    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
-                                                                         List<SelectedMethod<T>> methods,
-                                                                         List<Type> sourceTypes,
-                                                                         Type mappingTargetType, Type returnType,
-                                                                         SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<SelectedMethod<T>> methods,
+                                                                         SelectionContext context) {
 
-        if ( sourceTypes.size() != 1 ) {
+        Type sourceType = context.getSourceType();
+        if ( sourceType == null ) {
             return methods;
         }
-
-        Type singleSourceType = first( sourceTypes );
 
         List<SelectedMethod<T>> candidatesWithBestMatchingSourceType = new ArrayList<>();
         int bestMatchingSourceTypeDistance = Integer.MAX_VALUE;
 
-        // find the methods with the minimum distance regarding getParameter getParameter type
+        // Find methods with the minimum inheritance distance from the source parameter type
         for ( SelectedMethod<T> method : methods ) {
             Parameter singleSourceParam = first( method.getMethod().getSourceParameters() );
 
-            int sourceTypeDistance = singleSourceType.distanceTo( singleSourceParam.getType() );
+            int sourceTypeDistance = sourceType.distanceTo( singleSourceParam.getType() );
             bestMatchingSourceTypeDistance =
                 addToCandidateListIfMinimal(
                     candidatesWithBestMatchingSourceType,
@@ -53,17 +49,17 @@ public class InheritanceSelector implements MethodSelector {
         return candidatesWithBestMatchingSourceType;
     }
 
-    private <T extends Method> int addToCandidateListIfMinimal(List<SelectedMethod<T>> candidatesWithBestMathingType,
+    private <T extends Method> int addToCandidateListIfMinimal(List<SelectedMethod<T>> candidatesWithBestMatchingType,
                                                                int bestMatchingTypeDistance, SelectedMethod<T> method,
                                                                int currentTypeDistance) {
         if ( currentTypeDistance == bestMatchingTypeDistance ) {
-            candidatesWithBestMathingType.add( method );
+            candidatesWithBestMatchingType.add( method );
         }
         else if ( currentTypeDistance < bestMatchingTypeDistance ) {
             bestMatchingTypeDistance = currentTypeDistance;
 
-            candidatesWithBestMathingType.clear();
-            candidatesWithBestMathingType.add( method );
+            candidatesWithBestMatchingType.clear();
+            candidatesWithBestMatchingType.add( method );
         }
         return bestMatchingTypeDistance;
     }

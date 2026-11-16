@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright MapStruct Authors.
+
+    Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>recordsCrossModuleInterfaceTest</artifactId>
+        <groupId>org.mapstruct</groupId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>records-cross-module-2</artifactId>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>records-cross-module-1</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+</project>

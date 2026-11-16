@@ -172,7 +172,7 @@ public final class ImmutableItemDTO extends ItemDTO {
         }
 
         private String formatRequiredAttributesMessage() {
-            List<String> attributes = new ArrayList<String>();
+            List<String> attributes = new ArrayList<>();
             if ( ( initBits & INIT_BIT_ID ) != 0 ) {
                 attributes.add( "id" );
             }

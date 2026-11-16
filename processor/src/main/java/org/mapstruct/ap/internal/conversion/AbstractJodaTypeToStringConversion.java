@@ -13,9 +13,9 @@ import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.dateTimeFormat;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.locale;
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Base class for conversions between Joda-Time types and String.

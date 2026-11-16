@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -23,7 +23,7 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.ExecutableElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
@@ -39,22 +39,16 @@ import static org.mapstruct.ap.internal.util.accessor.AccessorType.SETTER;
 public class Filters {
 
     private static final Method RECORD_COMPONENTS_METHOD;
-    private static final Method RECORD_COMPONENT_ACCESSOR_METHOD;
 
     static {
         Method recordComponentsMethod;
-        Method recordComponentAccessorMethod;
         try {
             recordComponentsMethod = TypeElement.class.getMethod( "getRecordComponents" );
-            recordComponentAccessorMethod = Class.forName( "javax.lang.model.element.RecordComponentElement" )
-                .getMethod( "getAccessor" );
         }
-        catch ( NoSuchMethodException | ClassNotFoundException e ) {
+        catch ( NoSuchMethodException e ) {
             recordComponentsMethod = null;
-            recordComponentAccessorMethod = null;
         }
         RECORD_COMPONENTS_METHOD = recordComponentsMethod;
-        RECORD_COMPONENT_ACCESSOR_METHOD = recordComponentAccessorMethod;
     }
 
     private final AccessorNamingUtils accessorNaming;
@@ -70,7 +64,7 @@ public class Filters {
     public List<ReadAccessor> getterMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isGetterMethod )
-            .map( method ->  ReadAccessor.fromGetter( method, getReturnType( method ) ) )
+            .map( method -> ReadAccessor.fromGetter( method, getReturnType( method ) ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
@@ -89,35 +83,31 @@ public class Filters {
     }
 
     public Map<String, ReadAccessor> recordAccessorsIn(Collection<Element> recordComponents) {
-        if ( RECORD_COMPONENT_ACCESSOR_METHOD == null ) {
+        if ( recordComponents.isEmpty() ) {
             return java.util.Collections.emptyMap();
         }
-        try {
-            Map<String, ReadAccessor> recordAccessors = new LinkedHashMap<>();
-            for ( Element recordComponent : recordComponents ) {
-                ExecutableElement recordExecutableElement =
-                    (ExecutableElement) RECORD_COMPONENT_ACCESSOR_METHOD.invoke( recordComponent );
-                recordAccessors.put(
-                    recordComponent.getSimpleName().toString(),
-                    ReadAccessor.fromGetter( recordExecutableElement, getReturnType( recordExecutableElement ) )
-                );
-            }
+        Map<String, ReadAccessor> recordAccessors = new LinkedHashMap<>();
+        for ( Element recordComponent : recordComponents ) {
+            recordAccessors.put(
+                recordComponent.getSimpleName().toString(),
+                ReadAccessor.fromRecordComponent(
+                    recordComponent,
+                    typeUtils.asMemberOf( (DeclaredType) typeMirror, recordComponent )
+                )
+            );
+        }
 
-            return recordAccessors;
-        }
-        catch ( IllegalAccessException | InvocationTargetException e ) {
-            return java.util.Collections.emptyMap();
-        }
+        return recordAccessors;
     }
 
     private TypeMirror getReturnType(ExecutableElement executableElement) {
         return getWithinContext( executableElement ).getReturnType();
     }
 
-    public <T> List<T> fieldsIn(List<VariableElement> accessors, Function<VariableElement, T> creator) {
+    public <T> List<T> fieldsIn(List<VariableElement> accessors, BiFunction<VariableElement, TypeMirror, T> creator) {
         return accessors.stream()
             .filter( Fields::isFieldAccessor )
-            .map( creator )
+            .map( variableElement -> creator.apply( variableElement, getWithinContext( variableElement ) ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
@@ -130,7 +120,7 @@ public class Filters {
     public List<Accessor> setterMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isSetterMethod )
-            .map( method ->  new ExecutableElementAccessor( method, getFirstParameter( method ), SETTER ) )
+            .map( method -> new ElementAccessor( method, getFirstParameter( method ), SETTER ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 
@@ -142,10 +132,14 @@ public class Filters {
         return (ExecutableType) typeUtils.asMemberOf( (DeclaredType) typeMirror, executableElement );
     }
 
+    private TypeMirror getWithinContext( VariableElement variableElement ) {
+        return typeUtils.asMemberOf( (DeclaredType) typeMirror, variableElement );
+    }
+
     public List<Accessor> adderMethodsIn(List<ExecutableElement> elements) {
         return elements.stream()
             .filter( accessorNaming::isAdderMethod )
-            .map( method -> new ExecutableElementAccessor( method, getFirstParameter( method ), ADDER ) )
+            .map( method -> new ElementAccessor( method, getFirstParameter( method ), ADDER ) )
             .collect( Collectors.toCollection( LinkedList::new ) );
     }
 }

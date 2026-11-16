@@ -1,0 +1,26 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.mapstruct.itest.records.module2;
+
+import org.junit.jupiter.api.Test;
+import org.mapstruct.itest.records.module1.SourceNestedRecord;
+import org.mapstruct.itest.records.module1.SourceRootRecord;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class RecordsTest {
+
+    @Test
+    void shouldMap() {
+        SourceRootRecord source = new SourceRootRecord( new SourceNestedRecord( "test" ) );
+        TargetRootRecord target = RecordInterfaceIssueMapper.INSTANCE.map( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.nested() ).isNotNull();
+        assertThat( target.nested().field() ).isEqualTo( "test" );
+    }
+
+}

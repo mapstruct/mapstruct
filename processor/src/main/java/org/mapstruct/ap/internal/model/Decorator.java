@@ -7,14 +7,15 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import javax.lang.model.element.TypeElement;
 
+import org.mapstruct.ap.internal.gem.DecoratedWithGem;
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.option.Options;
-import org.mapstruct.ap.internal.gem.DecoratedWithGem;
 import org.mapstruct.ap.internal.version.VersionInformation;
 
 /**
@@ -33,6 +34,7 @@ public class Decorator extends GeneratedType {
         private String implName;
         private String implPackage;
         private boolean suppressGeneratorTimestamp;
+        private Set<Annotation> customAnnotations;
 
         public Builder() {
             super( Builder.class );
@@ -68,6 +70,11 @@ public class Decorator extends GeneratedType {
             return this;
         }
 
+        public Builder additionalAnnotations(Set<Annotation> customAnnotations) {
+            this.customAnnotations = customAnnotations;
+            return this;
+        }
+
         public Decorator build() {
             String implementationName = implName.replace( Mapper.CLASS_NAME_PLACEHOLDER,
                 Mapper.getFlatName( mapperElement ) );
@@ -95,7 +102,8 @@ public class Decorator extends GeneratedType {
                 suppressGeneratorTimestamp,
                 Accessibility.fromModifiers( mapperElement.getModifiers() ),
                 extraImportedTypes,
-                decoratorConstructor
+                decoratorConstructor,
+                customAnnotations
             );
         }
     }
@@ -110,7 +118,8 @@ public class Decorator extends GeneratedType {
                       Options options, VersionInformation versionInformation,
                       boolean suppressGeneratorTimestamp,
                       Accessibility accessibility, SortedSet<Type> extraImports,
-                      DecoratorConstructor decoratorConstructor) {
+                      DecoratorConstructor decoratorConstructor,
+                      Set<Annotation> customAnnotations) {
         super(
             typeFactory,
             packageName,
@@ -128,6 +137,11 @@ public class Decorator extends GeneratedType {
 
         this.decoratorType = decoratorType;
         this.mapperType = mapperType;
+
+        // Add custom annotations
+        if ( customAnnotations != null ) {
+            customAnnotations.forEach( this::addAnnotation );
+        }
     }
 
     @Override

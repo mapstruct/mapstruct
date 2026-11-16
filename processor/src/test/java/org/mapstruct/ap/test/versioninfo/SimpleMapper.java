@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.versioninfo;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.WithProperties;
 
 /**
  * @author Andreas Gudian
@@ -13,5 +14,5 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 public interface SimpleMapper {
-    Object toObject(Object object);
+    WithProperties toObject(WithProperties object);
 }

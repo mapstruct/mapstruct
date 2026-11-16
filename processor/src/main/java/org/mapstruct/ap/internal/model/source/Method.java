@@ -83,7 +83,7 @@ public interface Method {
     Parameter getMappingTargetParameter();
 
     /**
-     * Returns whether the meethod is designated as bean factory for
+     * Returns whether the method is designated as bean factory for
      * mapping target {@link  org.mapstruct.ObjectFactory }
      *
      * @return true if it is a target bean factory.
@@ -91,20 +91,11 @@ public interface Method {
     boolean isObjectFactory();
 
     /**
-     * Returns whether the method is designated as a presence check method
-     * @return {@code true} if it is a presence check method
-     */
-    default boolean isPresenceCheck() {
-        return false;
-    }
-
-    /**
      * Returns the parameter designated as target type (if present) {@link org.mapstruct.TargetType }
      *
      * @return target type parameter (when present) null otherwise.
      */
     Parameter getTargetTypeParameter();
-
 
     /**
      * Returns the {@link Accessibility} of this method.
@@ -187,13 +178,8 @@ public interface Method {
      */
     MappingMethodOptions getOptions();
 
-    /**
-     *
-     * @return true when @MappingTarget annotated parameter is the same type as the return type. The method has
-     * to be an update method in order for this to be true.
-     */
-    default boolean isMappingTargetAssignableToReturnType() {
-        return isUpdateMethod() && getResultType().isAssignableTo( getReturnType() );
+    default ConditionMethodOptions getConditionOptions() {
+        return ConditionMethodOptions.empty();
     }
 
     /**

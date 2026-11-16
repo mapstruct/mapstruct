@@ -192,7 +192,7 @@ The option `DEFAULT` should not be used explicitly. It is used to distinguish be
 
 [TIP]
 ====
-When working with an `adder` method and JPA entities, Mapstruct assumes that the target collections are initialized with a collection implementation (e.g. an `ArrayList`). You can use factories to create a new target entity with intialized collections instead of Mapstruct creating the target entity by its constructor.
+When working with an `adder` method and JPA entities, Mapstruct assumes that the target collections are initialized with a collection implementation (e.g. an `ArrayList`). You can use factories to create a new target entity with initialized collections instead of Mapstruct creating the target entity by its constructor.
 ====
 
 [[implementation-types-for-collection-mappings]]
@@ -212,11 +212,15 @@ When an iterable or map mapping method declares an interface type as return type
 
 |`Set`|`LinkedHashSet`
 
+|`SequencedSet`|`LinkedHashSet`
+
 |`SortedSet`|`TreeSet`
 
 |`NavigableSet`|`TreeSet`
 
 |`Map`|`LinkedHashMap`
+
+|`SequencedMap`|`LinkedHashMap`
 
 |`SortedMap`|`TreeMap`
 

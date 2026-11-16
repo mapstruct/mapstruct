@@ -29,7 +29,7 @@ public @interface ExpectedNote {
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface ExpectedNotes {
+    @interface ExpectedNotes {
 
         /**
          *  Regexp for the note to match.

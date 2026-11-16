@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.test.selection.generics;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.math.BigDecimal;
 
 import org.mapstruct.ap.test.NoProperties;
@@ -16,6 +14,8 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for the invocation of generic methods for mapping bean properties.

@@ -7,7 +7,6 @@ package org.mapstruct.ap.test.decorator.jakarta.jsr330;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-
 import org.mapstruct.ap.test.decorator.Person;
 import org.mapstruct.ap.test.decorator.PersonDto;
 

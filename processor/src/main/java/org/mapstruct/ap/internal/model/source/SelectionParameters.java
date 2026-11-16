@@ -9,9 +9,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.lang.model.type.TypeMirror;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.model.common.SourceRHS;
+import org.mapstruct.ap.internal.util.TypeUtils;
 
 /**
  * Holding parameters common to the selection process, common to IterableMapping, BeanMapping, PropertyMapping and
@@ -20,6 +20,16 @@ import org.mapstruct.ap.internal.model.common.SourceRHS;
  * @author Sjaak Derksen
  */
 public class SelectionParameters {
+
+    private static final SelectionParameters EMPTY = new SelectionParameters(
+        Collections.emptyList(),
+        Collections.emptyList(),
+        Collections.emptyList(),
+        Collections.emptyList(),
+        null,
+        null,
+        null
+    );
 
     private final List<TypeMirror> qualifiers;
     private final List<String> qualifyingNames;
@@ -39,6 +49,10 @@ public class SelectionParameters {
      * @return the selection parameters based on the given ones
      */
     public static SelectionParameters forInheritance(SelectionParameters selectionParameters) {
+        return withoutResultType( selectionParameters );
+    }
+
+    public static SelectionParameters withoutResultType(SelectionParameters selectionParameters) {
         return new SelectionParameters(
             selectionParameters.qualifiers,
             selectionParameters.qualifyingNames,
@@ -221,4 +235,9 @@ public class SelectionParameters {
             sourceRHS
         );
     }
+
+    public static SelectionParameters empty() {
+        return EMPTY;
+    }
+
 }

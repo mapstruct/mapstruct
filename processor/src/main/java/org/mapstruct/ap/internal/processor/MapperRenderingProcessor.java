@@ -6,7 +6,6 @@
 package org.mapstruct.ap.internal.processor;
 
 import java.io.IOException;
-
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;

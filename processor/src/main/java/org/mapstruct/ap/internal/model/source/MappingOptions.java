@@ -18,16 +18,16 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
 import org.mapstruct.ap.internal.gem.MappingGem;
 import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.tools.gem.GemValue;
 
 /**
@@ -118,10 +118,12 @@ public class MappingOptions extends DelegatingOptions {
         String conditionExpression = getConditionExpression( mapping, method, messager );
         String dateFormat = mapping.dateFormat().getValue();
         String numberFormat = mapping.numberFormat().getValue();
+        String locale = mapping.locale().getValue();
+
         String defaultValue = mapping.defaultValue().getValue();
 
         Set<String> dependsOn = mapping.dependsOn().hasValue() ?
-            new LinkedHashSet( mapping.dependsOn().getValue() ) :
+            new LinkedHashSet<>( mapping.dependsOn().getValue() ) :
             Collections.emptySet();
 
         FormattingParameters formattingParam = new FormattingParameters(
@@ -129,7 +131,8 @@ public class MappingOptions extends DelegatingOptions {
             numberFormat,
             mapping.mirror(),
             mapping.dateFormat().getAnnotationValue(),
-            method
+            method,
+            locale
         );
         SelectionParameters selectionParams = new SelectionParameters(
             mapping.qualifiedBy().get(),
@@ -182,7 +185,7 @@ public class MappingOptions extends DelegatingOptions {
             null,
             true,
             null,
-            null,
+            SelectionParameters.empty(),
             Collections.emptySet(),
             null,
             null,
@@ -207,10 +210,13 @@ public class MappingOptions extends DelegatingOptions {
         if ( gem.source().hasValue() && gem.constant().hasValue() ) {
             message = Message.PROPERTYMAPPING_SOURCE_AND_CONSTANT_BOTH_DEFINED;
         }
+        else if ( gem.expression().hasValue() && gem.conditionQualifiedByName().hasValue() ) {
+            message = Message.PROPERTYMAPPING_EXPRESSION_AND_CONDITION_QUALIFIED_BY_NAME_BOTH_DEFINED;
+        }
         else if ( gem.source().hasValue() && gem.expression().hasValue() ) {
             message = Message.PROPERTYMAPPING_SOURCE_AND_EXPRESSION_BOTH_DEFINED;
         }
-        else if (gem.expression().hasValue() && gem.constant().hasValue() ) {
+        else if ( gem.expression().hasValue() && gem.constant().hasValue() ) {
             message = Message.PROPERTYMAPPING_EXPRESSION_AND_CONSTANT_BOTH_DEFINED;
         }
         else if ( gem.expression().hasValue() && gem.defaultValue().hasValue() ) {
@@ -253,6 +259,12 @@ public class MappingOptions extends DelegatingOptions {
         else if ( gem.nullValuePropertyMappingStrategy().hasValue()
             && gem.ignore().hasValue() && gem.ignore().getValue() ) {
             message = Message.PROPERTYMAPPING_IGNORE_AND_NVPMS;
+        }
+        else if ( ".".equals( gem.target().get() ) && gem.ignore().hasValue() && gem.ignore().getValue() ) {
+            message = Message.PROPERTYMAPPING_TARGET_THIS_AND_IGNORE;
+        }
+        else if ( ".".equals( gem.target().get() ) && !gem.source().hasValue() ) {
+            message = Message.PROPERTYMAPPING_TARGET_THIS_NO_SOURCE;
         }
 
         if ( message == null ) {
@@ -470,13 +482,12 @@ public class MappingOptions extends DelegatingOptions {
     }
 
     /**
-     *  mapping can only be inversed if the source was not a constant nor an expression nor a nested property
-     *  and the mapping is not a 'target-source-ignore' mapping
+     *  Mapping can only be inversed if the source was not a constant nor an expression
      *
      * @return true when the above applies
      */
     public boolean canInverse() {
-        return constant == null && javaExpression == null && !( isIgnored && sourceName == null );
+        return constant == null && javaExpression == null;
     }
 
     public MappingOptions copyForInverseInheritance(SourceMethod templateMethod,

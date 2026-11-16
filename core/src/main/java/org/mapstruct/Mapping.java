@@ -20,7 +20,7 @@ import org.mapstruct.control.MappingControl;
 import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
 
 /**
- * Configures the mapping of one bean attribute or enum constant.
+ * Configures the mapping of one bean attribute.
  * <p>
  * The name of the mapped attribute or constant is to be specified via {@link #target()}. For mapped bean attributes it
  * is assumed by default that the attribute has the same name in the source bean. Alternatively, one of
@@ -118,7 +118,7 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  * // we can use {@link #defaultValue()} or {@link #defaultExpression()} for it
  * &#64;Mapper
  * public interface HumanMapper {
- *    &#64;Mapping(source="name", target="name", defaultValue="Somebody")
+ *    &#64;Mapping(source="name", target="fullName", defaultValue="Somebody")
  *    HumanDto toHumanDto(Human human)
  * }
  * </code></pre>
@@ -135,9 +135,6 @@ import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
  *   // ...
  * }
  * </code></pre>
- *
- * <b>IMPORTANT NOTE:</b> the enum mapping capability is deprecated and replaced by {@link ValueMapping} it
- * will be removed in subsequent versions.
  *
  * @author Gunnar Morling
  */
@@ -178,18 +175,37 @@ public @interface Mapping {
     /**
      * A format string as processable by {@link SimpleDateFormat} if the attribute is mapped from {@code String} to
      * {@link Date} or vice-versa. Will be ignored for all other attribute types and when mapping enum constants.
+     * <p>
+     * If the {@link #locale()} is also specified, the format will consider the specified locale when processing
+     * the date. Otherwise, the system's default locale will be used.
      *
      * @return A date format string as processable by {@link SimpleDateFormat}.
+     * @see #locale()
      */
     String dateFormat() default "";
 
     /**
      * A format string as processable by {@link DecimalFormat} if the annotated method maps from a
      *  {@link Number} to a {@link String} or vice-versa. Will be ignored for all other element types.
+     * <p>
+     * If the {@link #locale()} is also specified, the number format will be applied in the context of the given locale.
+     * Otherwise, the system's default locale will be used to process the number format.
      *
      * @return A decimal format string as processable by {@link DecimalFormat}.
+     * @see #locale()
      */
     String numberFormat() default "";
+
+    /**
+     * Specifies the locale to be used when processing {@link #dateFormat()} or {@link #numberFormat()}.
+     * <p>
+     * The locale should be a plain tag representing the language, such as "en" for English, "de" for German, etc.
+     * <p>
+     * If no locale is specified, the system's default locale will be used.
+     *
+     * @return A string representing the locale to be used when formatting dates or numbers.
+     */
+    String locale() default "";
 
     /**
      * A constant {@link String} based on which the specified target property is to be set.
@@ -214,7 +230,6 @@ public @interface Mapping {
      * <p>
      * MapStruct handles the constant as {@code String}. The value will be converted by applying a matching method,
      * type conversion method or built-in conversion.
-     * <p>
      * </li>
      * </ol>
      * <p>
@@ -287,9 +302,12 @@ public @interface Mapping {
 
     /**
      * Whether the property specified via {@link #target()} should be ignored by the generated mapping method or not.
-     * This can be useful when certain attributes should not be propagated from source or target or when properties in
+     * This can be useful when certain attributes should not be propagated from source to target or when properties in
      * the target object are populated using a decorator and thus would be reported as unmapped target property by
      * default.
+     * <p>
+     * If you have multiple properties to ignore,
+     * you can use the {@link Ignored} annotation instead and group them all at once.
      *
      * @return {@code true} if the given property should be ignored, {@code false} otherwise
      */
@@ -427,13 +445,11 @@ public @interface Mapping {
      * If not possible, MapStruct will try to apply a user defined mapping method.
      * </li>
      * </ul>
-     * <p>
      * </li>
      * <li>other
      * <p>
      * MapStruct handles the constant as {@code String}. The value will be converted by applying a matching method,
      * type conversion method or built-in conversion.
-     * <p>
      * </li>
      * </ol>
      * <p>

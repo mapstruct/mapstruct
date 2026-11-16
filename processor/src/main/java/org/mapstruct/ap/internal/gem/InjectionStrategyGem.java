@@ -13,5 +13,6 @@ package org.mapstruct.ap.internal.gem;
 public enum InjectionStrategyGem {
 
     FIELD,
-    CONSTRUCTOR;
+    CONSTRUCTOR,
+    SETTER;
 }

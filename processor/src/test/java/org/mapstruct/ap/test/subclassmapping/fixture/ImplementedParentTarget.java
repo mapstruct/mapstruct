@@ -7,4 +7,13 @@ package org.mapstruct.ap.test.subclassmapping.fixture;
 
 public class ImplementedParentTarget extends AbstractParentTarget {
 
+    private String implementedParentValue;
+
+    public String getImplementedParentValue() {
+        return implementedParentValue;
+    }
+
+    public void setImplementedParentValue(String implementedParentValue) {
+        this.implementedParentValue = implementedParentValue;
+    }
 }

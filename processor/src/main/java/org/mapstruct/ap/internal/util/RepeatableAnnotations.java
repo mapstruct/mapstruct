@@ -16,6 +16,12 @@ import javax.lang.model.element.TypeElement;
 import org.mapstruct.tools.gem.Gem;
 
 /**
+ * A base helper class that provides utility methods for working with repeatable annotations.
+ *
+ * @param <SINGULAR> The singular annotation type
+ * @param <MULTIPLE> The multiple annotation type
+ * @param <OPTIONS> The underlying holder for the processed annotations
+ *
  * @author Ben Zegveld
  */
 public abstract class RepeatableAnnotations<SINGULAR extends Gem, MULTIPLE extends Gem, OPTIONS> {

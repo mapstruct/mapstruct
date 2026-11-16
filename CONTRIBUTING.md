@@ -4,7 +4,7 @@ You love MapStruct but miss a certain feature? You found a bug and want to repor
 
 * Source code: [http://github.com/mapstruct/mapstruct](http://github.com/mapstruct/mapstruct)
 * Issue tracker: [https://github.com/mapstruct/mapstruct/issues](https://github.com/mapstruct/mapstruct/issues)
-* Discussions: Join the [mapstruct-users](https://groups.google.com/forum/?fromgroups#!forum/mapstruct-users) Google group
+* Discussions: [https://github.com/mapstruct/mapstruct/discussions](https://github.com/mapstruct/mapstruct/discussions)
 * CI build: [https://github.com/mapstruct/mapstruct/actions/](https://github.com/mapstruct/mapstruct/actions)
 
 MapStruct follows the _Fork & Pull_ development approach. To get started just fork the [MapStruct repository](http://github.com/mapstruct/mapstruct) to your GitHub account and create a new topic branch for each change. Once you are done with your change, submit a [pull request](https://help.github.com/articles/using-pull-requests) against the MapStruct repo.
@@ -15,7 +15,7 @@ When doing changes, keep the following best practices in mind:
 * Use the code formatter for your IDE
   * [IntelliJ Formatter](https://github.com/mapstruct/mapstruct/blob/master/etc/mapstruct.xml)
 * Update the [reference documentation](mapstruct.org/documentation) on [mapstruct.org](mapstruct.org) where required
-* Discuss new features you'd like to implement at the [Google group](https://groups.google.com/forum/?fromgroups#!forum/mapstruct-users) before getting started
+* Discuss new features you'd like to implement in the [discussions](https://github.com/mapstruct/mapstruct/discussions) before getting started
 * Create one pull request per feature
 * Provide a meaningful history, e.g. squash intermediary commits before submitting a pull request
 

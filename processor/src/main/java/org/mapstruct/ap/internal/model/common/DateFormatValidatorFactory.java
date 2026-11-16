@@ -61,13 +61,8 @@ final class DateFormatValidatorFactory {
             dateFormatValidator = new JodaTimeDateFormatValidator();
         }
         else {
-            dateFormatValidator = new DateFormatValidator() {
-                @Override
-                public DateFormatValidationResult validate(String dateFormat) {
-                    return new DateFormatValidationResult( true, Message.GENERAL_UNSUPPORTED_DATE_FORMAT_CHECK,
-                                                           sourceType, targetType );
-                }
-            };
+            dateFormatValidator = dateFormat -> new DateFormatValidationResult(
+                    true, Message.GENERAL_UNSUPPORTED_DATE_FORMAT_CHECK, sourceType, targetType );
         }
         return dateFormatValidator;
 

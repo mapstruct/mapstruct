@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  * All <em>before-mapping</em> methods that can be applied to a mapping method will be used. {@code @}{@link Qualifier}
  * / {@code @}{@link Named} can be used to filter the methods to use.
  * <p>
- * The order of the method invocation is determined by their their variant and their location of definition:
+ * The order of the method invocation is determined by their variant and their location of definition:
  * <ol>
  * <li>Methods without an {@code @}{@link MappingTarget} parameter are called before any null-checks on source
  * parameters and constructing a new target bean.</li>

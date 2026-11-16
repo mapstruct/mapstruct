@@ -10,7 +10,7 @@ package org.mapstruct;
  * {@link NullValuePropertyMappingStrategy} can be defined on {@link MapperConfig}, {@link Mapper}, {@link BeanMapping}
  * and {@link Mapping}.
  * Precedence is arranged  in the reverse order. So {@link Mapping} will override {@link BeanMapping}, will
- * overide {@link Mapper}
+ * override {@link Mapper}
  *
  * The enum <b>only applies to update methods</b>: methods that update a pre-existing target (annotated with
  * {@code @}{@link MappingTarget}).
@@ -27,7 +27,9 @@ package org.mapstruct;
 public enum NullValuePropertyMappingStrategy {
 
     /**
-     * If a source bean property equals {@code null} the target bean property will be set explicitly to {@code null}.
+     * If a source bean property equals {@code null} the target bean property will be set explicitly to {@code null}
+     * or {@link java.util.Optional#empty() Optional.empty()} in case the target type is an
+     * {@link java.util.Optional Optional}.
      */
     SET_TO_NULL,
 
@@ -36,6 +38,7 @@ public enum NullValuePropertyMappingStrategy {
      * <p>
      * This means:
      * <ol>
+     * <li>For {@code Optional} MapStruct generates an {@code Optional.empty()}</li>
      * <li>For {@code List} MapStruct generates an {@code ArrayList}</li>
      * <li>For {@code Map} a {@code HashMap}</li>
      * <li>For arrays an empty array</li>
@@ -53,5 +56,12 @@ public enum NullValuePropertyMappingStrategy {
      * If a source bean property equals {@code null} the target bean property will be ignored and retain its
      * existing value.
      */
-    IGNORE;
+    IGNORE,
+
+    /**
+     * If a source bean property equals {@code null} the target bean property will be cleared.
+     * This strategy is only applicable to target properties that are of type {@link java.util.Collection Collection}
+     * or {@link java.util.Map Map}.
+     */
+    CLEAR;
 }

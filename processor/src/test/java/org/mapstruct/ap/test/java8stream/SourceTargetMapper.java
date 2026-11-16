@@ -26,9 +26,12 @@ public abstract class SourceTargetMapper {
         @Mapping(target = "stringArrayList", source = "stringArrayStream"),
         @Mapping(target = "stringSet", source = "stringStreamToSet"),
         @Mapping(target = "integerCollection", source = "integerStream"),
+        @Mapping(target = "integerArray", source = "integerStream2"),
+        @Mapping(target = "integerMultiArray", source = "integerArrayStream"),
         @Mapping(target = "anotherStringSet", source = "anotherIntegerStream"),
         @Mapping(target = "stringListNoSetter", source = "stringStream2"),
-        @Mapping(target = "nonGenericStringList", source = "stringStream3")
+        @Mapping(target = "nonGenericStringList", source = "stringStream3"),
+        @Mapping(target = "arrayWithGenerics", source = "streamWithGenerics")
     })
     public abstract Target sourceToTarget(Source source);
 

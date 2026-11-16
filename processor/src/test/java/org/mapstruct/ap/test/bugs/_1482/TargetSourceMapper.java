@@ -21,7 +21,7 @@ public abstract class TargetSourceMapper {
     abstract Source2 map(Target target);
 
     protected <T extends Enum<T>> T map(String in, @TargetType Class<T>clz ) {
-        if ( clz.isAssignableFrom( SourceEnum.class )) {
+        if ( clz.isAssignableFrom( SourceEnum.class ) ) {
             return (T) SourceEnum.valueOf( in );
         }
         return null;

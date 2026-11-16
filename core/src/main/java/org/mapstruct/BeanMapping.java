@@ -19,6 +19,8 @@ import static org.mapstruct.SubclassExhaustiveStrategy.COMPILE_ERROR;
 /**
  * Configures the mapping between two bean types.
  * <p>
+ * Unless otherwise specified these properties are inherited to the generated bean mapping methods.
+ * <p>
  * Either {@link #resultType()}, {@link #qualifiedBy()} or {@link #nullValueMappingStrategy()} must be specified.
  * </p>
  * <p><strong>Example:</strong> Determining the result type</p>
@@ -58,6 +60,8 @@ public @interface BeanMapping {
 
     /**
      * Specifies the result type of the factory method to be used in case several factory methods qualify.
+     * <p>
+     * <b>NOTE</b>: This property is not inherited to generated mapping methods
      *
      * @return the resultType to select
      */
@@ -129,6 +133,18 @@ public @interface BeanMapping {
     SubclassExhaustiveStrategy subclassExhaustiveStrategy() default COMPILE_ERROR;
 
     /**
+     * Specifies the exception type to be thrown when a missing subclass implementation is detected
+     * in combination with {@link SubclassMappings}, based on the {@link #subclassExhaustiveStrategy()}.
+     * <p>
+     * This exception will only be thrown when the {@code subclassExhaustiveStrategy} is set to
+     * {@link SubclassExhaustiveStrategy#RUNTIME_EXCEPTION}.
+     *
+     * @return the exception class to throw when missing implementations are found.
+     *         Defaults to {@link IllegalArgumentException}.
+     */
+    Class<? extends Exception> subclassExhaustiveException() default IllegalArgumentException.class;
+
+    /**
      * Default ignore all mappings. All mappings have to be defined manually. No automatic mapping will take place. No
      * warning will be issued on missing source or target properties.
      *
@@ -145,12 +161,25 @@ public @interface BeanMapping {
      * source properties report.
      * <p>
      * <b>NOTE</b>: This does not support ignoring nested source properties
+     * <p>
+     * <b>NOTE</b>: This property is not inherited to generated mapping methods
      *
      * @return The source properties that should be ignored when performing a report
      *
      * @since 1.3
      */
     String[] ignoreUnmappedSourceProperties() default {};
+
+    /**
+     * How unmapped properties of the source type of a mapping should be reported.
+     * If no policy is configured, the policy given via {@link MapperConfig#unmappedSourcePolicy()} or
+     * {@link Mapper#unmappedSourcePolicy()} will be applied, using {@link ReportingPolicy#IGNORE} by default.
+     *
+     * @return The reporting policy for unmapped source properties.
+     *
+     * @since 1.6
+     */
+    ReportingPolicy unmappedSourcePolicy() default ReportingPolicy.IGNORE;
 
     /**
      * How unmapped properties of the target type of a mapping should be reported.

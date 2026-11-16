@@ -15,7 +15,7 @@ public class Issue1821Test {
 
     @ProcessorTest
     public void shouldNotGiveNullPtr() {
-        Issue1821Mapper.INSTANCE.map( new Issue1821Mapper.Source() );
+        Issue1821Mapper.INSTANCE.map( new Issue1821Mapper.Source( "test" ) );
     }
 
 }

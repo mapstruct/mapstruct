@@ -5,14 +5,14 @@
  */
 package org.mapstruct.itest.spring;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.itest.spring.SpringBasedMapperTest.SpringTestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,8 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andreas Gudian
  */
 @ContextConfiguration(classes = SpringTestConfig.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-public class SpringBasedMapperTest {
+@ExtendWith(SpringExtension.class)
+class SpringBasedMapperTest {
 
     @Configuration
     @ComponentScan(basePackageClasses = SpringBasedMapperTest.class)
@@ -40,7 +40,7 @@ public class SpringBasedMapperTest {
     private SecondDecoratedSourceTargetMapper secondDecoratedMapper;
 
     @Test
-    public void shouldInjectSpringBasedMapper() {
+    void shouldInjectSpringBasedMapper() {
         Source source = new Source();
 
         Target target = mapper.sourceToTarget( source );
@@ -51,7 +51,7 @@ public class SpringBasedMapperTest {
     }
 
     @Test
-    public void shouldInjectDecorator() {
+    void shouldInjectDecorator() {
         Source source = new Source();
 
         Target target = decoratedMapper.sourceToTarget( source );
@@ -68,7 +68,7 @@ public class SpringBasedMapperTest {
     }
 
     @Test
-    public void shouldInjectSecondDecorator() {
+    void shouldInjectSecondDecorator() {
         Source source = new Source();
 
         Target target = secondDecoratedMapper.sourceToTarget( source );

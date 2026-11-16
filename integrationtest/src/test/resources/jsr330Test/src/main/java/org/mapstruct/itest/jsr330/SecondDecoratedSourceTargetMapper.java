@@ -5,9 +5,9 @@
  */
 package org.mapstruct.itest.jsr330;
 
+import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.DecoratedWith;
 import org.mapstruct.itest.jsr330.other.DateMapper;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.JSR330, uses = DateMapper.class)

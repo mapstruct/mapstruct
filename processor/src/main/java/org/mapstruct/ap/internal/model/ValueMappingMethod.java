@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -25,6 +26,7 @@ import org.mapstruct.ap.internal.model.source.ValueMappingOptions;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.TypeUtils;
+import org.mapstruct.ap.internal.version.VersionInformation;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
 
 import static org.mapstruct.ap.internal.gem.MappingConstantsGem.ANY_REMAINING;
@@ -45,6 +47,7 @@ public class ValueMappingMethod extends MappingMethod {
     private final List<MappingEntry> valueMappings;
     private final MappingEntry defaultTarget;
     private final MappingEntry nullTarget;
+    private final VersionInformation versionInformation;
 
     private final Type unexpectedValueMappingException;
 
@@ -117,22 +120,32 @@ public class ValueMappingMethod extends MappingMethod {
                 LifecycleMethodResolver.beforeMappingMethods( method, selectionParameters, ctx, existingVariables );
             List<LifecycleCallbackMethodReference> afterMappingMethods =
                 LifecycleMethodResolver.afterMappingMethods( method, selectionParameters, ctx, existingVariables );
-            AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
+            List<Annotation> annotations;
+            if ( method instanceof ForgedMethod ) {
+                annotations = Collections.emptyList();
+            }
+            else {
+                annotations = new ArrayList<>();
+                AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
                     new AdditionalAnnotationsBuilder(
-                            ctx.getElementUtils(),
-                            ctx.getTypeFactory(),
-                            ctx.getMessager() );
-            List<Annotation> annotations = new ArrayList<>();
-            annotations.addAll( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
+                        ctx.getElementUtils(),
+                        ctx.getTypeFactory(),
+                        ctx.getMessager()
+                    );
+
+                annotations.addAll( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
+            }
             // finally return a mapping
-            return new ValueMappingMethod( method,
+            return new ValueMappingMethod(
+                method,
                 annotations,
                 mappingEntries,
                 valueMappings.nullValueTarget,
                 valueMappings.defaultTargetValue,
                 determineUnexpectedValueMappingException(),
                 beforeMappingMethods,
-                afterMappingMethods
+                afterMappingMethods,
+                ctx.getVersionInformation()
             );
         }
 
@@ -146,8 +159,10 @@ public class ValueMappingMethod extends MappingMethod {
 
                 String nameTransformationStrategy = enumMapping.getNameTransformationStrategy();
                 if ( enumTransformationStrategies.containsKey( nameTransformationStrategy ) ) {
-                    enumTransformationInvoker = new EnumTransformationStrategyInvoker( enumTransformationStrategies.get(
-                        nameTransformationStrategy ), enumMapping.getNameTransformationConfiguration() );
+                    enumTransformationInvoker = new EnumTransformationStrategyInvoker(
+                        enumTransformationStrategies.get(
+                            nameTransformationStrategy ), enumMapping.getNameTransformationConfiguration()
+                    );
                 }
             }
 
@@ -172,12 +187,12 @@ public class ValueMappingMethod extends MappingMethod {
             }
         }
 
-        private List<MappingEntry> enumToEnumMapping(Method method, Type sourceType, Type targetType ) {
+        private List<MappingEntry> enumToEnumMapping(Method method, Type sourceType, Type targetType) {
 
             List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants = new ArrayList<>( sourceType.getEnumConstants() );
-            boolean sourceErrorOccurred = !reportErrorIfMappedSourceEnumConstantsDontExist( method, sourceType );
-            boolean targetErrorOccurred = !reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
+            boolean sourceErrorOccurred = reportErrorIfMappedSourceEnumConstantsDontExist( method, sourceType );
+            boolean targetErrorOccurred = reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
             if ( sourceErrorOccurred || targetErrorOccurred ) {
                 return mappings;
             }
@@ -244,7 +259,8 @@ public class ValueMappingMethod extends MappingMethod {
                     }
                     // all sources should now be matched, there's no default to fall back to, so if sources remain,
                     // we have an issue.
-                    ctx.getMessager().printMessage( method.getExecutable(),
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
                         Message.VALUEMAPPING_UNMAPPED_SOURCES,
                         sourceErrorMessage,
                         targetErrorMessage,
@@ -256,17 +272,17 @@ public class ValueMappingMethod extends MappingMethod {
             return mappings;
         }
 
-         private List<MappingEntry> enumToStringMapping(Method method, Type sourceType ) {
+        private List<MappingEntry> enumToStringMapping(Method method, Type sourceType) {
 
             List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants = new ArrayList<>( sourceType.getEnumConstants() );
-            boolean sourceErrorOccurred = !reportErrorIfMappedSourceEnumConstantsDontExist( method, sourceType );
-            boolean anyRemainingUsedError = !reportErrorIfSourceEnumConstantsContainsAnyRemaining( method );
+            boolean sourceErrorOccurred = reportErrorIfMappedSourceEnumConstantsDontExist( method, sourceType );
+            boolean anyRemainingUsedError = reportErrorIfSourceEnumConstantsContainsAnyRemaining( method );
             if ( sourceErrorOccurred || anyRemainingUsedError ) {
                 return mappings;
             }
 
-            // Start to fill the mappings with the defined valuemappings
+            // Start to fill the mappings with the defined valueMappings
             for ( ValueMappingOptions valueMapping : valueMappings.regularValueMappings ) {
                 mappings.add( new MappingEntry( valueMapping.getSource(), valueMapping.getTarget() ) );
                 unmappedSourceConstants.remove( valueMapping.getSource() );
@@ -286,18 +302,18 @@ public class ValueMappingMethod extends MappingMethod {
             return mappings;
         }
 
-        private List<MappingEntry> stringToEnumMapping(Method method, Type targetType ) {
+        private List<MappingEntry> stringToEnumMapping(Method method, Type targetType) {
 
             List<MappingEntry> mappings = new ArrayList<>();
             List<String> unmappedSourceConstants = new ArrayList<>( targetType.getEnumConstants() );
-            boolean sourceErrorOccurred = !reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
+            boolean sourceErrorOccurred = reportErrorIfMappedTargetEnumConstantsDontExist( method, targetType );
             reportWarningIfAnyRemainingOrAnyUnMappedMissing( method );
             if ( sourceErrorOccurred ) {
                 return mappings;
             }
             Set<String> mappedSources = new LinkedHashSet<>();
 
-            // Start to fill the mappings with the defined valuemappings
+            // Start to fill the mappings with the defined value mappings
             for ( ValueMappingOptions valueMapping : valueMappings.regularValueMappings ) {
                 mappedSources.add( valueMapping.getSource() );
                 mappings.add( new MappingEntry( valueMapping.getSource(), valueMapping.getTarget() ) );
@@ -364,7 +380,7 @@ public class ValueMappingMethod extends MappingMethod {
                     foundIncorrectMapping = true;
                 }
             }
-            return !foundIncorrectMapping;
+            return foundIncorrectMapping;
         }
 
         private boolean reportErrorIfSourceEnumConstantsContainsAnyRemaining(Method method) {
@@ -380,7 +396,7 @@ public class ValueMappingMethod extends MappingMethod {
                 );
                 foundIncorrectMapping = true;
             }
-            return !foundIncorrectMapping;
+            return foundIncorrectMapping;
         }
 
         private void reportWarningIfAnyRemainingOrAnyUnMappedMissing(Method method) {
@@ -431,7 +447,8 @@ public class ValueMappingMethod extends MappingMethod {
 
             if ( valueMappings.nullTarget != null && NULL.equals( valueMappings.nullTarget.getTarget() )
                 && !targetEnumConstants.contains( valueMappings.nullTarget.getTarget() ) ) {
-                ctx.getMessager().printMessage( method.getExecutable(),
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
                     valueMappings.nullTarget.getMirror(),
                     valueMappings.nullTarget.getTargetAnnotationValue(),
                     Message.VALUEMAPPING_NON_EXISTING_CONSTANT,
@@ -454,7 +471,7 @@ public class ValueMappingMethod extends MappingMethod {
                 );
             }
 
-            return !foundIncorrectMapping;
+            return foundIncorrectMapping;
         }
 
         private Type determineUnexpectedValueMappingException() {
@@ -546,14 +563,29 @@ public class ValueMappingMethod extends MappingMethod {
                                String defaultTarget,
                                Type unexpectedValueMappingException,
                                List<LifecycleCallbackMethodReference> beforeMappingMethods,
-                               List<LifecycleCallbackMethodReference> afterMappingMethods) {
+                               List<LifecycleCallbackMethodReference> afterMappingMethods,
+                               VersionInformation versionInformation) {
         super( method, beforeMappingMethods, afterMappingMethods );
         this.valueMappings = enumMappings;
         this.nullTarget = new MappingEntry( null, nullTarget );
-        this.defaultTarget = new MappingEntry( null, defaultTarget != null ? defaultTarget : THROW_EXCEPTION);
+        this.defaultTarget = new MappingEntry( null, defaultTarget != null ? defaultTarget : THROW_EXCEPTION );
         this.unexpectedValueMappingException = unexpectedValueMappingException;
         this.overridden = method.overridesMethod();
         this.annotations = annotations;
+        this.versionInformation = versionInformation;
+    }
+
+    public boolean isDefaultTargetRequired() {
+        if ( !versionInformation.isSourceVersionAtLeast14() ) {
+            return true;
+        }
+
+        Type sourceType = getSourceParameter().getType();
+        if ( !sourceType.isEnumType() ) {
+            return true;
+        }
+
+        return sourceType.getEnumConstants().size() != getValueMappings().size();
     }
 
     @Override
@@ -561,7 +593,8 @@ public class ValueMappingMethod extends MappingMethod {
         Set<Type> importTypes = super.getImportTypes();
 
         if ( unexpectedValueMappingException != null && !unexpectedValueMappingException.isJavaLangType() ) {
-            if ( defaultTarget.isTargetAsException() || nullTarget.isTargetAsException() ||
+            if ( ( isDefaultTargetRequired() && defaultTarget.isTargetAsException() ) ||
+                nullTarget.isTargetAsException() ||
                 hasMappingWithTargetAsException() ) {
                 importTypes.addAll( unexpectedValueMappingException.getImportTypes() );
             }
@@ -588,6 +621,10 @@ public class ValueMappingMethod extends MappingMethod {
 
     public MappingEntry getNullTarget() {
         return nullTarget;
+    }
+
+    public VersionInformation getVersionInformation() {
+        return versionInformation;
     }
 
     public Type getUnexpectedValueMappingException() {

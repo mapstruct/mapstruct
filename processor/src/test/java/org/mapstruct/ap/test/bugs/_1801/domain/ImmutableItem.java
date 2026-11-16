@@ -124,7 +124,7 @@ public final class ImmutableItem extends Item {
 
     /**
      * Initializes the value for the {@link Item#getId() id} attribute.
-     * @param id The value for id 
+     * @param id The value for id
      * @return {@code this} builder for use in a chained invocation
      */
     public final Builder id(String id) {
@@ -146,7 +146,7 @@ public final class ImmutableItem extends Item {
     }
 
     private String formatRequiredAttributesMessage() {
-      List<String> attributes = new ArrayList<String>();
+      List<String> attributes = new ArrayList<>();
       if ((initBits & INIT_BIT_ID) != 0) attributes.add("id");
       return "Cannot build Item, some of required attributes are not set " + attributes;
     }

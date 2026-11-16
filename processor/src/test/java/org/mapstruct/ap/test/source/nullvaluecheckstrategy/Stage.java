@@ -14,9 +14,9 @@ import java.util.List;
  */
 public enum Stage {
 
-    MAIN("Paul McCartney", "Ellie Goulding", "Disclosure", "Kaiser Chiefs", "Rammstein"),
-    KLUB_C("James Blake", "Lost Frequencies"),
-    THE_BARN("New Order", "Year and Years");
+    MAIN( "Paul McCartney", "Ellie Goulding", "Disclosure", "Kaiser Chiefs", "Rammstein" ),
+    KLUB_C( "James Blake", "Lost Frequencies" ),
+    THE_BARN( "New Order", "Year and Years" );
 
     private final List<String> artists;
 

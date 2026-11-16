@@ -75,7 +75,7 @@ public class UserDtoUpdateMapperSmartImpl implements UserDtoUpdateMapperSmart {
             return null;
         }
 
-        List<WheelDto> list1 = new ArrayList<WheelDto>( list.size() );
+        List<WheelDto> list1 = new ArrayList<>( list.size() );
         for ( Wheel wheel : list ) {
             list1.add( wheelToWheelDto( wheel ) );
         }

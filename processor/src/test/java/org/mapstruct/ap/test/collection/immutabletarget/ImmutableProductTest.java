@@ -41,19 +41,24 @@ public class ImmutableProductTest {
 
     @ProcessorTest
     @WithClasses({
-        ErroneousCupboardMapper.class,
+        CupboardNoSetterMapper.class,
         CupboardEntityOnlyGetter.class
     })
-    @ExpectedCompilationOutcome(
-        value = CompilationResult.FAILED,
+    @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
         diagnostics = {
-            @Diagnostic(type = ErroneousCupboardMapper.class,
-                kind = javax.tools.Diagnostic.Kind.ERROR,
+            @Diagnostic(type = CupboardNoSetterMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
                 line = 22,
-                message = "No write accessor found for property \"content\" in target type.")
-        }
-    )
-    public void testShouldFailOnPropertyMappingNoPropertySetterOnlyGetter() {
+                message = "No target property found for target \"CupboardEntityOnlyGetter\"."),
+        })
+    public void shouldIgnoreImmutableTarget() {
+        CupboardDto in = new CupboardDto();
+        in.setContent( Arrays.asList( "flour", "peas" ) );
+        CupboardEntityOnlyGetter out = new CupboardEntityOnlyGetter();
+        out.getContent().add( "bread" );
+        CupboardNoSetterMapper.INSTANCE.map( in, out );
+
+        assertThat( out.getContent() ).containsExactly( "bread" );
     }
 
 }

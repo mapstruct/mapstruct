@@ -10,10 +10,13 @@
 <@lib.sourceLocalVarAssignment/>
 if ( ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing /> != null ) {
     <@lib.handleExceptions>
-      <#if ext.existingInstanceMapping>
+      <#if ext.existingInstanceMapping && !ignoreMapNull>
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing />.clear();
       </#if>
       <@lib.handleLocalVarNullCheck needs_explicit_local_var=false>
+        <#if ext.existingInstanceMapping && ignoreMapNull>
+            ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing />.clear();
+        </#if>
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWriteAccesing />.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( <@lib.handleWithAssignmentOrNullCheckVar/> );
       </@lib.handleLocalVarNullCheck>
     </@lib.handleExceptions>

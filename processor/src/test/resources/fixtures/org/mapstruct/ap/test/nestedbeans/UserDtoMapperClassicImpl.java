@@ -82,7 +82,7 @@ public class UserDtoMapperClassicImpl implements UserDtoMapperClassic {
             return null;
         }
 
-        List<WheelDto> list = new ArrayList<WheelDto>( wheels.size() );
+        List<WheelDto> list = new ArrayList<>( wheels.size() );
         for ( Wheel wheel : wheels ) {
             list.add( mapWheel( wheel ) );
         }

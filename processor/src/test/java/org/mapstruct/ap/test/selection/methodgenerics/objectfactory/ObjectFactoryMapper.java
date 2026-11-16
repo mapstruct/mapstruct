@@ -7,10 +7,11 @@ package org.mapstruct.ap.test.selection.methodgenerics.objectfactory;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ObjectFactory;
+import org.mapstruct.ReportingPolicy;
 import org.mapstruct.TargetType;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ObjectFactoryMapper {
 
     ObjectFactoryMapper INSTANCE = Mappers.getMapper( ObjectFactoryMapper.class );
@@ -44,6 +45,16 @@ public interface ObjectFactoryMapper {
     }
 
     abstract class Target {
+
+        private String value;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
     }
 
     class TargetA extends Target {

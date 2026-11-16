@@ -27,10 +27,10 @@ import javax.annotation.Generated;
 )
 public class SourceTargetMapperImpl implements SourceTargetMapper {
 
-    private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242 = DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" );
-    private final DateTimeFormatter dateTimeFormatter_HH_mm_168697690 = DateTimeFormatter.ofPattern( "HH:mm" );
-    private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_11900521056 = DateTimeFormatter.ofPattern( "dd.MM.yyyy" );
     private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_HH_mm_z_01894582668 = DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm z" );
+    private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_HH_mm_12071769242 = DateTimeFormatter.ofPattern( "dd.MM.yyyy HH:mm" );
+    private final DateTimeFormatter dateTimeFormatter_dd_MM_yyyy_11900521056 = DateTimeFormatter.ofPattern( "dd.MM.yyyy" );
+    private final DateTimeFormatter dateTimeFormatter_HH_mm_168697690 = DateTimeFormatter.ofPattern( "HH:mm" );
 
     @Override
     public Target sourceToTarget(Source source) {
@@ -67,6 +67,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( source.getForDateConversionWithInstant() != null ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant() ) );
+        }
+        if ( source.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().atStartOfDay() );
         }
         if ( source.getForInstantConversionWithString() != null ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().toString() );
@@ -117,6 +120,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( source.getForDateConversionWithInstant() != null ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant() ) );
         }
+        if ( source.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().atStartOfDay() );
+        }
         if ( source.getForInstantConversionWithString() != null ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().toString() );
         }
@@ -165,6 +171,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( source.getForDateConversionWithInstant() != null ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant() ) );
+        }
+        if ( source.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().atStartOfDay() );
         }
         if ( source.getForInstantConversionWithString() != null ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().toString() );
@@ -215,6 +224,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( source.getForDateConversionWithInstant() != null ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant() ) );
         }
+        if ( source.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().atStartOfDay() );
+        }
         if ( source.getForInstantConversionWithString() != null ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().toString() );
         }
@@ -263,6 +275,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( source.getForDateConversionWithInstant() != null ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant() ) );
+        }
+        if ( source.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().atStartOfDay() );
         }
         if ( source.getForInstantConversionWithString() != null ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().toString() );
@@ -313,6 +328,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( source.getForDateConversionWithInstant() != null ) {
             target.setForDateConversionWithInstant( Date.from( source.getForDateConversionWithInstant() ) );
         }
+        if ( source.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            target.setForLocalDateTimeConversionWithLocalDate( source.getForLocalDateTimeConversionWithLocalDate().atStartOfDay() );
+        }
         if ( source.getForInstantConversionWithString() != null ) {
             target.setForInstantConversionWithString( source.getForInstantConversionWithString().toString() );
         }
@@ -361,6 +379,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( target.getForDateConversionWithInstant() != null ) {
             source.setForDateConversionWithInstant( target.getForDateConversionWithInstant().toInstant() );
+        }
+        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            source.setForLocalDateTimeConversionWithLocalDate( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() );
         }
         if ( target.getForInstantConversionWithString() != null ) {
             source.setForInstantConversionWithString( Instant.parse( target.getForInstantConversionWithString() ) );
@@ -411,6 +432,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( target.getForDateConversionWithInstant() != null ) {
             source.setForDateConversionWithInstant( target.getForDateConversionWithInstant().toInstant() );
         }
+        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            source.setForLocalDateTimeConversionWithLocalDate( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() );
+        }
         if ( target.getForInstantConversionWithString() != null ) {
             source.setForInstantConversionWithString( Instant.parse( target.getForInstantConversionWithString() ) );
         }
@@ -459,6 +483,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( target.getForDateConversionWithInstant() != null ) {
             source.setForDateConversionWithInstant( target.getForDateConversionWithInstant().toInstant() );
+        }
+        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            source.setForLocalDateTimeConversionWithLocalDate( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() );
         }
         if ( target.getForInstantConversionWithString() != null ) {
             source.setForInstantConversionWithString( Instant.parse( target.getForInstantConversionWithString() ) );
@@ -509,6 +536,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( target.getForDateConversionWithInstant() != null ) {
             source.setForDateConversionWithInstant( target.getForDateConversionWithInstant().toInstant() );
         }
+        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            source.setForLocalDateTimeConversionWithLocalDate( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() );
+        }
         if ( target.getForInstantConversionWithString() != null ) {
             source.setForInstantConversionWithString( Instant.parse( target.getForInstantConversionWithString() ) );
         }
@@ -557,6 +587,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         }
         if ( target.getForDateConversionWithInstant() != null ) {
             source.setForDateConversionWithInstant( target.getForDateConversionWithInstant().toInstant() );
+        }
+        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            source.setForLocalDateTimeConversionWithLocalDate( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() );
         }
         if ( target.getForInstantConversionWithString() != null ) {
             source.setForInstantConversionWithString( Instant.parse( target.getForInstantConversionWithString() ) );
@@ -607,6 +640,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         if ( target.getForDateConversionWithInstant() != null ) {
             source.setForDateConversionWithInstant( target.getForDateConversionWithInstant().toInstant() );
         }
+        if ( target.getForLocalDateTimeConversionWithLocalDate() != null ) {
+            source.setForLocalDateTimeConversionWithLocalDate( target.getForLocalDateTimeConversionWithLocalDate().toLocalDate() );
+        }
         if ( target.getForInstantConversionWithString() != null ) {
             source.setForInstantConversionWithString( Instant.parse( target.getForInstantConversionWithString() ) );
         }
@@ -620,14 +656,6 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         return source;
     }
 
-    private ZonedDateTime calendarToZonedDateTime(Calendar cal) {
-        if ( cal == null ) {
-            return null;
-        }
-
-        return ZonedDateTime.ofInstant( cal.toInstant(), cal.getTimeZone().toZoneId() );
-    }
-
     private Calendar zonedDateTimeToCalendar(ZonedDateTime dateTime) {
         if ( dateTime == null ) {
             return null;
@@ -636,5 +664,13 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( dateTime.getZone() ) );
         instance.setTimeInMillis( dateTime.toInstant().toEpochMilli() );
         return instance;
+    }
+
+    private ZonedDateTime calendarToZonedDateTime(Calendar cal) {
+        if ( cal == null ) {
+            return null;
+        }
+
+        return ZonedDateTime.ofInstant( cal.toInstant(), cal.getTimeZone().toZoneId() );
     }
 }

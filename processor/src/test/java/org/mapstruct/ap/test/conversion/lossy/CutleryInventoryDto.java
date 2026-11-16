@@ -10,6 +10,7 @@ public class CutleryInventoryDto {
     private short numberOfKnifes;
     private int numberOfForks;
     private byte numberOfSpoons;
+    private int drawerId;
 
     private float approximateKnifeLength;
 
@@ -43,5 +44,13 @@ public class CutleryInventoryDto {
 
     public void setApproximateKnifeLength(float approximateKnifeLength) {
         this.approximateKnifeLength = approximateKnifeLength;
+    }
+
+    public int getDrawerId() {
+        return drawerId;
+    }
+
+    public void setDrawerId(int drawerId) {
+        this.drawerId = drawerId;
     }
 }

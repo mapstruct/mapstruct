@@ -32,7 +32,7 @@ public class IntrospectorUtils {
      * @return The decapitalized version of the string.
      */
     public static String decapitalize(String name) {
-        if ( name == null || name.length() == 0 ) {
+        if ( name == null || name.isEmpty() ) {
             return name;
         }
         if ( name.length() > 1 && Character.isUpperCase( name.charAt( 1 ) ) &&

@@ -14,6 +14,7 @@ ${openExpression}<@_assignment/>${closeExpression}
                existingInstanceMapping=ext.existingInstanceMapping
                targetReadAccessorName=ext.targetReadAccessorName
                targetWriteAccessorName=ext.targetWriteAccessorName
+               sourcePropertyName=ext.sourcePropertyName
                targetPropertyName=ext.targetPropertyName
                targetType=ext.targetType/>
 </#macro>

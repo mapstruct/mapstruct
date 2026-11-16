@@ -15,4 +15,5 @@ public class Car extends Vehicle {
     public void setManual(boolean manual) {
         this.manual = manual;
     }
+
 }

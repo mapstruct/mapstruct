@@ -22,11 +22,31 @@ public interface Issue1821Mapper {
     ExtendedTarget mapExtended(Source source);
 
     class Target {
+
+        private String value;
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
     }
 
     class ExtendedTarget extends Target {
     }
 
     class Source {
+
+        private final String value;
+
+        public Source(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 }

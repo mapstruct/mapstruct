@@ -6,35 +6,52 @@
 package org.mapstruct.ap.internal.util.accessor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
+/**
+ * All write accessors of a type indexed by property name. A property can have several write accessors when its
+ * setter is overloaded; one of them is the default, the others are only used when the source type cannot be mapped
+ * onto the default.
+ */
 public class AccessorCandidates {
 
     private final Types types;
 
     private final Map<String, List<Accessor>> accessors;
-    private final Map<String, TypeMirror> preferredTypes;
+    private final Map<String, Accessor> defaults;
 
     public AccessorCandidates(Types types) {
         this.types = types;
         this.accessors = new LinkedHashMap<>();
-        this.preferredTypes = new LinkedHashMap<>();
+        this.defaults = new LinkedHashMap<>();
     }
 
     public AccessorCandidates(AccessorCandidates source) {
         this.types = source.types;
         this.accessors = new LinkedHashMap<>( source.accessors );
-        this.preferredTypes = new LinkedHashMap<>( source.preferredTypes );
+        this.defaults = new LinkedHashMap<>( source.defaults );
     }
 
-    public void put(String key, Accessor value) {
-        accessors.computeIfAbsent( key, (k) -> new ArrayList<>() ).add( value );
+    public void put(String key, Accessor value, boolean isDefault) {
+        accessors.computeIfAbsent( key, k -> new ArrayList<>() ).add( value );
+        if ( isDefault || !defaults.containsKey( key ) ) {
+            defaults.put( key, value );
+        }
+    }
+
+    public void overrideAll(Map<String, Accessor> map) {
+        map.forEach( (key, value) -> {
+            accessors.put( key, new ArrayList<>( Collections.singletonList( value ) ) );
+            defaults.put( key, value );
+        } );
     }
 
     public boolean containsKey(String key) {
@@ -45,52 +62,17 @@ public class AccessorCandidates {
         return accessors.keySet();
     }
 
-    public void overrideAll(Map<String, Accessor> map) {
-        map.forEach( (key, value) -> override( key, value ) );
-    }
-
-    private void override(String key, Accessor value) {
-        List<Accessor> values = new ArrayList<>();
-        values.add( value );
-
-        accessors.put( key, values );
-    }
-
     public void remove(String key) {
         accessors.remove( key );
+        defaults.remove( key );
     }
 
     public List<Accessor> get(String key) {
-        if ( accessors.containsKey( key ) ) {
-            return accessors.get( key );
-        }
-        return new ArrayList<>();
+        return accessors.getOrDefault( key, Collections.emptyList() );
     }
 
-    public Accessor getBestFit(String targetPropertyName) {
-        return getBestFit( targetPropertyName, null );
-    }
-
-    public Accessor getBestFit(String targetPropertyName, TypeMirror type) {
-        List<Accessor> accessors = get( targetPropertyName );
-        if ( accessors.size() == 1 ) {
-            return accessors.get( 0 );
-        }
-
-        if ( type == null ) {
-            type = preferredTypes.get( targetPropertyName );
-        }
-
-        Predicate<Accessor> filter;
-        if ( type == null ) {
-            filter = accessor -> true;
-        }
-        else {
-            TypeMirror expectedType = type;
-            filter = accessor -> types.isAssignable( accessor.getAccessedType(), expectedType );
-        }
-
-        return accessors.stream().filter( filter ).findFirst().orElse( null );
+    public Accessor getDefault(String key) {
+        return defaults.get( key );
     }
 
     public boolean isEmpty() {
@@ -101,8 +83,33 @@ public class AccessorCandidates {
         return accessors.size();
     }
 
-    public void setPreferedType(String targetPropertyName, TypeMirror preferredType) {
-        this.preferredTypes.put( targetPropertyName, preferredType );
+    public Accessor getBestFit(String targetPropertyName, TypeMirror sourceType,
+                               BiPredicate<TypeMirror, TypeMirror> convertible) {
+        Accessor defaultAccessor = defaults.get( targetPropertyName );
+        List<Accessor> candidates = get( targetPropertyName );
+        if ( candidates.size() <= 1 || sourceType == null || isMappable( sourceType, defaultAccessor, convertible ) ) {
+            return defaultAccessor;
+        }
+
+        return firstAccepting( candidates, sourceType ).orElse( defaultAccessor );
+    }
+
+    private boolean isMappable(TypeMirror sourceType, Accessor accessor,
+                               BiPredicate<TypeMirror, TypeMirror> convertible) {
+        TypeMirror targetType = accessor.getAccessedType();
+        return types.isAssignable( sourceType, targetType ) || convertible.test( sourceType, targetType );
+    }
+
+    private Optional<Accessor> firstAccepting(List<Accessor> candidates, TypeMirror sourceType) {
+        Optional<Accessor> sameType = candidates.stream()
+            .filter( accessor -> types.isSameType( sourceType, accessor.getAccessedType() ) )
+            .findFirst();
+        if ( sameType.isPresent() ) {
+            return sameType;
+        }
+        return candidates.stream()
+            .filter( accessor -> types.isAssignable( sourceType, accessor.getAccessedType() ) )
+            .findFirst();
     }
 
 }

@@ -61,17 +61,10 @@ public class Issue1561MapperImpl implements Issue1561Mapper {
     }
 
     private Stream<String> targetNestedTargetProperties(Target target) {
-        if ( target == null ) {
-            return null;
-        }
         NestedTarget nestedTarget = target.getNestedTarget();
         if ( nestedTarget == null ) {
             return null;
         }
-        Stream<String> properties = nestedTarget.getProperties();
-        if ( properties == null ) {
-            return null;
-        }
-        return properties;
+        return nestedTarget.getProperties();
     }
 }

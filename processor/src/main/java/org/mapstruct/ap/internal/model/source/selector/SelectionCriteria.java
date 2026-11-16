@@ -5,10 +5,8 @@
  */
 package org.mapstruct.ap.internal.model.source.selector;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.model.common.SourceRHS;
@@ -22,50 +20,39 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
  */
 public class SelectionCriteria {
 
-    private final List<TypeMirror> qualifiers = new ArrayList<>();
-    private final List<String> qualifiedByNames = new ArrayList<>();
+    private final QualifyingInfo qualifyingInfo;
     private final String targetPropertyName;
-    private final TypeMirror qualifyingResultType;
     private final SourceRHS sourceRHS;
     private boolean ignoreQualifiers = false;
     private Type type;
-    private final boolean allowDirect;
-    private final boolean allowConversion;
-    private final boolean allowMappingMethod;
-    private final boolean allow2Steps;
+    private final MappingControl mappingControl;
 
     public SelectionCriteria(SelectionParameters selectionParameters, MappingControl mappingControl,
                              String targetPropertyName, Type type) {
-        if ( selectionParameters != null ) {
-            if ( type == Type.PRESENCE_CHECK ) {
-                qualifiers.addAll( selectionParameters.getConditionQualifiers() );
-                qualifiedByNames.addAll( selectionParameters.getConditionQualifyingNames() );
-            }
-            else {
-                qualifiers.addAll( selectionParameters.getQualifiers() );
-                qualifiedByNames.addAll( selectionParameters.getQualifyingNames() );
-            }
-            qualifyingResultType = selectionParameters.getResultType();
-            sourceRHS = selectionParameters.getSourceRHS();
-        }
-        else {
-            this.qualifyingResultType = null;
-            sourceRHS = null;
-        }
-        if ( mappingControl != null ) {
-            this.allowDirect = mappingControl.allowDirect();
-            this.allowConversion = mappingControl.allowTypeConversion();
-            this.allowMappingMethod = mappingControl.allowMappingMethod();
-            this.allow2Steps = mappingControl.allowBy2Steps();
-        }
-        else {
-            this.allowDirect = true;
-            this.allowConversion = true;
-            this.allowMappingMethod = true;
-            this.allow2Steps = true;
-        }
+        this(
+            QualifyingInfo.fromSelectionParameters( selectionParameters ),
+            selectionParameters != null ? selectionParameters.getSourceRHS() : null,
+            mappingControl,
+            targetPropertyName,
+            type
+        );
+    }
+
+    private SelectionCriteria(QualifyingInfo qualifyingInfo, SourceRHS sourceRHS, MappingControl mappingControl,
+                              String targetPropertyName, Type type) {
+        this.qualifyingInfo = qualifyingInfo;
         this.targetPropertyName = targetPropertyName;
+        this.sourceRHS = sourceRHS;
         this.type = type;
+        this.mappingControl = mappingControl;
+    }
+
+    /**
+     *
+     * @return {@code true} if only mapping methods should be selected
+     */
+    public boolean isForMapping() {
+        return type == null || type == Type.PREFER_UPDATE_MAPPING;
     }
 
     /**
@@ -89,16 +76,23 @@ public class SelectionCriteria {
         return type == Type.PRESENCE_CHECK;
     }
 
+    /**
+     * @return {@code true} if source parameter check methods should be selected, {@code false} otherwise
+     */
+    public boolean isSourceParameterCheckRequired() {
+        return type == Type.SOURCE_PARAMETER_CHECK;
+    }
+
     public void setIgnoreQualifiers(boolean ignoreQualifiers) {
         this.ignoreQualifiers = ignoreQualifiers;
     }
 
     public List<TypeMirror> getQualifiers() {
-        return ignoreQualifiers ? Collections.emptyList() : qualifiers;
+        return ignoreQualifiers ? Collections.emptyList() : qualifyingInfo.qualifiers();
     }
 
     public List<String> getQualifiedByNames() {
-        return ignoreQualifiers ? Collections.emptyList() : qualifiedByNames;
+        return ignoreQualifiers ? Collections.emptyList() : qualifyingInfo.qualifiedByNames();
     }
 
     public String getTargetPropertyName() {
@@ -106,7 +100,7 @@ public class SelectionCriteria {
     }
 
     public TypeMirror getQualifyingResultType() {
-        return qualifyingResultType;
+        return qualifyingInfo.qualifyingResultType();
     }
 
     public boolean isPreferUpdateMapping() {
@@ -122,23 +116,27 @@ public class SelectionCriteria {
     }
 
     public boolean hasQualfiers() {
-        return !qualifiedByNames.isEmpty() || !qualifiers.isEmpty();
+        return !qualifyingInfo.qualifiedByNames().isEmpty() || !qualifyingInfo.qualifiers().isEmpty();
     }
 
     public boolean isAllowDirect() {
-        return allowDirect;
+        return mappingControl == null || mappingControl.allowDirect();
     }
 
     public boolean isAllowConversion() {
-        return allowConversion;
+        return mappingControl == null || mappingControl.allowTypeConversion();
     }
 
     public boolean isAllowMappingMethod() {
-        return allowMappingMethod;
+        return mappingControl == null || mappingControl.allowMappingMethod();
     }
 
     public boolean isAllow2Steps() {
-        return allow2Steps;
+        return mappingControl == null || mappingControl.allowBy2Steps();
+    }
+
+    public boolean isSelfAllowed() {
+        return type != Type.SELF_NOT_ALLOWED;
     }
 
     public static SelectionCriteria forMappingMethods(SelectionParameters selectionParameters,
@@ -162,13 +160,83 @@ public class SelectionCriteria {
     }
 
     public static SelectionCriteria forPresenceCheckMethods(SelectionParameters selectionParameters) {
-        return new SelectionCriteria( selectionParameters, null, null, Type.PRESENCE_CHECK );
+        SourceRHS sourceRHS = selectionParameters.getSourceRHS();
+        Type type;
+        QualifyingInfo qualifyingInfo = new QualifyingInfo(
+            selectionParameters.getConditionQualifiers(),
+            selectionParameters.getConditionQualifyingNames(),
+            selectionParameters.getResultType()
+        );
+        if ( sourceRHS != null && sourceRHS.isSourceReferenceParameter() ) {
+            // If the source reference is for a source parameter,
+            // then the presence check should be for the source parameter
+            type = Type.SOURCE_PARAMETER_CHECK;
+        }
+        else {
+            type = Type.PRESENCE_CHECK;
+        }
+        return new SelectionCriteria( qualifyingInfo, sourceRHS, null, null, type );
     }
+
+    public static SelectionCriteria forSourceParameterCheckMethods(SelectionParameters selectionParameters) {
+        return new SelectionCriteria( selectionParameters, null, null, Type.SOURCE_PARAMETER_CHECK );
+    }
+
+    public static SelectionCriteria forSubclassMappingMethods(SelectionParameters selectionParameters,
+        MappingControl mappingControl) {
+        return new SelectionCriteria( selectionParameters, mappingControl, null, Type.SELF_NOT_ALLOWED );
+    }
+
+    private static class QualifyingInfo {
+
+        private static final QualifyingInfo EMPTY = new QualifyingInfo(
+            Collections.emptyList(),
+            Collections.emptyList(),
+            null
+        );
+
+        private final List<TypeMirror> qualifiers;
+        private final List<String> qualifiedByNames;
+        private final TypeMirror qualifyingResultType;
+
+        private QualifyingInfo(List<TypeMirror> qualifiers, List<String> qualifiedByNames,
+                               TypeMirror qualifyingResultType) {
+            this.qualifiers = qualifiers;
+            this.qualifiedByNames = qualifiedByNames;
+            this.qualifyingResultType = qualifyingResultType;
+        }
+
+        public List<TypeMirror> qualifiers() {
+            return qualifiers;
+        }
+
+        public List<String> qualifiedByNames() {
+            return qualifiedByNames;
+        }
+
+        public TypeMirror qualifyingResultType() {
+            return qualifyingResultType;
+        }
+
+        private static QualifyingInfo fromSelectionParameters(SelectionParameters selectionParameters) {
+            if ( selectionParameters == null ) {
+                return EMPTY;
+            }
+            return new QualifyingInfo(
+                selectionParameters.getQualifiers(),
+                selectionParameters.getQualifyingNames(),
+                selectionParameters.getResultType()
+            );
+        }
+    }
+
 
     public enum Type {
         PREFER_UPDATE_MAPPING,
         OBJECT_FACTORY,
         LIFECYCLE_CALLBACK,
         PRESENCE_CHECK,
+        SOURCE_PARAMETER_CHECK,
+        SELF_NOT_ALLOWED,
     }
 }

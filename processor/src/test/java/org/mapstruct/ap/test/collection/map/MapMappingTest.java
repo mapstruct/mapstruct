@@ -11,6 +11,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.mapstruct.ap.test.collection.map.other.ImportedType;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -26,6 +27,7 @@ import static org.assertj.core.api.Assertions.entry;
  */
 @WithClasses({ SourceTargetMapper.class, CustomNumberMapper.class, Source.class, Target.class, ImportedType.class })
 @IssueKey("44")
+@DefaultTimeZone("UTC")
 public class MapMappingTest {
 
     @ProcessorTest

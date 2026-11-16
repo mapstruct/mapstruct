@@ -39,7 +39,15 @@ public class AdderWrapper extends AssignmentWrapper {
         // localVar is iteratorVariable
         String desiredName = Nouns.singularize( adderIteratorName );
         rhs.setSourceLoopVarName( rhs.createUniqueVarName( desiredName ) );
-        adderType = first( getSourceType().determineTypeArguments( Collection.class ) );
+        if ( getSourceType().isCollectionType() ) {
+            adderType = first( getSourceType().determineTypeArguments( Collection.class ) );
+        }
+        else if ( getSourceType().isArrayType() ) {
+            adderType = getSourceType().getComponentType();
+        }
+        else { // iterable
+            adderType = first( getSourceType().determineTypeArguments( Iterable.class ) );
+        }
     }
 
     @Override

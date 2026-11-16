@@ -5,7 +5,7 @@
  */
 package org.mapstruct.itest.lombok;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,10 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eric Martineau
  */
-public class LombokMapperTest {
+class LombokMapperTest {
 
     @Test
-    public void testSimpleImmutableBuilderHappyPath() {
+    void testSimpleImmutableBuilderHappyPath() {
         PersonDto personDto = PersonMapper.INSTANCE.toDto( Person.foo()
             .age( 33 )
             .name( "Bob" )
@@ -33,7 +33,7 @@ public class LombokMapperTest {
     }
 
     @Test
-    public void testLombokToImmutable() {
+    void testLombokToImmutable() {
         Person person = PersonMapper.INSTANCE.fromDto( new PersonDto( "Bob", 33, new AddressDto( "Wild Drive" ) ) );
         assertThat( person.getAge() ).isEqualTo( 33 );
         assertThat( person.getName() ).isEqualTo( "Bob" );

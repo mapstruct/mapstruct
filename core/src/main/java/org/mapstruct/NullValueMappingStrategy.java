@@ -13,8 +13,9 @@ package org.mapstruct;
 public enum NullValueMappingStrategy {
 
     /**
-     * If {@code null} is passed to a mapping method, {@code null} will be returned. That's the default behavior if no
-     * alternative strategy is configured globally, for given mapper or method.
+     * If {@code null} is passed to a mapping method, {@code null} will be returned, unless the return type is
+     * {@link java.util.Optional Optional}, in which case an empty optional will be returned.
+     * That's the default behavior if no alternative strategy is configured globally, for given mapper or method.
      */
     RETURN_NULL,
 
@@ -28,6 +29,7 @@ public enum NullValueMappingStrategy {
      * case.</li>
      * <li>For iterable mapping methods an empty collection will be returned.</li>
      * <li>For map mapping methods an empty map will be returned.</li>
+     * <li>For optional mapping methods an empty optional will be returned.</li>
      * </ul>
      */
     RETURN_DEFAULT;

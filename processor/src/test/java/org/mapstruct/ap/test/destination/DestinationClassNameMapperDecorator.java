@@ -16,7 +16,7 @@ public abstract class DestinationClassNameMapperDecorator implements Destination
     }
 
     @Override
-    public String intToString(Integer source) {
-        return delegate.intToString( source );
+    public Target map(Integer source) {
+        return delegate.map( source );
     }
 }

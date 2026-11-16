@@ -21,4 +21,6 @@ public interface PresenceCheck {
      */
     Set<Type> getImportTypes();
 
+    PresenceCheck negate();
+
 }

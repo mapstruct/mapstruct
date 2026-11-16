@@ -8,14 +8,24 @@ package org.mapstruct.ap.test.missingignoredsource;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
     unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface ErroneousSourceTargetMapper {
-    ErroneousSourceTargetMapper INSTANCE = Mappers.getMapper( ErroneousSourceTargetMapper.class );
 
     @BeanMapping(ignoreUnmappedSourceProperties = "bar")
-    Object sourceToTarget(Object source);
+    Target map(Target source);
+
+    class Target {
+        private final String value;
+
+        public Target(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 }

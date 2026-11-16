@@ -17,5 +17,5 @@ import org.mapstruct.factory.Mappers;
 public interface DestinationPackageNameMapperDecorated {
     DestinationPackageNameMapperDecorated INSTANCE = Mappers.getMapper( DestinationPackageNameMapperDecorated.class );
 
-    String intToString(Integer source);
+    Target map(Integer source);
 }

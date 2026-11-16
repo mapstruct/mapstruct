@@ -6,4 +6,14 @@
 package org.mapstruct.ap.test.bugs._1650;
 
 public class CPrime {
+
+    private int value;
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
 }

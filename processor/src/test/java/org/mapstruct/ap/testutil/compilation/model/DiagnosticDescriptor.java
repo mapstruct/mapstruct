@@ -10,11 +10,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
-
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import org.codehaus.plexus.compiler.CompilerMessage;
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity;
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation;
+import org.jetbrains.kotlin.cli.common.messages.MessageCollectorImpl;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 
 /**
@@ -100,6 +102,37 @@ public class DiagnosticDescriptor {
         }
     }
 
+    public static DiagnosticDescriptor forCompilerMessage(String sourceDir, MessageCollectorImpl.Message message) {
+        CompilerMessageSourceLocation location = message.getLocation();
+        String sourceFileName;
+        Long line;
+        if ( location != null ) {
+            sourceFileName = location.getPath();
+            line = (long) location.getLine();
+        }
+        else {
+            sourceFileName = null;
+            line = null;
+        }
+        return new DiagnosticDescriptor(
+            sourceFileName,
+            toJavaxKind( message.getSeverity() ),
+            line,
+            message.getMessage(),
+            null
+        );
+    }
+
+    private static Kind toJavaxKind(CompilerMessageSeverity severity) {
+        return switch ( severity ) {
+            case ERROR, EXCEPTION -> Kind.ERROR;
+            case WARNING, FIXED_WARNING -> Kind.WARNING;
+            case STRONG_WARNING -> Kind.MANDATORY_WARNING;
+            case INFO, LOGGING -> Kind.NOTE;
+            case OUTPUT -> Kind.OTHER;
+        };
+    }
+
     private static String getSourceName(String sourceDir, javax.tools.Diagnostic<? extends JavaFileObject> diagnostic) {
         if ( diagnostic.getSource() == null ) {
             return null;
@@ -131,7 +164,7 @@ public class DiagnosticDescriptor {
 
         //Make the URI absolute in case it isn't (the case with JDK 6)
         try {
-            return new URI( "file:" + uri.toString() );
+            return new URI( "file:" + uri );
         }
         catch ( URISyntaxException e ) {
             throw new RuntimeException( e );
@@ -189,7 +222,7 @@ public class DiagnosticDescriptor {
         if ( kind != other.kind ) {
             return false;
         }
-        if ( line != other.line ) {
+        if ( !Objects.equals( line, other.line ) ) {
             return false;
         }
         if ( !Objects.equals( message, other.message ) ) {

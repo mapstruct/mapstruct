@@ -4,7 +4,7 @@
  * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,10 +12,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Filip Hrisafov
  */
 
-public class DefaultPackageTest {
+class DefaultPackageTest {
 
     @Test
-    public void shouldWorkCorrectlyInDefaultPackage() {
+    void shouldWorkCorrectlyInDefaultPackage() {
         DefaultPackageObject.CarDto carDto = DefaultPackageObject.CarMapper.INSTANCE.carToCarDto(
             new DefaultPackageObject.Car(
                 "Morris",

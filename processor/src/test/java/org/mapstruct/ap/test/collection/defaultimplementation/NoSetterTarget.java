@@ -15,8 +15,8 @@ import java.util.Map;
  *
  */
 public class NoSetterTarget {
-    private List<String> listValues = new ArrayList<String>();
-    private Map<String, String> mapValues = new HashMap<String, String>();
+    private List<String> listValues = new ArrayList<>();
+    private Map<String, String> mapValues = new HashMap<>();
 
     public List<String> getListValues() {
         return listValues;

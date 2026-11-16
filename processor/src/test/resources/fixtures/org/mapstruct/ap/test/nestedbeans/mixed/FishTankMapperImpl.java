@@ -57,9 +57,9 @@ public class FishTankMapperImpl implements FishTankMapper {
 
         FishTankDto fishTankDto = new FishTankDto();
 
-        fishTankDto.setFish( fishToFishDto1( source.getFish() ) );
+        fishTankDto.setFish( fishToFishDto( source.getFish() ) );
         fishTankDto.setMaterial( fishTankToMaterialDto1( source ) );
-        fishTankDto.setQuality( waterQualityToWaterQualityDto1( source.getQuality() ) );
+        fishTankDto.setQuality( waterQualityToWaterQualityDto( source.getQuality() ) );
         fishTankDto.setOrnament( ornamentToOrnamentDto( sourceInteriorOrnament( source ) ) );
         fishTankDto.setPlant( waterPlantToWaterPlantDto( source.getPlant() ) );
         fishTankDto.setName( source.getName() );
@@ -159,18 +159,11 @@ public class FishTankMapperImpl implements FishTankMapper {
     }
 
     private Ornament sourceInteriorOrnament(FishTank fishTank) {
-        if ( fishTank == null ) {
-            return null;
-        }
         Interior interior = fishTank.getInterior();
         if ( interior == null ) {
             return null;
         }
-        Ornament ornament = interior.getOrnament();
-        if ( ornament == null ) {
-            return null;
-        }
-        return ornament;
+        return interior.getOrnament();
     }
 
     protected OrnamentDto ornamentToOrnamentDto(Ornament ornament) {
@@ -197,18 +190,6 @@ public class FishTankMapperImpl implements FishTankMapper {
         return waterPlantDto;
     }
 
-    protected FishDto fishToFishDto1(Fish fish) {
-        if ( fish == null ) {
-            return null;
-        }
-
-        FishDto fishDto = new FishDto();
-
-        fishDto.setKind( fish.getType() );
-
-        return fishDto;
-    }
-
     protected MaterialDto fishTankToMaterialDto1(FishTank fishTank) {
         if ( fishTank == null ) {
             return null;
@@ -231,31 +212,6 @@ public class FishTankMapperImpl implements FishTankMapper {
         waterQualityOrganisationDto.setName( waterQualityReport.getOrganisationName() );
 
         return waterQualityOrganisationDto;
-    }
-
-    protected WaterQualityReportDto waterQualityReportToWaterQualityReportDto1(WaterQualityReport waterQualityReport) {
-        if ( waterQualityReport == null ) {
-            return null;
-        }
-
-        WaterQualityReportDto waterQualityReportDto = new WaterQualityReportDto();
-
-        waterQualityReportDto.setOrganisation( waterQualityReportToWaterQualityOrganisationDto1( waterQualityReport ) );
-        waterQualityReportDto.setVerdict( waterQualityReport.getVerdict() );
-
-        return waterQualityReportDto;
-    }
-
-    protected WaterQualityDto waterQualityToWaterQualityDto1(WaterQuality waterQuality) {
-        if ( waterQuality == null ) {
-            return null;
-        }
-
-        WaterQualityDto waterQualityDto = new WaterQualityDto();
-
-        waterQualityDto.setReport( waterQualityReportToWaterQualityReportDto1( waterQuality.getReport() ) );
-
-        return waterQualityDto;
     }
 
     protected Fish fishDtoToFish(FishDto fishDto) {
@@ -295,18 +251,11 @@ public class FishTankMapperImpl implements FishTankMapper {
     }
 
     private String waterQualityReportDtoOrganisationName(WaterQualityReportDto waterQualityReportDto) {
-        if ( waterQualityReportDto == null ) {
-            return null;
-        }
         WaterQualityOrganisationDto organisation = waterQualityReportDto.getOrganisation();
         if ( organisation == null ) {
             return null;
         }
-        String name = organisation.getName();
-        if ( name == null ) {
-            return null;
-        }
-        return name;
+        return organisation.getName();
     }
 
     protected WaterQualityReport waterQualityReportDtoToWaterQualityReport(WaterQualityReportDto waterQualityReportDto) {
@@ -335,18 +284,11 @@ public class FishTankMapperImpl implements FishTankMapper {
     }
 
     private MaterialTypeDto sourceMaterialMaterialType(FishTankDto fishTankDto) {
-        if ( fishTankDto == null ) {
-            return null;
-        }
         MaterialDto material = fishTankDto.getMaterial();
         if ( material == null ) {
             return null;
         }
-        MaterialTypeDto materialType = material.getMaterialType();
-        if ( materialType == null ) {
-            return null;
-        }
-        return materialType;
+        return material.getMaterialType();
     }
 
     protected MaterialType materialTypeDtoToMaterialType(MaterialTypeDto materialTypeDto) {

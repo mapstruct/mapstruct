@@ -12,8 +12,8 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.common.ConversionContext;
 import org.mapstruct.ap.internal.model.common.Type;
 
-import static org.mapstruct.ap.internal.util.Collections.asSet;
 import static org.mapstruct.ap.internal.conversion.ConversionUtils.bigDecimal;
+import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
  * Conversion between {@link BigDecimal} and {@link BigInteger}.

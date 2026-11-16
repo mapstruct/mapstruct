@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Issue1801Test {
 
     @ProcessorTest
-    public void shouldIncludeBuildeType() {
+    public void shouldIncludeBuilderType() {
 
         ItemDTO item = ImmutableItemDTO.builder().id( "test" ).build();
 

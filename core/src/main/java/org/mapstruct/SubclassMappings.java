@@ -45,12 +45,14 @@ import org.mapstruct.util.Experimental;
  * @author Ben Zegveld
  * @since 1.5
  */
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.CLASS)
 @Experimental
 public @interface SubclassMappings {
 
     /**
+     * The subclassMappings that should be applied.
+     *
      * @return the subclassMappings to apply.
      */
     SubclassMapping[] value();

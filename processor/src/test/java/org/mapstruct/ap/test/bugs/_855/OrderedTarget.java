@@ -12,7 +12,7 @@ import java.util.List;
  * @author Markus Heberling
  */
 class OrderedTarget {
-    private List<String> order = new LinkedList<String>();
+    private List<String> order = new LinkedList<>();
 
     public void setField0(String field0) {
         order.add( "field0" );

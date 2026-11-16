@@ -21,7 +21,18 @@ public class ImmutablesAccessorNamingStrategy extends DefaultAccessorNamingStrat
 
     @Override
     protected boolean isFluentSetter(ExecutableElement method) {
-        return super.isFluentSetter( method ) && !method.getSimpleName().toString().equals( "from" );
+        return super.isFluentSetter( method ) &&
+            !method.getSimpleName().toString().equals( "from" ) &&
+            !isPutterWithUpperCase4thCharacter( method );
+    }
+
+    private boolean isPutterWithUpperCase4thCharacter(ExecutableElement method) {
+        return isPutterMethod( method ) && Character.isUpperCase( method.getSimpleName().toString().charAt( 3 ) );
+    }
+
+    public boolean isPutterMethod(ExecutableElement method) {
+        String methodName = method.getSimpleName().toString();
+        return methodName.startsWith( "put" ) && methodName.length() > 3;
     }
 
 }

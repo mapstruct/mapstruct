@@ -17,7 +17,7 @@ import org.mapstruct.util.Experimental;
  *
  * @since 1.4
  */
-@Experimental("This SPI can have it's signature changed in subsequent releases")
+@Experimental("This SPI can have its signature changed in subsequent releases")
 public interface EnumMappingStrategy {
 
     /**

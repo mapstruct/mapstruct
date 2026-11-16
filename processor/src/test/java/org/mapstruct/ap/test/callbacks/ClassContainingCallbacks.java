@@ -18,7 +18,7 @@ import org.mapstruct.TargetType;
  * @author Andreas Gudian
  */
 public class ClassContainingCallbacks {
-    private static final List<Invocation> INVOCATIONS = new ArrayList<Invocation>();
+    private static final List<Invocation> INVOCATIONS = new ArrayList<>();
 
     @BeforeMapping
     public void noArgsBeforeMapping() {

@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.collection.immutabletarget;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public class CupboardEntityOnlyGetter {
 
-    private List<String> content;
+    private List<String> content = new ArrayList<>();
 
     public List<String> getContent() {
         return content;

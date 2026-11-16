@@ -71,7 +71,7 @@ public class GolfPlayerDto {
 
     public GolfPlayerDto withName(String name) {
         this.name = name;
-        return this
+        return this;
     }
 }
 ----
@@ -369,5 +369,56 @@ A nice example is to provide support for a custom transformation strategy.
 [subs="verbatim,attributes"]
 ----
 include::{processor-ap-test}/value/nametransformation/CustomEnumTransformationStrategy.java[tag=documentation]
+----
+====
+
+[[additional-supported-options-provider]]
+=== Additional Supported Options Provider
+
+SPI name: `org.mapstruct.ap.spi.AdditionalSupportedOptionsProvider`
+
+MapStruct offers the ability to pass through declared compiler args (or "options") provided to the MappingProcessor
+to the individual SPIs, by implementing `AdditionalSupportedOptionsProvider` via the Service Provider Interface (SPI).
+
+.Custom Additional Supported Options Provider that declares `myorg.custom.defaultNullEnumConstant` as an option to pass through
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/additionalsupportedoptions/CustomAdditionalSupportedOptionsProvider.java[tag=documentation]
+----
+====
+
+The value of this option is provided by including an `arg` to the `compilerArgs` tag when defining your custom SPI
+implementation.
+
+.Example maven configuration with additional options
+====
+[source, maven, linenums]
+[subs="verbatim,attributes"]
+----
+<configuration>
+    <annotationProcessorPaths>
+        <path>
+            <groupId>org.myorg</groupId>
+            <artifactId>custom-spi-impl</artifactId>
+            <version>${project.version}</version>
+        </path>
+    </annotationProcessorPaths>
+    <compilerArgs>
+        <arg>-Amyorg.custom.defaultNullEnumConstant=MISSING</arg>
+    </compilerArgs>
+</configuration>
+----
+====
+
+Your custom SPI implementations can then access this configured value via `MapStructProcessingEnvironment#getOptions()`.
+
+.Accessing your custom options
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+include::{processor-ap-test}/additionalsupportedoptions/UnknownEnumMappingStrategy.java[tag=documentation]
 ----
 ====

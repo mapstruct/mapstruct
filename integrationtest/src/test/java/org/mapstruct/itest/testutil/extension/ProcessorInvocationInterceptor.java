@@ -134,17 +134,18 @@ public class ProcessorInvocationInterceptor implements InvocationInterceptor {
     }
 
     private void configureProcessor(Verifier verifier) {
-        String compilerId = processorTestContext.getProcessor().getCompilerId();
-        if ( compilerId != null ) {
-            String profile = processorTestContext.getProcessor().getProfile();
-            if ( profile == null ) {
-                profile = "generate-via-compiler-plugin";
-            }
-            verifier.addCliOption( "-P" + profile );
-            verifier.addCliOption( "-Dcompiler-id=" + compilerId );
+        ProcessorTest.ProcessorType processor = processorTestContext.getProcessor();
+        String compilerId = processor.getCompilerId();
+        String profile = processor.getProfile();
+        if ( profile == null ) {
+            profile = "generate-via-compiler-plugin";
         }
-        else {
-            verifier.addCliOption( "-Pgenerate-via-processor-plugin" );
+        verifier.addCliOption( "-P" + profile );
+        verifier.addCliOption( "-Dcompiler-id=" + compilerId );
+        if ( processor == ProcessorTest.ProcessorType.JAVAC ) {
+            if ( CURRENT_VERSION.ordinal() >= JRE.JAVA_21.ordinal() ) {
+                verifier.addCliOption( "-Dmaven.compiler.proc=full" );
+            }
         }
     }
 

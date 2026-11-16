@@ -6,6 +6,9 @@
 package org.mapstruct.ap.internal.util.accessor;
 
 /**
+ * {@link ReadAccessor} that delegates to another {@link Accessor} and requires an implementation of
+ * {@link #getSimpleName()}
+ *
  * @author Filip Hrisafov
  */
 public abstract class ReadDelegateAccessor extends DelegateAccessor implements ReadAccessor {

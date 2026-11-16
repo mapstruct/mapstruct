@@ -5,8 +5,14 @@
  */
 package org.mapstruct.ap.test.annotatewith;
 
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.WithProperties;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -15,11 +21,6 @@ import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 import org.mapstruct.factory.Mappers;
-
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -176,12 +177,12 @@ public class AnnotateWithTest {
             @Diagnostic(
                 kind = javax.tools.Diagnostic.Kind.ERROR,
                 type = ErroneousMapperWithClassOnMethod.class,
-                line = 17,
+                line = 18,
                 message = "Annotation \"CustomClassOnlyAnnotation\" is not allowed on methods."
             )
         }
     )
-    @WithClasses({ ErroneousMapperWithClassOnMethod.class, CustomClassOnlyAnnotation.class })
+    @WithClasses({ ErroneousMapperWithClassOnMethod.class, CustomClassOnlyAnnotation.class, WithProperties.class })
     public void erroneousMapperWithClassOnMethod() {
     }
 
@@ -593,5 +594,4 @@ public class AnnotateWithTest {
         Method method = mapper.getClass().getMethod( "map", String.class );
         assertThat( method.getAnnotation( CustomMethodOnlyAnnotation.class ) ).isNotNull();
     }
-
 }

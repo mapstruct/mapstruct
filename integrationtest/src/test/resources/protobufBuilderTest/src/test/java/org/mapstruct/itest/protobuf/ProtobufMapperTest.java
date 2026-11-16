@@ -5,7 +5,7 @@
  */
 package org.mapstruct.itest.protobuf;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,10 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Christian Bandowski
  */
-public class ProtobufMapperTest {
+class ProtobufMapperTest {
 
     @Test
-    public void testSimpleImmutableBuilderHappyPath() {
+    void testSimpleImmutableBuilderHappyPath() {
         PersonDto personDto = PersonMapper.INSTANCE.toDto( PersonProtos.Person.newBuilder()
             .setAge( 33 )
             .setName( "Bob" )
@@ -33,7 +33,7 @@ public class ProtobufMapperTest {
     }
 
     @Test
-    public void testLombokToImmutable() {
+    void testLombokToImmutable() {
         PersonProtos.Person person = PersonMapper.INSTANCE.fromDto( new PersonDto( "Bob", 33, new AddressDto( "Wild Drive" ) ) );
 
         assertThat( person.getAge() ).isEqualTo( 33 );

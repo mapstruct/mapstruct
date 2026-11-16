@@ -248,9 +248,8 @@ All before/after-mapping methods that *can* be applied to a mapping method *will
 
 The order of the method invocation is determined primarily by their variant:
 
-1. `@BeforeMapping` methods without an `@MappingTarget` parameter are called before any null-checks on source
-parameters and constructing a new target bean.
-2. `@BeforeMapping` methods with an `@MappingTarget` parameter are called after constructing a new target bean.
+1. `@BeforeMapping` methods without parameters, a `@MappingTarget` parameter or a `@TargetType` parameter are called before any null-checks on source parameters and constructing a new target bean.
+2. `@BeforeMapping` methods with a `@MappingTarget` parameter are called after constructing a new target bean.
 3. `@AfterMapping` methods are called at the end of the mapping method before the last `return` statement.
 
 Within those groups, the method invocations are ordered by their location of definition:
@@ -262,4 +261,11 @@ Within those groups, the method invocations are ordered by their location of def
 
 *Important:* the order of methods declared within one type can not be guaranteed, as it depends on the compiler and the processing environment implementation.
 
-*Important:* when using a builder, the `@AfterMapping` annotated method must have the builder as `@MappingTarget` annotated parameter so that the method is able to modify the object going to be build. The `build` method is called when the `@AfterMapping` annotated method scope finishes. MapStruct will not call the `@AfterMapping` annotated method if the real target is used as `@MappingTarget` annotated parameter.
+[NOTE]
+====
+Before/After-mapping methods can also be used with builders:
+
+* `@BeforeMapping` methods with a `@MappingTarget` parameter of the real target will not be invoked because it is only available after the mapping was already performed.
+* To be able to modify the object that is going to be built, the `@AfterMapping` annotated method must have the builder as `@MappingTarget` annotated parameter. The `build` method is called when the `@AfterMapping` annotated method scope finishes.
+* The `@AfterMapping` annotated method can also have the real target as `@TargetType` or `@MappingTarget`. It will be invoked after the real target was built (first the methods annotated with `@TargetType`, then the methods annotated with `@MappingTarget`)
+====

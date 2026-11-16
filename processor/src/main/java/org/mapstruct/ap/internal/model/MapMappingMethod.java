@@ -15,6 +15,7 @@ import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
@@ -35,6 +36,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
     private final Assignment keyAssignment;
     private final Assignment valueAssignment;
+    private final Parameter sourceParameter;
+    private final PresenceCheck sourceParameterPresenceCheck;
     private IterableCreation iterableCreation;
 
     public static class Builder extends AbstractMappingMethodBuilder<Builder, MapMappingMethod> {
@@ -178,9 +181,17 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 ctx.getMessager().note( 2, Message.MAPMAPPING_SELECT_VALUE_NOTE, valueAssignment );
             }
 
-            // mapNullToDefault
+            // mapNullToDefault — a JSpecify @NonNull return forces RETURN_DEFAULT to avoid generating `return null`.
+            // Forcing is unconditional here (unlike BeanMappingMethod): when the source is @NonNull the template skips
+            // the whole guard block via `sourceParameterPresenceCheck??`, so the forced value is simply unused there.
             boolean mapNullToDefault =
                 method.getOptions().getMapMapping().getNullValueMappingStrategy().isReturnDefault();
+            if ( !mapNullToDefault && ctx.isJSpecifyNonNullReturn( method ) ) {
+                ctx.getMessager().note( 2,
+                    Message.MAPPING_METHOD_JSPECIFY_FORCE_RETURN_DEFAULT,
+                    method.getName() );
+                mapNullToDefault = true;
+            }
 
             MethodReference factoryMethod = null;
             if ( !method.isUpdateMethod() ) {
@@ -197,6 +208,10 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             List<LifecycleCallbackMethodReference> afterMappingMethods =
                 LifecycleMethodResolver.afterMappingMethods( method, null, ctx, existingVariables );
 
+            Parameter sourceParam = first( method.getSourceParameters() );
+            PresenceCheck sourceParameterPresenceCheck =
+                PresenceCheckMethodResolver.getPresenceCheckForSourceParameter( method, null, sourceParam, ctx );
+
             return new MapMappingMethod(
                 method,
                 getMethodAnnotations(),
@@ -206,7 +221,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 factoryMethod,
                 mapNullToDefault,
                 beforeMappingMethods,
-                afterMappingMethods
+                afterMappingMethods,
+                sourceParameterPresenceCheck
             );
         }
 
@@ -225,26 +241,41 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
     }
 
+    //CHECKSTYLE:OFF
     private MapMappingMethod(Method method, List<Annotation> annotations,
                              Collection<String> existingVariableNames, Assignment keyAssignment,
                              Assignment valueAssignment, MethodReference factoryMethod, boolean mapNullToDefault,
                              List<LifecycleCallbackMethodReference> beforeMappingReferences,
-                             List<LifecycleCallbackMethodReference> afterMappingReferences) {
+                             List<LifecycleCallbackMethodReference> afterMappingReferences,
+                             PresenceCheck sourceParameterPresenceCheck) {
+        //CHECKSTYLE:ON
         super( method, annotations, existingVariableNames, factoryMethod, mapNullToDefault, beforeMappingReferences,
             afterMappingReferences );
 
         this.keyAssignment = keyAssignment;
         this.valueAssignment = valueAssignment;
-    }
-
-    public Parameter getSourceParameter() {
+        Parameter sourceParameter = null;
         for ( Parameter parameter : getParameters() ) {
             if ( !parameter.isMappingTarget() && !parameter.isMappingContext() ) {
-                return parameter;
+                sourceParameter = parameter;
+                break;
             }
         }
 
-        throw new IllegalStateException( "Method " + this + " has no source parameter." );
+        if ( sourceParameter == null ) {
+            throw new IllegalStateException( "Method " + this + " has no source parameter." );
+        }
+
+        this.sourceParameter = sourceParameter;
+        this.sourceParameterPresenceCheck = sourceParameterPresenceCheck;
+    }
+
+    public Parameter getSourceParameter() {
+        return sourceParameter;
+    }
+
+    public PresenceCheck getSourceParameterPresenceCheck() {
+        return sourceParameterPresenceCheck;
     }
 
     public List<Type> getSourceElementTypes() {

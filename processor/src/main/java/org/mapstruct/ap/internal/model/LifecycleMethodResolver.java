@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
@@ -19,7 +21,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
-import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
+import org.mapstruct.ap.internal.model.source.selector.SelectionContext;
 
 /**
  * Factory for creating lists of appropriate {@link LifecycleCallbackMethodReference}s
@@ -64,13 +66,16 @@ public final class LifecycleMethodResolver {
                                                                              Type alternativeTarget,
                                                                              SelectionParameters selectionParameters,
                                                                              MappingBuilderContext ctx,
-                                                                             Set<String> existingVariableNames) {
+                                                         Set<String> existingVariableNames,
+                                                         Supplier<List<ParameterBinding>> parameterBindingsProvider) {
         return collectLifecycleCallbackMethods( method,
                         alternativeTarget,
                         selectionParameters,
                         filterAfterMappingMethods( getAllAvailableMethods( method, ctx.getSourceModel() ) ),
                         ctx,
-                        existingVariableNames );
+                        existingVariableNames,
+                        parameterBindingsProvider
+            );
     }
 
     /**
@@ -132,17 +137,35 @@ public final class LifecycleMethodResolver {
     private static List<LifecycleCallbackMethodReference> collectLifecycleCallbackMethods(
             Method method, Type targetType, SelectionParameters selectionParameters, List<SourceMethod> callbackMethods,
             MappingBuilderContext ctx, Set<String> existingVariableNames) {
+        return collectLifecycleCallbackMethods(
+            method,
+            targetType,
+            selectionParameters,
+            callbackMethods,
+            ctx,
+            existingVariableNames,
+            Collections::emptyList
+        );
+    }
+
+    private static List<LifecycleCallbackMethodReference> collectLifecycleCallbackMethods(
+        Method method, Type targetType, SelectionParameters selectionParameters, List<SourceMethod> callbackMethods,
+        MappingBuilderContext ctx, Set<String> existingVariableNames,
+        Supplier<List<ParameterBinding>> parameterBindingsProvider) {
 
         MethodSelectors selectors =
-            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory(), ctx.getMessager() );
+            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getMessager(), ctx.getOptions() );
 
         List<SelectedMethod<SourceMethod>> matchingMethods = selectors.getMatchingMethods(
-            method,
             callbackMethods,
-            Collections.emptyList(),
-            targetType,
-            method.getReturnType(),
-            SelectionCriteria.forLifecycleMethods( selectionParameters ) );
+            SelectionContext.forLifecycleMethods(
+                method,
+                targetType,
+                selectionParameters,
+                ctx.getTypeFactory(),
+                parameterBindingsProvider
+            )
+        );
 
         return toLifecycleCallbackMethodRefs(
             method,

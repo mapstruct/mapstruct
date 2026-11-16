@@ -13,14 +13,22 @@ import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ * A {@link PresenceCheck} that is based on a {@link MethodReference}.
+ *
  * @author Filip Hrisafov
  */
 public class MethodReferencePresenceCheck extends ModelElement implements PresenceCheck {
 
     protected final MethodReference methodReference;
+    protected final boolean negate;
 
     public MethodReferencePresenceCheck(MethodReference methodReference) {
+        this( methodReference, false );
+    }
+
+    public MethodReferencePresenceCheck(MethodReference methodReference, boolean negate) {
         this.methodReference = methodReference;
+        this.negate = negate;
     }
 
     @Override
@@ -30,6 +38,15 @@ public class MethodReferencePresenceCheck extends ModelElement implements Presen
 
     public MethodReference getMethodReference() {
         return methodReference;
+    }
+
+    public boolean isNegate() {
+        return negate;
+    }
+
+    @Override
+    public PresenceCheck negate() {
+        return new MethodReferencePresenceCheck( methodReference, true );
     }
 
     @Override

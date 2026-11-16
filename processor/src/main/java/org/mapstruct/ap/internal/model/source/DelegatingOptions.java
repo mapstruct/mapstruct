@@ -12,6 +12,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.ClassAccessibilityGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
 import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
@@ -84,6 +85,10 @@ public abstract class DelegatingOptions {
         return next.isDisableSubMappingMethodsGeneration();
     }
 
+    public ClassAccessibilityGem accessibility() {
+        return next.accessibility();
+    }
+
     // BeanMapping and Mapping
 
     public CollectionMappingStrategyGem getCollectionMappingStrategy() {
@@ -104,6 +109,10 @@ public abstract class DelegatingOptions {
 
     public SubclassExhaustiveStrategyGem getSubclassExhaustiveStrategy() {
         return next.getSubclassExhaustiveStrategy();
+    }
+
+    public TypeMirror getSubclassExhaustiveException() {
+        return next.getSubclassExhaustiveException();
     }
 
     public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {

@@ -7,7 +7,6 @@ package org.mapstruct.ap.internal.util;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.spi.AstModifyingAnnotationProcessor;

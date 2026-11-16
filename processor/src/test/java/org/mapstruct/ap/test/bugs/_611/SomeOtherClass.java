@@ -19,9 +19,29 @@ public class SomeOtherClass {
         Target toTarget(Source in);
 
         class Source {
+
+            private final String value;
+
+            public Source(String value) {
+                this.value = value;
+            }
+
+            public String getValue() {
+                return value;
+            }
         }
 
         class Target {
+
+            private final String value;
+
+            public Target(String value) {
+                this.value = value;
+            }
+
+            public String getValue() {
+                return value;
+            }
         }
     }
 }

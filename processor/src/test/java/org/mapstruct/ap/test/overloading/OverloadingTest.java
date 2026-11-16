@@ -5,15 +5,16 @@
  */
 package org.mapstruct.ap.test.overloading;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Date;
 import javax.tools.Diagnostic.Kind;
+
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithClasses( { SourceTargetMapper.class, Source.class, Target.class, SourceMappingTargetMapper.class,
     MappingTarget.class } )
@@ -24,6 +25,9 @@ public class OverloadingTest {
         long updatedOn = 1059811320000L;
         Target result = SourceTargetMapper.INSTANCE.sourceToTarget( new Source( new Date( updatedOn ) ) );
         assertThat( result.getUpdatedOn() ).isEqualTo( updatedOn );
+
+        Source reversed = SourceTargetMapper.INSTANCE.targetToSourceReversed( result );
+        assertThat( reversed.getUpdatedOn() ).isEqualTo( new Date( updatedOn ) );
     }
 
     @ProcessorTest
@@ -31,6 +35,9 @@ public class OverloadingTest {
         long updatedOn = 1059822320000L;
         MappingTarget result = SourceMappingTargetMapper.INSTANCE.sourceToTarget( new Source( new Date( updatedOn ) ) );
         assertThat( result.getUpdatedOnTarget() ).isEqualTo( updatedOn );
+
+        Source reversed = SourceMappingTargetMapper.INSTANCE.targetToSourceReversed( result );
+        assertThat( reversed.getUpdatedOn() ).isEqualTo( new Date( updatedOn ) );
     }
 
     @ProcessorTest

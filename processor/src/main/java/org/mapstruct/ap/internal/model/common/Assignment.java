@@ -147,7 +147,6 @@ public interface Assignment {
      */
     void setSourceLoopVarName(String sourceLoopVarName);
 
-
     /**
      * Returns whether the type of assignment
      *

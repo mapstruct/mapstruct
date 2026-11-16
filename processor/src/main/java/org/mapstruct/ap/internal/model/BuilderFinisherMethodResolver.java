@@ -9,9 +9,9 @@ import java.util.Collection;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
+import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.source.Method;
-import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.util.Extractor;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
@@ -19,6 +19,8 @@ import org.mapstruct.ap.internal.util.Strings;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
+ * Factory for creating the appropriate builder finisher method.
+ *
  * @author Filip Hrisafov
  */
 public class BuilderFinisherMethodResolver {

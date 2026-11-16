@@ -8,6 +8,7 @@ package org.mapstruct.ap;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,12 +17,12 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -29,19 +30,21 @@ import javax.lang.model.element.Name;
 import javax.lang.model.element.QualifiedNameable;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementKindVisitor6;
+import javax.lang.model.util.ElementKindVisitor8;
 import javax.tools.Diagnostic.Kind;
 
-import org.mapstruct.ap.internal.model.Mapper;
-import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.gem.MapperGem;
-import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
+import org.mapstruct.ap.internal.model.Mapper;
+import org.mapstruct.ap.internal.option.MappingOption;
+import org.mapstruct.ap.internal.option.Options;
 import org.mapstruct.ap.internal.processor.DefaultModelElementProcessorContext;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor;
 import org.mapstruct.ap.internal.processor.ModelElementProcessor.ProcessorContext;
 import org.mapstruct.ap.internal.util.AnnotationProcessingException;
 import org.mapstruct.ap.internal.util.AnnotationProcessorContext;
 import org.mapstruct.ap.internal.util.RoundContext;
+import org.mapstruct.ap.internal.util.Services;
+import org.mapstruct.ap.spi.AdditionalSupportedOptionsProvider;
 import org.mapstruct.ap.spi.TypeHierarchyErroneousException;
 
 import static javax.lang.model.element.ElementKind.CLASS;
@@ -79,16 +82,6 @@ import static javax.lang.model.element.ElementKind.CLASS;
  * @author Gunnar Morling
  */
 @SupportedAnnotationTypes("org.mapstruct.Mapper")
-@SupportedOptions({
-    MappingProcessor.SUPPRESS_GENERATOR_TIMESTAMP,
-    MappingProcessor.SUPPRESS_GENERATOR_VERSION_INFO_COMMENT,
-    MappingProcessor.UNMAPPED_TARGET_POLICY,
-    MappingProcessor.UNMAPPED_SOURCE_POLICY,
-    MappingProcessor.DEFAULT_COMPONENT_MODEL,
-    MappingProcessor.DEFAULT_INJECTION_STRATEGY,
-    MappingProcessor.DISABLE_BUILDERS,
-    MappingProcessor.VERBOSE
-})
 public class MappingProcessor extends AbstractProcessor {
 
     /**
@@ -96,16 +89,35 @@ public class MappingProcessor extends AbstractProcessor {
      */
     private static final boolean ANNOTATIONS_CLAIMED_EXCLUSIVELY = false;
 
-    protected static final String SUPPRESS_GENERATOR_TIMESTAMP = "mapstruct.suppressGeneratorTimestamp";
-    protected static final String SUPPRESS_GENERATOR_VERSION_INFO_COMMENT =
-        "mapstruct.suppressGeneratorVersionInfoComment";
-    protected static final String UNMAPPED_TARGET_POLICY = "mapstruct.unmappedTargetPolicy";
-    protected static final String UNMAPPED_SOURCE_POLICY = "mapstruct.unmappedSourcePolicy";
-    protected static final String DEFAULT_COMPONENT_MODEL = "mapstruct.defaultComponentModel";
-    protected static final String DEFAULT_INJECTION_STRATEGY = "mapstruct.defaultInjectionStrategy";
-    protected static final String ALWAYS_GENERATE_SERVICE_FILE = "mapstruct.alwaysGenerateServicesFile";
-    protected static final String DISABLE_BUILDERS = "mapstruct.disableBuilders";
-    protected static final String VERBOSE = "mapstruct.verbose";
+    // CHECKSTYLE:OFF
+    // Deprecated options, kept for backwards compatibility.
+    // They will be removed in a future release.
+    @Deprecated
+    protected static final String SUPPRESS_GENERATOR_TIMESTAMP = MappingOption.SUPPRESS_GENERATOR_TIMESTAMP.getOptionName();
+    @Deprecated
+    protected static final String SUPPRESS_GENERATOR_VERSION_INFO_COMMENT = MappingOption.SUPPRESS_GENERATOR_VERSION_INFO_COMMENT.getOptionName();
+    @Deprecated
+    protected static final String UNMAPPED_TARGET_POLICY = MappingOption.UNMAPPED_TARGET_POLICY.getOptionName();
+    @Deprecated
+    protected static final String UNMAPPED_SOURCE_POLICY = MappingOption.UNMAPPED_SOURCE_POLICY.getOptionName();
+    @Deprecated
+    protected static final String DEFAULT_COMPONENT_MODEL = MappingOption.DEFAULT_COMPONENT_MODEL.getOptionName();
+    @Deprecated
+    protected static final String DEFAULT_INJECTION_STRATEGY = MappingOption.DEFAULT_INJECTION_STRATEGY.getOptionName();
+    @Deprecated
+    protected static final String ALWAYS_GENERATE_SERVICE_FILE = MappingOption.ALWAYS_GENERATE_SERVICE_FILE.getOptionName();
+    @Deprecated
+    protected static final String DISABLE_BUILDERS = MappingOption.DISABLE_BUILDERS.getOptionName();
+    @Deprecated
+    protected static final String VERBOSE = MappingOption.VERBOSE.getOptionName();
+    @Deprecated
+    protected static final String NULL_VALUE_ITERABLE_MAPPING_STRATEGY = MappingOption.NULL_VALUE_ITERABLE_MAPPING_STRATEGY.getOptionName();
+    @Deprecated
+    protected static final String NULL_VALUE_MAP_MAPPING_STRATEGY = MappingOption.NULL_VALUE_MAP_MAPPING_STRATEGY.getOptionName();
+    // CHECKSTYLE:ON
+
+    private final Set<String> additionalSupportedOptions;
+    private final String additionalSupportedOptionsError;
 
     private Options options;
 
@@ -122,35 +134,39 @@ public class MappingProcessor extends AbstractProcessor {
      */
     private Set<DeferredMapper> deferredMappers = new HashSet<>();
 
+    public MappingProcessor() {
+        Set<String> additionalSupportedOptions;
+        String additionalSupportedOptionsError;
+        try {
+            additionalSupportedOptions = resolveAdditionalSupportedOptions();
+            additionalSupportedOptionsError = null;
+        }
+        catch ( IllegalStateException ex ) {
+            additionalSupportedOptions = Collections.emptySet();
+            additionalSupportedOptionsError = ex.getMessage();
+        }
+        this.additionalSupportedOptions = additionalSupportedOptions;
+        this.additionalSupportedOptionsError = additionalSupportedOptionsError;
+    }
+
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init( processingEnv );
 
-        options = createOptions();
+        options = new Options( processingEnv.getOptions() );
         annotationProcessorContext = new AnnotationProcessorContext(
             processingEnv.getElementUtils(),
             processingEnv.getTypeUtils(),
             processingEnv.getMessager(),
             options.isDisableBuilders(),
-            options.isVerbose()
+            options.isDisableJSpecify(),
+            options.isVerbose(),
+            resolveAdditionalOptions( processingEnv.getOptions() )
         );
-    }
 
-    private Options createOptions() {
-        String unmappedTargetPolicy = processingEnv.getOptions().get( UNMAPPED_TARGET_POLICY );
-        String unmappedSourcePolicy = processingEnv.getOptions().get( UNMAPPED_SOURCE_POLICY );
-
-        return new Options(
-            Boolean.parseBoolean( processingEnv.getOptions().get( SUPPRESS_GENERATOR_TIMESTAMP ) ),
-            Boolean.parseBoolean( processingEnv.getOptions().get( SUPPRESS_GENERATOR_VERSION_INFO_COMMENT ) ),
-            unmappedTargetPolicy != null ? ReportingPolicyGem.valueOf( unmappedTargetPolicy.toUpperCase() ) : null,
-            unmappedSourcePolicy != null ? ReportingPolicyGem.valueOf( unmappedSourcePolicy.toUpperCase() ) : null,
-            processingEnv.getOptions().get( DEFAULT_COMPONENT_MODEL ),
-            processingEnv.getOptions().get( DEFAULT_INJECTION_STRATEGY ),
-            Boolean.parseBoolean( processingEnv.getOptions().get( ALWAYS_GENERATE_SERVICE_FILE ) ),
-            Boolean.parseBoolean( processingEnv.getOptions().get( DISABLE_BUILDERS ) ),
-            Boolean.parseBoolean( processingEnv.getOptions().get( VERBOSE ) )
-        );
+        if ( additionalSupportedOptionsError != null ) {
+            processingEnv.getMessager().printMessage( Kind.ERROR, additionalSupportedOptionsError );
+        }
     }
 
     @Override
@@ -211,6 +227,15 @@ public class MappingProcessor extends AbstractProcessor {
         return ANNOTATIONS_CLAIMED_EXCLUSIVELY;
     }
 
+    @Override
+    public Set<String> getSupportedOptions() {
+        return Stream.concat(
+                Stream.of( MappingOption.values() ).map( MappingOption::getOptionName ),
+                additionalSupportedOptions.stream()
+            )
+            .collect( Collectors.toSet() );
+    }
+
     /**
      * Gets fresh copies of all mappers deferred from previous rounds (the originals may contain references to
      * erroneous source/target type elements).
@@ -240,7 +265,7 @@ public class MappingProcessor extends AbstractProcessor {
 
             try {
                 Set<? extends Element> annotatedMappers = roundEnvironment.getElementsAnnotatedWith( annotation );
-                for (Element mapperElement : annotatedMappers) {
+                for ( Element mapperElement : annotatedMappers ) {
                     TypeElement mapperTypeElement = asTypeElement( mapperElement );
 
                     // on some JDKs, RoundEnvironment.getElementsAnnotatedWith( ... ) returns types with
@@ -378,7 +403,7 @@ public class MappingProcessor extends AbstractProcessor {
 
     private TypeElement asTypeElement(Element element) {
         return element.accept(
-            new ElementKindVisitor6<TypeElement, Void>() {
+            new ElementKindVisitor8<TypeElement, Void>() {
                 @Override
                 public TypeElement visitTypeAsInterface(TypeElement e, Void p) {
                     return e;
@@ -391,6 +416,35 @@ public class MappingProcessor extends AbstractProcessor {
 
             }, null
         );
+    }
+
+    /**
+     * Fetch the additional supported options provided by the SPI {@link AdditionalSupportedOptionsProvider}.
+     *
+     * @return the additional supported options
+     */
+    private static Set<String> resolveAdditionalSupportedOptions() {
+        Set<String> additionalSupportedOptions = null;
+        for ( AdditionalSupportedOptionsProvider optionsProvider :
+            Services.all( AdditionalSupportedOptionsProvider.class ) ) {
+            if ( additionalSupportedOptions == null ) {
+                additionalSupportedOptions = new HashSet<>();
+            }
+            Set<String> providerOptions = optionsProvider.getAdditionalSupportedOptions();
+
+            for ( String providerOption : providerOptions ) {
+                // Ensure additional options are not in the mapstruct namespace
+                if ( providerOption.startsWith( "mapstruct" ) ) {
+                    throw new IllegalStateException(
+                        "Additional SPI options cannot start with \"mapstruct\". Provider " + optionsProvider +
+                            " provided option " + providerOption );
+                }
+                additionalSupportedOptions.add( providerOption );
+            }
+
+        }
+
+        return additionalSupportedOptions == null ? Collections.emptySet() : additionalSupportedOptions;
     }
 
     private static class ProcessorComparator implements Comparator<ModelElementProcessor<?, ?>> {
@@ -410,5 +464,17 @@ public class MappingProcessor extends AbstractProcessor {
             this.deferredMapperElement = deferredMapperElement;
             this.erroneousElement = erroneousElement;
         }
+    }
+
+    /**
+     * Filters only the options belonging to the declared additional supported options.
+     *
+     * @param options all processor environment options
+     * @return filtered options
+     */
+    private Map<String, String> resolveAdditionalOptions(Map<String, String> options) {
+        return options.entrySet().stream()
+            .filter( entry -> additionalSupportedOptions.contains( entry.getKey() ) )
+            .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
     }
 }

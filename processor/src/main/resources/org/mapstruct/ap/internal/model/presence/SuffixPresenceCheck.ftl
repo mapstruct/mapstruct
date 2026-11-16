@@ -6,4 +6,4 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.presence.SuffixPresenceCheck" -->
-${sourceReference}${suffix}
+<#if isNegate()>!</#if>${sourceReference}${suffix}

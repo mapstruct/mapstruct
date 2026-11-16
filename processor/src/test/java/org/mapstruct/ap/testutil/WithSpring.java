@@ -11,6 +11,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
+
 /**
  * Meta annotation that adds the needed Spring Dependencies
  *
@@ -23,6 +26,7 @@ import java.lang.annotation.Target;
     "spring-beans",
     "spring-context"
 })
+@DisabledOnJre(JRE.OTHER)
 public @interface WithSpring {
 
 }

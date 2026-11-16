@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.bugs._1111;
 
 import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -24,8 +25,29 @@ public interface Issue1111Mapper {
 
     List<List<Target>> listList(List<List<Source>> in);
 
-    class Source { }
+    class Source {
+        private final String value;
 
-    class Target { }
+        public Source(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    class Target {
+
+        private final String value;
+
+        public Target(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 
 }

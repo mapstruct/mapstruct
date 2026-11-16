@@ -11,6 +11,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.mapstruct.ap.test.complex._target.CarDto;
 import org.mapstruct.ap.test.complex._target.PersonDto;
 import org.mapstruct.ap.test.complex.other.DateMapper;
@@ -31,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     Category.class,
     DateMapper.class
 })
+@DefaultTimeZone("UTC")
 public class CarMapperTest {
 
     @ProcessorTest

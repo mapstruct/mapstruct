@@ -68,7 +68,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        List<TargetFoo> list = new ArrayList<TargetFoo>( foos.size() );
+        List<TargetFoo> list = new ArrayList<>( foos.size() );
         for ( SourceFoo sourceFoo : foos ) {
             list.add( sourceFooToTargetFoo( sourceFoo ) );
         }
@@ -82,7 +82,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        Set<TargetFoo> set = new LinkedHashSet<TargetFoo>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
+        Set<TargetFoo> set = new LinkedHashSet<>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
         for ( SourceFoo sourceFoo : foos ) {
             set.add( sourceFooToTargetFoo( sourceFoo ) );
         }
@@ -96,7 +96,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        Collection<TargetFoo> collection = new ArrayList<TargetFoo>( foos.size() );
+        Collection<TargetFoo> collection = new ArrayList<>( foos.size() );
         for ( SourceFoo sourceFoo : foos ) {
             collection.add( sourceFooToTargetFoo( sourceFoo ) );
         }
@@ -110,7 +110,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        ArrayList<TargetFoo> iterable = new ArrayList<TargetFoo>();
+        ArrayList<TargetFoo> iterable = new ArrayList<>();
         for ( SourceFoo sourceFoo : foos ) {
             iterable.add( sourceFooToTargetFoo( sourceFoo ) );
         }
@@ -150,7 +150,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        SortedSet<TargetFoo> sortedSet = new TreeSet<TargetFoo>();
+        SortedSet<TargetFoo> sortedSet = new TreeSet<>();
         for ( SourceFoo sourceFoo : foos ) {
             sortedSet.add( sourceFooToTargetFoo( sourceFoo ) );
         }
@@ -164,7 +164,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        NavigableSet<TargetFoo> navigableSet = new TreeSet<TargetFoo>();
+        NavigableSet<TargetFoo> navigableSet = new TreeSet<>();
         for ( SourceFoo sourceFoo : foos ) {
             navigableSet.add( sourceFooToTargetFoo( sourceFoo ) );
         }
@@ -178,7 +178,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        Map<String, TargetFoo> map = new LinkedHashMap<String, TargetFoo>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
+        Map<String, TargetFoo> map = new LinkedHashMap<>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<Long, SourceFoo> entry : foos.entrySet() ) {
             String key = String.valueOf( entry.getKey() );
@@ -195,7 +195,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        SortedMap<String, TargetFoo> sortedMap = new TreeMap<String, TargetFoo>();
+        SortedMap<String, TargetFoo> sortedMap = new TreeMap<>();
 
         for ( java.util.Map.Entry<Long, SourceFoo> entry : foos.entrySet() ) {
             String key = String.valueOf( entry.getKey() );
@@ -212,7 +212,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        NavigableMap<String, TargetFoo> navigableMap = new TreeMap<String, TargetFoo>();
+        NavigableMap<String, TargetFoo> navigableMap = new TreeMap<>();
 
         for ( java.util.Map.Entry<Long, SourceFoo> entry : foos.entrySet() ) {
             String key = String.valueOf( entry.getKey() );
@@ -229,7 +229,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        ConcurrentMap<String, TargetFoo> concurrentMap = new ConcurrentHashMap<String, TargetFoo>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
+        ConcurrentMap<String, TargetFoo> concurrentMap = new ConcurrentHashMap<>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<Long, SourceFoo> entry : foos.entrySet() ) {
             String key = String.valueOf( entry.getKey() );
@@ -246,7 +246,7 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
             return null;
         }
 
-        ConcurrentNavigableMap<String, TargetFoo> concurrentNavigableMap = new ConcurrentSkipListMap<String, TargetFoo>();
+        ConcurrentNavigableMap<String, TargetFoo> concurrentNavigableMap = new ConcurrentSkipListMap<>();
 
         for ( java.util.Map.Entry<Long, SourceFoo> entry : foos.entrySet() ) {
             String key = String.valueOf( entry.getKey() );

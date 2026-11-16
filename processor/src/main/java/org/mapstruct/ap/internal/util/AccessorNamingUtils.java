@@ -10,8 +10,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.SimpleElementVisitor6;
-import javax.lang.model.util.SimpleTypeVisitor6;
+import javax.lang.model.util.SimpleElementVisitor8;
+import javax.lang.model.util.SimpleTypeVisitor8;
 
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
@@ -84,7 +84,7 @@ public final class AccessorNamingUtils {
 
     private static String getQualifiedName(TypeMirror type) {
         DeclaredType declaredType = type.accept(
-            new SimpleTypeVisitor6<DeclaredType, Void>() {
+            new SimpleTypeVisitor8<DeclaredType, Void>() {
                 @Override
                 public DeclaredType visitDeclared(DeclaredType t, Void p) {
                     return t;
@@ -98,7 +98,7 @@ public final class AccessorNamingUtils {
         }
 
         TypeElement typeElement = declaredType.asElement().accept(
-            new SimpleElementVisitor6<TypeElement, Void>() {
+            new SimpleElementVisitor8<TypeElement, Void>() {
                 @Override
                 public TypeElement visitType(TypeElement e, Void p) {
                     return e;

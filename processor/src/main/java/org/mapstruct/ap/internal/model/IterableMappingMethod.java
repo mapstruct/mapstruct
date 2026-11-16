@@ -5,8 +5,6 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -14,9 +12,12 @@ import java.util.Set;
 import org.mapstruct.ap.internal.model.assignment.LocalVarWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
+
+import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
  * A {@link MappingMethod} implemented by a {@link Mapper} class which maps one iterable type to another. The collection
@@ -54,7 +55,8 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         protected IterableMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
             Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
-            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters) {
+            List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
+            PresenceCheck sourceParameterPresenceCheck) {
             return new IterableMappingMethod(
                 method,
                 getMethodAnnotations(),
@@ -65,17 +67,20 @@ public class IterableMappingMethod extends ContainerMappingMethod {
                 loopVariableName,
                 beforeMappingMethods,
                 afterMappingMethods,
-                selectionParameters
+                selectionParameters,
+                sourceParameterPresenceCheck
             );
         }
     }
 
+    //CHECKSTYLE:OFF
     private IterableMappingMethod(Method method, List<Annotation> annotations,
                                   Collection<String> existingVariables, Assignment parameterAssignment,
                                   MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
-        SelectionParameters selectionParameters) {
+        SelectionParameters selectionParameters, PresenceCheck sourceParameterPresenceCheck) {
+        //CHECKSTYLE:ON
         super(
             method,
             annotations,
@@ -86,7 +91,8 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             loopVariableName,
             beforeMappingReferences,
             afterMappingReferences,
-            selectionParameters
+            selectionParameters,
+            sourceParameterPresenceCheck
         );
     }
 

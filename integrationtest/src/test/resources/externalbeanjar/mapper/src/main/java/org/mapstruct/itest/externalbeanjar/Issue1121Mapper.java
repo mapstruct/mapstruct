@@ -10,11 +10,11 @@
  */
 package org.mapstruct.itest.externalbeanjar;
 
-import org.mapstruct.itest.externalbeanjar.Source;
-import org.mapstruct.itest.externalbeanjar.Target;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.mapstruct.itest.externalbeanjar.Source;
+import org.mapstruct.itest.externalbeanjar.Target;
 
 /**
  *

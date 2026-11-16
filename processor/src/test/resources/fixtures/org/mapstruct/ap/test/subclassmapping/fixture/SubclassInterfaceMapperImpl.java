@@ -38,6 +38,8 @@ public class SubclassInterfaceMapperImpl implements SubclassInterfaceMapper {
 
         SubTarget subTarget = new SubTarget();
 
+        subTarget.setParentValue( subSource.getParentValue() );
+        subTarget.setImplementedParentValue( subSource.getImplementedParentValue() );
         subTarget.setValue( subSource.getValue() );
 
         return subTarget;
@@ -53,6 +55,9 @@ public class SubclassInterfaceMapperImpl implements SubclassInterfaceMapper {
         finalValue = subSourceOther.getFinalValue();
 
         SubTargetOther subTargetOther = new SubTargetOther( finalValue );
+
+        subTargetOther.setParentValue( subSourceOther.getParentValue() );
+        subTargetOther.setImplementedParentValue( subSourceOther.getImplementedParentValue() );
 
         return subTargetOther;
     }

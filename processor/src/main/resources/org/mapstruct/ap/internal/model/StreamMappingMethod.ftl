@@ -6,10 +6,10 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.StreamMappingMethod" -->
+<#import "macro/CommonMacros.ftl" as lib>
 <#list annotations as annotation>
     <#nt><@includeModel object=annotation/>
 </#list>
-<#if overridden>@Override</#if>
 <#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#--TODO does it even make sense to do a callback if the result is a Stream, as they are immutable-->
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
@@ -18,7 +18,8 @@
 
     	</#if>
     </#list>
-    if ( ${sourceParameter.name} == null ) {
+    <#if sourceParameterPresenceCheck??>
+    if ( <@includeModel object=sourceParameterPresenceCheck.negate() /> ) {
         <#if !mapNullToDefault>
             return<#if returnType.name != "void"> <#if existingInstanceMapping>${resultName}<#else>null</#if></#if>;
         <#else>
@@ -30,7 +31,7 @@
                     }
                     return<#if returnType.name != "void"> ${resultName}</#if>;
                 <#else>
-                    return new <@includeModel object=resultElementType/>[0];
+                    return <@lib.constructArrayType targetType=resultType targetSize=0/>;
                 </#if>
             <#elseif resultType.iterableType>
                 <#if existingInstanceMapping>
@@ -49,6 +50,7 @@
             </#if>
         </#if>
     }
+    </#if>
 
     <#-- A variable needs to be defined if there are before or after mappings and this is not exisitingInstanceMapping -->
     <#assign needVarDefine = (beforeMappingReferencesWithMappingTarget?has_content || afterMappingReferences?has_content) && !existingInstanceMapping />
@@ -89,7 +91,7 @@
     <#if resultType.arrayType>
         <#if existingInstanceMapping>
         int ${index1Name} = 0;
-        for ( <@includeModel object=resultElementType/> ${loopVariableName} : ${sourceParameter.name}.limit( ${resultName}.length )<@streamMapSupplier />.toArray( ${resultElementType}[]::new ) ) {
+        for ( <@includeModel object=resultElementType/> ${loopVariableName} : ${sourceParameter.name}.limit( ${resultName}.length )<@streamMapSupplier />.toArray( <@includeModel object=resultElementType raw=true/>[]::new ) ) {
             if ( ( ${index1Name} >= ${resultName}.length ) ) {
                 break;
             }
@@ -97,7 +99,7 @@
         }
         <#else>
             <#if canReturnImmediatelly><#if returnType.name != "void">return </#if><#else> <#if needVarDefine>${resultElementType}[] <#else>${resultName} = </#if></#if>${sourceParameter.name}<@streamMapSupplier />
-                        .toArray( <@includeModel object=resultElementType/>[]::new );
+                        .toArray( <@includeModel object=resultElementType raw=true/>[]::new );
         </#if>
     <#elseif resultType.iterableType>
         <#if existingInstanceMapping || !canReturnImmediatelly>
@@ -114,7 +116,7 @@
     <#else>
         <#-- Streams are immutable so we can't update them -->
         <#if !existingInstanceMapping>
-            <#--TODO fhr: after the the result is no longer the same instance, how does it affect the
+            <#--TODO fhr: after the result is no longer the same instance, how does it affect the
                 Before mapping methods. Does it even make sense to have before mapping on a stream? -->
             <#if sourceParameter.type.arrayType>
                 <@returnLocalVarDefOrUpdate>Stream.of( ${sourceParameter.name} )<@streamMapSupplier />;</@returnLocalVarDefOrUpdate>

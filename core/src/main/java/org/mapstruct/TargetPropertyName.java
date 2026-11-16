@@ -11,10 +11,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation marks a <em>presence check method</em> parameter as a property name parameter.
+ * This annotation marks a <em>presence check method</em> parameter as a target property name parameter.
  * <p>
- *   This parameter enables conditional filtering based on target property name at run-time.
- *   Parameter must be of type {@link String} and can be present only in {@link Condition} method.
+ * This parameter enables conditional filtering based on target property name at run-time.
+ * Parameter must be of type {@link String} and can be present only in {@link Condition} method.
  * </p>
  * @author Nikola Ivačič
  * @since 1.6

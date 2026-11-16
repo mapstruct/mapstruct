@@ -1,0 +1,196 @@
+/*
+ * Copyright MapStruct Authors.
+ *
+ * Licensed under the Apache License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
+ */
+package org.mapstruct.ap.test.nestedbeans;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.processing.Generated;
+
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor",
+    date = "2026-06-12T22:22:12+0200",
+    comments = "version: , compiler: javac, environment: Java 21.0.11 (Eclipse Adoptium)"
+)
+public class UserDtoMapperSmartImpl implements UserDtoMapperSmart {
+
+    @Override
+    public UserDto userToUserDto(User user) {
+        if ( user == null ) {
+            return null;
+        }
+
+        UserDto userDto = new UserDto();
+
+        userDto.setName( user.getName() );
+        userDto.setCar( carToCarDto( user.getCar() ) );
+        userDto.setSecondCar( carToCarDto( user.getSecondCar() ) );
+        userDto.setHouse( houseToHouseDto( user.getHouse() ) );
+
+        return userDto;
+    }
+
+    @Override
+    public org.mapstruct.ap.test.nestedbeans.other.UserDto userToUserDto2(User user) {
+        if ( user == null ) {
+            return null;
+        }
+
+        org.mapstruct.ap.test.nestedbeans.other.UserDto userDto = new org.mapstruct.ap.test.nestedbeans.other.UserDto();
+
+        userDto.setName( user.getName() );
+        userDto.setCar( carToCarDto1( user.getCar() ) );
+        userDto.setHouse( houseToHouseDto1( user.getHouse() ) );
+
+        return userDto;
+    }
+
+    protected WheelDto wheelToWheelDto(Wheel wheel) {
+        if ( wheel == null ) {
+            return null;
+        }
+
+        WheelDto wheelDto = new WheelDto();
+
+        wheelDto.setFront( wheel.isFront() );
+        wheelDto.setRight( wheel.isRight() );
+
+        return wheelDto;
+    }
+
+    protected List<WheelDto> wheelListToWheelDtoList(List<Wheel> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<WheelDto> list1 = new ArrayList<>( list.size() );
+        for ( Wheel wheel : list ) {
+            list1.add( wheelToWheelDto( wheel ) );
+        }
+
+        return list1;
+    }
+
+    protected CarDto carToCarDto(Car car) {
+        if ( car == null ) {
+            return null;
+        }
+
+        CarDto carDto = new CarDto();
+
+        carDto.setName( car.getName() );
+        carDto.setYear( car.getYear() );
+        carDto.setWheels( wheelListToWheelDtoList( car.getWheels() ) );
+
+        return carDto;
+    }
+
+    protected ExternalRoofType roofTypeToExternalRoofType(RoofType roofType) {
+        if ( roofType == null ) {
+            return null;
+        }
+
+        ExternalRoofType externalRoofType = switch ( roofType ) {
+            case OPEN -> ExternalRoofType.OPEN;
+            case BOX -> ExternalRoofType.BOX;
+            case GAMBREL -> ExternalRoofType.GAMBREL;
+        };
+
+        return externalRoofType;
+    }
+
+    protected RoofDto roofToRoofDto(Roof roof) {
+        if ( roof == null ) {
+            return null;
+        }
+
+        RoofDto roofDto = new RoofDto();
+
+        roofDto.setColor( String.valueOf( roof.getColor() ) );
+        roofDto.setType( roofTypeToExternalRoofType( roof.getType() ) );
+
+        return roofDto;
+    }
+
+    protected HouseDto houseToHouseDto(House house) {
+        if ( house == null ) {
+            return null;
+        }
+
+        HouseDto houseDto = new HouseDto();
+
+        houseDto.setName( house.getName() );
+        houseDto.setYear( house.getYear() );
+        houseDto.setRoof( roofToRoofDto( house.getRoof() ) );
+
+        return houseDto;
+    }
+
+    protected org.mapstruct.ap.test.nestedbeans.other.WheelDto wheelToWheelDto1(Wheel wheel) {
+        if ( wheel == null ) {
+            return null;
+        }
+
+        org.mapstruct.ap.test.nestedbeans.other.WheelDto wheelDto = new org.mapstruct.ap.test.nestedbeans.other.WheelDto();
+
+        wheelDto.setFront( wheel.isFront() );
+        wheelDto.setRight( wheel.isRight() );
+
+        return wheelDto;
+    }
+
+    protected List<org.mapstruct.ap.test.nestedbeans.other.WheelDto> wheelListToWheelDtoList1(List<Wheel> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<org.mapstruct.ap.test.nestedbeans.other.WheelDto> list1 = new ArrayList<>( list.size() );
+        for ( Wheel wheel : list ) {
+            list1.add( wheelToWheelDto1( wheel ) );
+        }
+
+        return list1;
+    }
+
+    protected org.mapstruct.ap.test.nestedbeans.other.CarDto carToCarDto1(Car car) {
+        if ( car == null ) {
+            return null;
+        }
+
+        org.mapstruct.ap.test.nestedbeans.other.CarDto carDto = new org.mapstruct.ap.test.nestedbeans.other.CarDto();
+
+        carDto.setName( car.getName() );
+        carDto.setYear( car.getYear() );
+        carDto.setWheels( wheelListToWheelDtoList1( car.getWheels() ) );
+
+        return carDto;
+    }
+
+    protected org.mapstruct.ap.test.nestedbeans.other.RoofDto roofToRoofDto1(Roof roof) {
+        if ( roof == null ) {
+            return null;
+        }
+
+        org.mapstruct.ap.test.nestedbeans.other.RoofDto roofDto = new org.mapstruct.ap.test.nestedbeans.other.RoofDto();
+
+        roofDto.setColor( String.valueOf( roof.getColor() ) );
+
+        return roofDto;
+    }
+
+    protected org.mapstruct.ap.test.nestedbeans.other.HouseDto houseToHouseDto1(House house) {
+        if ( house == null ) {
+            return null;
+        }
+
+        org.mapstruct.ap.test.nestedbeans.other.HouseDto houseDto = new org.mapstruct.ap.test.nestedbeans.other.HouseDto();
+
+        houseDto.setName( house.getName() );
+        houseDto.setYear( house.getYear() );
+        houseDto.setRoof( roofToRoofDto1( house.getRoof() ) );
+
+        return houseDto;
+    }
+}

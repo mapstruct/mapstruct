@@ -11,38 +11,48 @@
 
     <groupId>org.mapstruct</groupId>
     <artifactId>mapstruct-parent</artifactId>
-    <version>1.6.0-SNAPSHOT</version>
+    <version>1.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>MapStruct Parent</name>
     <description>An annotation processor for generating type-safe bean mappers</description>
-    <url>http://mapstruct.org/</url>
+    <url>https://mapstruct.org/</url>
     <inceptionYear>2012</inceptionYear>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <project.repository>mapstruct/mapstruct</project.repository>
+        <local.repository.path>/tmp/repository</local.repository.path>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <!-- value comes from property git.commit.author.time -->
+        <project.build.outputTimestamp>${git.commit.author.time}</project.build.outputTimestamp>
+
         <org.mapstruct.gem.version>1.0.0.Alpha3</org.mapstruct.gem.version>
-        <org.apache.maven.plugins.enforcer.version>3.0.0-M3</org.apache.maven.plugins.enforcer.version>
-        <org.apache.maven.plugins.surefire.version>3.0.0-M5</org.apache.maven.plugins.surefire.version>
-        <org.apache.maven.plugins.javadoc.version>3.1.0</org.apache.maven.plugins.javadoc.version>
-        <org.springframework.version>5.3.18</org.springframework.version>
+        <org.apache.maven.plugins.enforcer.version>3.6.2</org.apache.maven.plugins.enforcer.version>
+        <org.apache.maven.plugins.surefire.version>3.5.4</org.apache.maven.plugins.surefire.version>
+        <org.apache.maven.plugins.javadoc.version>3.12.0</org.apache.maven.plugins.javadoc.version>
+        <org.springframework.version>7.0.3</org.springframework.version>
         <org.eclipse.tycho.compiler-jdt.version>1.6.0</org.eclipse.tycho.compiler-jdt.version>
-        <com.puppycrawl.tools.checkstyle.version>8.36.1</com.puppycrawl.tools.checkstyle.version>
-        <org.junit.jupiter.version>5.8.0-M1</org.junit.jupiter.version>
-        <junit-pioneer.version>1.4.2</junit-pioneer.version>
-        <add.release.arguments />
+        <com.puppycrawl.tools.checkstyle.version>13.0.0</com.puppycrawl.tools.checkstyle.version>
+        <org.junit.jupiter.version>5.14.1</org.junit.jupiter.version>
+        <junit-pioneer.version>2.2.0</junit-pioneer.version>
+        <jreleaser.plugin.version>1.24.0</jreleaser.plugin.version>
         <forkCount>1</forkCount>
-        <assertj.version>3.17.2</assertj.version>
+        <assertj.version>3.27.7</assertj.version>
         <!-- automatically run annotation processors within the incremental compilation -->
         <!-- Needed for the gem tools processor-->
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
         <!--
             The minimum Java Version that is needed to build a module in MapStruct.
-            The processor module needs at least Java 11.
+            The processor module needs at least Java 21.
          -->
         <minimum.java.version>1.8</minimum.java.version>
-        <protobuf.version>3.21.2</protobuf.version>
+        <protobuf.version>3.25.5</protobuf.version>
         <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
+        <kotlin.version>2.3.0</kotlin.version>
     </properties>
 
     <licenses>
@@ -78,12 +88,12 @@
         <repository>
             <id>sonatype-nexus-staging</id>
             <name>Nexus Release Repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/</url>
         </repository>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
             <name>Sonatype Nexus Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -109,7 +119,7 @@
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
-                <version>2.3.21</version>
+                <version>2.3.34</version>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
@@ -119,7 +129,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>29.0-jre</version>
+                <version>32.0.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>org.mapstruct.tools.gem</groupId>
@@ -132,16 +142,23 @@
                 <version>${org.mapstruct.gem.version}</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.13.1</version>
-            </dependency>
-            <dependency>
                 <groupId>com.puppycrawl.tools</groupId>
                 <artifactId>checkstyle</artifactId>
                 <version>${com.puppycrawl.tools.checkstyle.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-bom</artifactId>
+                <version>${kotlin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-metadata-jvm</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
@@ -179,7 +196,7 @@
             <dependency>
                 <groupId>org.jboss.arquillian</groupId>
                 <artifactId>arquillian-bom</artifactId>
-                <version>1.6.0.Final</version>
+                <version>1.7.2.Final</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -226,7 +243,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.22</version>
+                <version>1.18.38</version>
             </dependency>
             <dependency>
                 <groupId>org.immutables</groupId>
@@ -249,11 +266,18 @@
                 <version>1.14.6</version>
             </dependency>
 
+            <!-- JSpecify -->
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+
             <!-- Joda-Time -->
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
-                <version>2.9</version>
+                <version>2.12.5</version>
             </dependency>
 
             <!-- XML Binding -->
@@ -304,12 +328,12 @@
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-utils</artifactId>
-                <version>3.0.20</version>
+                <version>3.0.24</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.7</version>
+                <version>2.15.0</version>
             </dependency>
 
             <!-- Project modules -->
@@ -349,12 +373,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.8.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.6.0</version>
                     <configuration>
                         <configLocation>build-config/checkstyle.xml</configLocation>
                         <consoleOutput>true</consoleOutput>
@@ -386,34 +410,25 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
+                    <version>3.15.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.9.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.1.4</version>
                     <configuration>
                         <deployAtEnd>true</deployAtEnd>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.6</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -444,12 +459,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>3.0.0-M1</version>
+                    <version>3.1.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -463,33 +478,18 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
-                    <configuration>
-                        <arguments>-DskipTests ${add.release.arguments}</arguments>
-                        <preparationGoals>clean install</preparationGoals>
-                        <pushChanges>false</pushChanges>
-                        <localCheckout>true</localCheckout>
-                        <tagNameFormat>@{project.version}</tagNameFormat>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                        <useReleaseProfile>false</useReleaseProfile>
-                        <releaseProfiles>release</releaseProfiles>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.4.0</version>
                 </plugin>
                 <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.4.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.7.1</version>
+                    <version>3.21.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -503,12 +503,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.6.1</version>
                 </plugin>
                 <plugin>
-                    <groupId>com.mycila.maven-license-plugin</groupId>
-                    <artifactId>maven-license-plugin</artifactId>
-                    <version>1.10.b1</version>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-maven-plugin</artifactId>
+                    <version>${kotlin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.mycila</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>4.6</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -521,6 +526,11 @@
                             <version>7.0</version>
                         </dependency>
                     </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.16.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
@@ -576,7 +586,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.8</version>
+                    <version>0.8.14</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -601,7 +611,7 @@
                 <plugin>
                     <groupId>com.github.siom79.japicmp</groupId>
                     <artifactId>japicmp-maven-plugin</artifactId>
-                    <version>0.15.2</version>
+                    <version>0.25.4</version>
                     <executions>
                         <execution>
                             <phase>verify</phase>
@@ -641,38 +651,43 @@
 
         <plugins>
             <plugin>
-                <groupId>com.mycila.maven-license-plugin</groupId>
-                <artifactId>maven-license-plugin</artifactId>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
                 <configuration>
-                    <header>${basedir}/../etc/license.txt</header>
                     <strictCheck>true</strictCheck>
-                    <excludes>
-                        <exclude>**/.idea/**</exclude>
-                        <exclude>**/.mvn/**</exclude>
-                        <exclude>**/build-config/checkstyle.xml</exclude>
-                        <exclude>**/build-config/import-control.xml</exclude>
-                        <exclude>copyright.txt</exclude>
-                        <exclude>**/LICENSE.txt</exclude>
-                        <exclude>**/mapstruct.xml</exclude>
-                        <exclude>**/ci-settings.xml</exclude>
-                        <exclude>**/eclipse-formatter-config.xml</exclude>
-                        <exclude>**/forbidden-apis.txt</exclude>
-                        <exclude>**/checkstyle-for-generated-sources.xml</exclude>
-                        <exclude>**/nb-configuration.xml</exclude>
-                        <exclude>**/junit-platform.properties</exclude>
-                        <exclude>maven-settings.xml</exclude>
-                        <exclude>readme.md</exclude>
-                        <exclude>CONTRIBUTING.md</exclude>
-                        <exclude>.gitattributes</exclude>
-                        <exclude>.gitignore</exclude>
-                        <exclude>.factorypath</exclude>
-                        <exclude>.checkstyle</exclude>
-                        <exclude>*.yml</exclude>
-                        <exclude>mvnw*</exclude>
-                        <exclude>**/*.asciidoc</exclude>
-                        <exclude>**/binding.xjb</exclude>
-                        <exclude>**/*.flattened-pom.xml</exclude>
-                    </excludes>
+                    <licenseSets>
+                        <licenseSet>
+                            <header>${basedir}/../etc/license.txt</header>
+                            <excludes>
+                                <exclude>**/.idea/**</exclude>
+                                <exclude>**/.mvn/**</exclude>
+                                <exclude>**/build-config/checkstyle.xml</exclude>
+                                <exclude>**/build-config/import-control.xml</exclude>
+                                <exclude>copyright.txt</exclude>
+                                <exclude>**/LICENSE.txt</exclude>
+                                <exclude>**/mapstruct.xml</exclude>
+                                <exclude>**/ci-settings.xml</exclude>
+                                <exclude>**/eclipse-formatter-config.xml</exclude>
+                                <exclude>**/forbidden-apis.txt</exclude>
+                                <exclude>**/checkstyle-for-generated-sources.xml</exclude>
+                                <exclude>**/nb-configuration.xml</exclude>
+                                <exclude>**/junit-platform.properties</exclude>
+                                <exclude>maven-settings.xml</exclude>
+                                <exclude>readme.md</exclude>
+                                <exclude>CONTRIBUTING.md</exclude>
+                                <exclude>NEXT_RELEASE_CHANGELOG.md</exclude>
+                                <exclude>.gitattributes</exclude>
+                                <exclude>.gitignore</exclude>
+                                <exclude>.factorypath</exclude>
+                                <exclude>.checkstyle</exclude>
+                                <exclude>*.yml</exclude>
+                                <exclude>mvnw*</exclude>
+                                <exclude>**/*.asciidoc</exclude>
+                                <exclude>**/binding.xjb</exclude>
+                                <exclude>**/*.flattened-pom.xml</exclude>
+                            </excludes>
+                        </licenseSet>
+                    </licenseSets>
                     <mapping>
                         <java>SLASHSTAR_STYLE</java>
                         <proto>SLASHSTAR_STYLE</proto>
@@ -791,12 +806,21 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 
     <profiles>
         <profile>
-            <id>release</id>
+            <id>publication</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -823,18 +847,94 @@
                             </execution>
                         </executions>
                     </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>stage</id>
+            <properties>
+                <altDeploymentRepository>local::file:${maven.multiModuleProjectDirectory}/target/staging-deploy</altDeploymentRepository>
+            </properties>
+            <build>
+                <defaultGoal>deploy</defaultGoal>
+            </build>
+        </profile>
+        <profile>
+            <id>jreleaser</id>
+            <build>
+                <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
+                        <groupId>org.jreleaser</groupId>
+                        <artifactId>jreleaser-maven-plugin</artifactId>
+                        <version>${jreleaser.plugin.version}</version>
+                        <configuration>
+                            <gitRootSearch>true</gitRootSearch>
+                            <jreleaser>
+                                <project>
+                                    <name>Mapstruct</name>
+                                    <links>
+                                        <homepage>https://mapstruct.org/</homepage>
+                                        <documentation>https://mapstruct.org/documentation/stable/reference/html/</documentation>
+                                    </links>
+                                </project>
+                                <signing>
+                                    <active>ALWAYS</active>
+                                    <pgp>
+                                        <active>ALWAYS</active>
+                                        <armored>true</armored>
+                                    </pgp>
+                                </signing>
+                                <checksum>
+                                    <files>false</files>
+                                </checksum>
+                                <deploy>
+                                    <maven>
+                                        <mavenCentral>
+                                            <sonatype>
+                                                <active>RELEASE</active>
+                                                <url>https://central.sonatype.com/api/v1/publisher</url>
+                                                <stagingRepositories>${maven.multiModuleProjectDirectory}/target/staging-deploy</stagingRepositories>
+                                                <artifactOverrides>
+                                                    <artifactOverride>
+                                                        <groupId>org.mapstruct</groupId>
+                                                        <artifactId>mapstruct-jdk8</artifactId>
+                                                        <sourceJar>false</sourceJar>
+                                                        <javadocJar>false</javadocJar>
+                                                    </artifactOverride>
+                                                </artifactOverrides>
+                                            </sonatype>
+                                        </mavenCentral>
+                                    </maven>
+                                </deploy>
+                                <release>
+                                    <github>
+                                        <tagName>{{projectVersion}}</tagName>
+                                        <releaseName>{{projectVersion}}</releaseName>
+                                        <changelog>
+                                            <external>${maven.multiModuleProjectDirectory}/NEXT_RELEASE_CHANGELOG.md</external>
+                                        </changelog>
+                                        <prerelease>
+                                            <pattern>\d+\.\d+\.\d+\.(Alpha|Beta|M|RC)\d*</pattern>
+                                        </prerelease>
+                                        <!--
+                                            Let GitHub determine depending on the version
+                                            whether it is the latest version or not
+                                        -->
+                                        <makeLatest>legacy</makeLatest>
+                                    </github>
+                                </release>
+                                <files>
+                                    <artifacts>
+                                        <artifact>
+                                            <path>${maven.multiModuleProjectDirectory}/distribution/target/mapstruct-{{projectVersion}}-dist.tar.gz</path>
+                                        </artifact>
+                                        <artifact>
+                                            <path>${maven.multiModuleProjectDirectory}/distribution/target/mapstruct-{{projectVersion}}-dist.zip</path>
+                                        </artifact>
+                                    </artifacts>
+                                </files>
+                            </jreleaser>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

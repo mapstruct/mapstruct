@@ -41,7 +41,7 @@ public class AccessibilityTest {
 
         assertTrue( isDefault( defaultFromIfc.getModifiers() ) );
 
-        assertTrue( isPublic( modifiersFor( defaultFromIfc, "implicitlyPublicSoureToTarget" ) ) );
+        assertTrue( isPublic( modifiersFor( defaultFromIfc, "implicitlyPublicSourceToTarget" ) ) );
     }
 
     private static Class<?> loadForMapper(Class<?> mapper) throws ClassNotFoundException {

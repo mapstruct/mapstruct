@@ -15,8 +15,12 @@
       ${ext.targetBeanName}.${ext.targetReadAccessorName}.<#if ext.targetType.collectionType>addAll<#else>putAll</#if>( <@lib.handleWithAssignmentOrNullCheckVar/> );
       </@lib.handleLocalVarNullCheck>
       <#if !ext.defaultValueAssignment?? && !sourcePresenceCheckerReference?? && includeElseBranch>else {<#-- the opposite (defaultValueAssignment) case is handeld inside lib.handleLocalVarNullCheck -->
-      ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if mapNullToDefault><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
-      }
+          <#if mapNullToClear>
+              ${ext.targetBeanName}.${ext.targetReadAccessorName}.clear();
+          <#else >
+              ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if mapNullToDefault><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
+          </#if>
+          }
       </#if>
   }
   else {
@@ -30,6 +34,10 @@
   <@lib.handleLocalVarNullCheck needs_explicit_local_var=directAssignment>
     ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if directAssignment><@wrapLocalVarInCollectionInitializer/><#else><@lib.handleWithAssignmentOrNullCheckVar/></#if></@lib.handleWrite>;
   </@lib.handleLocalVarNullCheck>
+  <#if !ext.defaultValueAssignment?? && !sourcePresenceCheckerReference?? && mapNullToDefault>else {
+    ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.initTargetObject/></@lib.handleWrite>;
+  }
+  </#if>
 </#macro>
 <#--
   wraps the local variable in a collection initializer (new collection, or EnumSet.copyOf)
@@ -38,6 +46,6 @@
     <#if enumSet>
       EnumSet.copyOf( ${nullCheckLocalVarName} )
     <#else>
-      new <#if ext.targetType.implementationType??><@includeModel object=ext.targetType.implementationType/><#else><@includeModel object=ext.targetType/></#if>( ${nullCheckLocalVarName} )
+      <@includeModel object=newInstance/>( ${nullCheckLocalVarName} )
     </#if>
 </@compress></#macro>

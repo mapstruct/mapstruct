@@ -17,8 +17,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junitpioneer.jupiter.DefaultTimeZone;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -250,6 +250,21 @@ public class Java8TimeConversionTest {
 
         source = SourceTargetMapper.INSTANCE.targetToSource( target );
         assertThat( source.getForDateConversionWithInstant() ).isEqualTo( instant );
+    }
+
+    @ProcessorTest
+    public void testLocalDateTimeToLocalDateMapping() {
+        LocalDate localDate = LocalDate.of( 2014, 1, 1 );
+
+        Source source = new Source();
+        source.setForLocalDateTimeConversionWithLocalDate( localDate );
+        Target target = SourceTargetMapper.INSTANCE.sourceToTargetDefaultMapping( source );
+        LocalDateTime localDateTime = target.getForLocalDateTimeConversionWithLocalDate();
+        assertThat( localDateTime ).isNotNull();
+        assertThat( localDateTime ).isEqualTo( LocalDateTime.of( 2014, 1, 1, 0, 0 ) );
+
+        source = SourceTargetMapper.INSTANCE.targetToSource( target );
+        assertThat( source.getForLocalDateTimeConversionWithLocalDate() ).isEqualTo( localDate );
     }
 
     @ProcessorTest

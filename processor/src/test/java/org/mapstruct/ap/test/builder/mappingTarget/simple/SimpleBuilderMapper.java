@@ -21,9 +21,6 @@ public interface SimpleBuilderMapper {
     @Mapping(target = "builder.name", source = "source.fullName")
     void updateImmutable(SimpleMutableSource source, @MappingTarget SimpleImmutableTarget.Builder builder);
 
-    // This method is fine as if the mapping target has setters it would use them, otherwise it won't
-    void toImmutable(SimpleMutableSource source, @MappingTarget SimpleImmutableTarget target);
-
     @Mapping(target = "name", source = "fullName")
     SimpleImmutableTarget toImmutable(SimpleMutableSource source);
 

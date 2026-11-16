@@ -68,7 +68,7 @@ public interface AccessorNamingStrategy {
      *
      * @return getter name for collection properties
      *
-     * @deprecated MapStuct will not call this method anymore. Use {@link #getMethodType(ExecutableElement)} to
+     * @deprecated MapStruct will not call this method anymore. Use {@link #getMethodType(ExecutableElement)} to
      * determine the {@link MethodType}. When collections somehow need to be treated special, it should be done in
      * {@link #getMethodType(ExecutableElement) } as well. In the future, this method will be removed.
      */

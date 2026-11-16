@@ -7,7 +7,6 @@ package org.mapstruct.ap.internal.model.source.selector;
 
 import java.util.List;
 
-import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 
 /**
@@ -23,18 +22,10 @@ interface MethodSelector {
      * Selects those methods which match the given types and other criteria
      *
      * @param <T> either SourceMethod or BuiltInMethod
-     * @param mappingMethod mapping method, defined in Mapper for which this selection is carried out
      * @param candidates list of available methods
-     * @param sourceTypes parameter type(s) that should be matched
-     * @param mappingTargetType mappingTargetType that should be matched
-     * @param returnType return type that should be matched
-     * @param criteria criteria used in the selection process
+     * @param context the context for the matching
      * @return list of methods that passes the matching process
      */
-    <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
-                                                                  List<SelectedMethod<T>> candidates,
-                                                                  List<Type> sourceTypes,
-                                                                  Type mappingTargetType,
-                                                                  Type returnType,
-                                                                  SelectionCriteria criteria);
+    <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<SelectedMethod<T>> candidates,
+                                                                  SelectionContext context);
 }

@@ -1,14 +1,11 @@
 # MapStruct - Java bean mappings, the easy way!
 
-[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.5.2.Final-blue.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct%20AND%20v%3A1.*.Final)
-[![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](http://search.maven.org/#search%7Cga%7C1%7Cg%3Aorg.mapstruct)
-[![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/mapstruct/mapstruct/blob/master/LICENSE.txt)
+[![Latest Stable Version](https://img.shields.io/badge/Latest%20Stable%20Version-1.6.3-blue.svg)](https://central.sonatype.com/search?q=g:org.mapstruct%20v:1.6.3)
+[![Latest Version](https://img.shields.io/maven-central/v/org.mapstruct/mapstruct-processor.svg?maxAge=3600&label=Latest%20Release)](https://central.sonatype.com/search?q=g:org.mapstruct)
+[![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](https://github.com/mapstruct/mapstruct/blob/main/LICENSE.txt)
 
-[![Build Status](https://github.com/mapstruct/mapstruct/workflows/CI/badge.svg?branch=master)](https://github.com/mapstruct/mapstruct/actions?query=branch%3Amaster+workflow%3ACI)
-[![Coverage Status](https://img.shields.io/codecov/c/github/mapstruct/mapstruct.svg)](https://codecov.io/gh/mapstruct/mapstruct)
-[![Gitter](https://img.shields.io/gitter/room/mapstruct/mapstruct.svg)](https://gitter.im/mapstruct/mapstruct-users)
-[![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/mapstruct/mapstruct.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mapstruct/mapstruct/context:java)
-[![Total Alerts](https://img.shields.io/lgtm/alerts/g/mapstruct/mapstruct.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/mapstruct/mapstruct/alerts)
+[![Build Status](https://github.com/mapstruct/mapstruct/workflows/CI/badge.svg?branch=main)](https://github.com/mapstruct/mapstruct/actions?query=branch%3Amain+workflow%3ACI)
+[![Coverage Status](https://img.shields.io/codecov/c/github/mapstruct/mapstruct.svg)](https://codecov.io/gh/mapstruct/mapstruct/tree/main)
 
 * [What is MapStruct?](#what-is-mapstruct)
 * [Requirements](#requirements)
@@ -22,7 +19,10 @@
 
 ## What is MapStruct?
 
-MapStruct is a Java [annotation processor](http://docs.oracle.com/javase/6/docs/technotes/guides/apt/index.html) for the generation of type-safe and performant mappers for Java bean classes. It saves you from writing mapping code by hand, which is a tedious and error-prone task. The generator comes with sensible defaults and many built-in type conversions, but it steps out of your way when it comes to configuring or implementing special behavior.
+MapStruct is a Java [annotation processor](https://docs.oracle.com/en/java/javase/21/docs/specs/man/javac.html#annotation-processing) designed to generate type-safe and high-performance mappers for Java bean classes, including support for Java 16+ records.
+By automating the creation of mappings, MapStruct eliminates the need for tedious and error-prone manual coding. 
+The generator provides sensible defaults and built-in type conversions, allowing it to handle standard mappings effortlessly, while also offering flexibility for custom configurations or specialized mapping behaviors.
+With seamless integration into modern Java projects, MapStruct can map between conventional beans, records, and even complex hierarchies, making it an adaptable tool for diverse Java applications.
 
 Compared to mapping frameworks working at runtime, MapStruct offers the following advantages:
 
@@ -68,7 +68,7 @@ For Maven-based projects, add the following to your POM file in order to use Map
 ```xml
 ...
 <properties>
-    <org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
+    <org.mapstruct.version>1.6.3</org.mapstruct.version>
 </properties>
 ...
 <dependencies>
@@ -84,10 +84,10 @@ For Maven-based projects, add the following to your POM file in order to use Map
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.1</version>
+            <version>3.13.0</version>
             <configuration>
-                <source>1.8</source>
-                <target>1.8</target>
+                <source>17</source>
+                <target>17</target>
                 <annotationProcessorPaths>
                     <path>
                         <groupId>org.mapstruct</groupId>
@@ -114,34 +114,35 @@ plugins {
 
 dependencies {
     ...
-    compile 'org.mapstruct:mapstruct:1.5.2.Final'
+    implementation 'org.mapstruct:mapstruct:1.6.3'
 
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
-    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final' // if you are using mapstruct in test code
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3' // if you are using mapstruct in test code
 }
 ...
 ```
 
-If you don't work with a dependency management tool, you can obtain a distribution bundle from [SourceForge](https://sourceforge.net/projects/mapstruct/files/).
+If you don't work with a dependency management tool, you can obtain a distribution bundle from [Releases page](https://github.com/mapstruct/mapstruct/releases).
 
 ## Documentation and getting help
 
-To learn more about MapStruct, refer to the [project homepage](http://mapstruct.org). The [reference documentation](http://mapstruct.org/documentation/reference-guide/) covers all provided functionality in detail. If you need help, come and join the [mapstruct-users](https://groups.google.com/forum/?hl=en#!forum/mapstruct-users) group.
+To learn more about MapStruct, refer to the [project homepage](https://mapstruct.org). The [reference documentation](https://mapstruct.org/documentation/reference-guide/) covers all provided functionality in detail. If you need help please ask it in the [Discussions](https://github.com/mapstruct/mapstruct/discussions).
 
 ## Building from Source
 
-MapStruct uses Maven for its build. Java 11 is required for building MapStruct from source. To build the complete project, run
+MapStruct uses Maven for its build. Java 21 is required for building MapStruct from source.
+To build the complete project, run
 
-    mvn clean install
+    ./mvnw clean install
 
 from the root of the project directory. To skip the distribution module, run 
 
-    mvn clean install -DskipDistribution=true
+    ./mvnw clean install -DskipDistribution=true
     
 ## Importing into IDE
 
-MapStruct uses the gem annotation processor to generate mapping gems for it's own annotations.
-Therefore for seamless integration within an IDE annotation processing needs to be enabled.
+MapStruct uses the gem annotation processor to generate mapping gems for its own annotations.
+Therefore, for seamless integration within an IDE annotation processing needs to be enabled.
 
 ### IntelliJ 
 
@@ -154,13 +155,13 @@ Make sure that you have the [m2e_apt](https://marketplace.eclipse.org/content/m2
 
 ## Links
 
-* [Homepage](http://mapstruct.org)
+* [Homepage](https://mapstruct.org)
 * [Source code](https://github.com/mapstruct/mapstruct/)
-* [Downloads](https://sourceforge.net/projects/mapstruct/files/)
+* [Downloads](https://github.com/mapstruct/mapstruct/releases)
 * [Issue tracker](https://github.com/mapstruct/mapstruct/issues)
 * [User group](https://groups.google.com/forum/?hl=en#!forum/mapstruct-users)
 * [CI build](https://github.com/mapstruct/mapstruct/actions/)
 
 ## Licensing
 
-MapStruct is licensed under the Apache License, Version 2.0 (the "License"); you may not use this project except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
+MapStruct is licensed under the Apache License, Version 2.0 (the "License"); you may not use this project except in compliance with the License. You may obtain a copy of the License at https://www.apache.org/licenses/LICENSE-2.0.

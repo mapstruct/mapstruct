@@ -174,7 +174,7 @@ public class NativeTypes {
             boolean endsWithDSuffix = PTRN_DOUBLE.matcher( val ).find();
             // error handling
             if ( isFloat && endsWithDSuffix ) {
-                throw new NumberFormatException( "Assiging double to a float" );
+                throw new NumberFormatException( "Assigning double to a float" );
             }
             // remove suffix
             if ( endsWithLSuffix || endsWithFSuffix || endsWithDSuffix ) {
@@ -270,11 +270,11 @@ public class NativeTypes {
 
                 @Override
                 void parse(String val, int radix) {
-                    Double d = Double.parseDouble( radix == 16 ? "0x" + val : val );
+                    double d = Double.parseDouble( radix == 16 ? "0x" + val : val );
                     if ( doubleHasBecomeZero( d  ) ) {
                         throw new NumberFormatException( "floating point number too small" );
                     }
-                    if ( d.isInfinite() ) {
+                    if ( Double.isInfinite( d ) ) {
                         throw new NumberFormatException( "infinitive is not allowed" );
                     }
                 }
@@ -284,7 +284,7 @@ public class NativeTypes {
 
         @Override
         public Class<?> getLiteral() {
-            return float.class;
+            return double.class;
         }
 
     }
@@ -297,11 +297,11 @@ public class NativeTypes {
             NumberRepresentation br = new NumberRepresentation( s, false, false, true ) {
                 @Override
                 void parse(String val, int radix) {
-                    Float f = Float.parseFloat( radix == 16 ? "0x" + val : val );
+                    float f = Float.parseFloat( radix == 16 ? "0x" + val : val );
                     if ( doubleHasBecomeZero( f  ) ) {
                         throw new NumberFormatException( "floating point number too small" );
                     }
-                    if ( f.isInfinite() ) {
+                    if ( Float.isInfinite( f ) ) {
                         throw new NumberFormatException( "infinitive is not allowed" );
                     }
                 }
@@ -363,7 +363,7 @@ public class NativeTypes {
 
         @Override
         public Class<?> getLiteral() {
-            return int.class;
+            return long.class;
         }
     }
 
@@ -474,6 +474,7 @@ public class NativeTypes {
         tmp3.put( Double.class.getName(), 6 );
         tmp3.put( BigInteger.class.getName(), 50 );
         tmp3.put( BigDecimal.class.getName(), 51 );
+        tmp3.put( String.class.getName(), 51 );
         NARROWING_LUT = Collections.unmodifiableMap( tmp3 );
     }
 

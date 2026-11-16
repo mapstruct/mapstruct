@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.callbacks.returning;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.jupiter.api.AfterEach;
 import org.mapstruct.ap.test.callbacks.returning.NodeMapperContext.ContextListener;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
@@ -25,30 +26,31 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @WithClasses( { Attribute.class, AttributeDto.class, Node.class, NodeDto.class, NodeMapperDefault.class,
     NodeMapperWithContext.class, NodeMapperContext.class, Number.class, NumberMapperDefault.class,
     NumberMapperContext.class, NumberMapperWithContext.class } )
-public class CallbacksWithReturnValuesTest {
+class CallbacksWithReturnValuesTest {
+    @AfterEach
+    void cleanup() {
+        NumberMapperContext.clearCache();
+        NumberMapperContext.clearVisited();
+    }
+
     @ProcessorTest
-    public void mappingWithDefaultHandlingRaisesStackOverflowError() {
+    void mappingWithDefaultHandlingRaisesStackOverflowError() {
         Node root = buildNodes();
         assertThatThrownBy( () -> NodeMapperDefault.INSTANCE.nodeToNodeDto( root ) )
             .isInstanceOf( StackOverflowError.class );
     }
 
     @ProcessorTest
-    public void updatingWithDefaultHandlingRaisesStackOverflowError() {
+    void updatingWithDefaultHandlingRaisesStackOverflowError() {
         Node root = buildNodes();
         assertThatThrownBy( () -> NodeMapperDefault.INSTANCE.nodeToNodeDto( root, new NodeDto() ) )
             .isInstanceOf( StackOverflowError.class );
     }
 
     @ProcessorTest
-    public void mappingWithContextCorrectlyResolvesCycles() {
+    void mappingWithContextCorrectlyResolvesCycles() {
         final AtomicReference<Integer> contextLevel = new AtomicReference<>( null );
-        ContextListener contextListener = new ContextListener() {
-            @Override
-            public void methodCalled(Integer level, String method, Object source, Object target) {
-                contextLevel.set( level );
-            }
-        };
+        ContextListener contextListener = (level, method, source, target) -> contextLevel.set( level );
 
         NodeMapperContext.addContextListener( contextListener );
         try {
@@ -75,28 +77,49 @@ public class CallbacksWithReturnValuesTest {
     }
 
     @ProcessorTest
-    public void numberMappingWithoutContextDoesNotUseCache() {
+    void numberMappingWithoutContextDoesNotUseCache() {
         Number n1 = NumberMapperDefault.INSTANCE.integerToNumber( 2342 );
         Number n2 = NumberMapperDefault.INSTANCE.integerToNumber( 2342 );
+
         assertThat( n1 ).isEqualTo( n2 );
         assertThat( n1 ).isNotSameAs( n2 );
     }
 
     @ProcessorTest
-    public void numberMappingWithContextUsesCache() {
+    void numberMappingWithContextUsesCache() {
         NumberMapperContext.putCache( new Number( 2342 ) );
         Number n1 = NumberMapperWithContext.INSTANCE.integerToNumber( 2342 );
         Number n2 = NumberMapperWithContext.INSTANCE.integerToNumber( 2342 );
+
         assertThat( n1 ).isEqualTo( n2 );
         assertThat( n1 ).isSameAs( n2 );
-        NumberMapperContext.clearCache();
     }
 
     @ProcessorTest
-    public void numberMappingWithContextCallsVisitNumber() {
+    void numberMappingWithContextCallsVisitNumber() {
         Number n1 = NumberMapperWithContext.INSTANCE.integerToNumber( 1234 );
         Number n2 = NumberMapperWithContext.INSTANCE.integerToNumber( 5678 );
+
         assertThat( NumberMapperContext.getVisited() ).isEqualTo( Arrays.asList( n1, n2 ) );
-        NumberMapperContext.clearVisited();
+    }
+
+    @ProcessorTest
+    @IssueKey( "2955" )
+    void numberUpdateMappingWithContextUsesCacheAndThereforeDoesNotVisitNumber() {
+        Number target = new Number();
+        Number expectedReturn = new Number( 2342 );
+        NumberMapperContext.putCache( expectedReturn );
+        NumberMapperWithContext.INSTANCE.integerToNumber( 2342, target );
+
+        assertThat( NumberMapperContext.getVisited() ).isEmpty();
+    }
+
+    @ProcessorTest
+    @IssueKey( "2955" )
+    void numberUpdateMappingWithContextCallsVisitNumber() {
+        Number target = new Number();
+        NumberMapperWithContext.INSTANCE.integerToNumber( 2342, target );
+
+        assertThat( NumberMapperContext.getVisited() ).contains( target );
     }
 }

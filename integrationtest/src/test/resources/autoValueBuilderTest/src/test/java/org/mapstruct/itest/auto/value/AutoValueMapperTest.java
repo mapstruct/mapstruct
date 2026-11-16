@@ -5,7 +5,7 @@
  */
 package org.mapstruct.itest.auto.value;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,10 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eric Martineau
  */
-public class AutoValueMapperTest {
+class AutoValueMapperTest {
 
     @Test
-    public void testSimpleImmutableBuilderHappyPath() {
+    void testSimpleImmutableBuilderHappyPath() {
         PersonDto personDto = PersonMapper.INSTANCE.toDto( Person.builder()
             .age( 33 )
             .name( "Bob" )
@@ -32,7 +32,7 @@ public class AutoValueMapperTest {
     }
 
     @Test
-    public void testLombokToImmutable() {
+    void testLombokToImmutable() {
         Person person = PersonMapper.INSTANCE.fromDto( new PersonDto( "Bob", 33, new AddressDto( "Wild Drive" ) ) );
         assertThat( person.getAge() ).isEqualTo( 33 );
         assertThat( person.getName() ).isEqualTo( "Bob" );

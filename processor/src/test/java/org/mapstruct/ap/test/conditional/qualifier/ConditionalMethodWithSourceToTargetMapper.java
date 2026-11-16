@@ -5,10 +5,10 @@
  */
 package org.mapstruct.ap.test.conditional.qualifier;
 
-import org.mapstruct.Condition;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.SourceParameterCondition;
 import org.mapstruct.factory.Mappers;
 
 /**
@@ -29,13 +29,13 @@ public interface ConditionalMethodWithSourceToTargetMapper {
 
     Address convertToAddress(OrderDTO orderDTO);
 
-    @Condition
+    @SourceParameterCondition
     @Named("mapCustomerFromOrder")
     default boolean mapCustomerFromOrder(OrderDTO orderDTO) {
         return orderDTO != null && ( orderDTO.getCustomerName() != null || mapAddressFromOrder( orderDTO ) );
     }
 
-    @Condition
+    @SourceParameterCondition
     @Named("mapAddressFromOrder")
     default boolean mapAddressFromOrder(OrderDTO orderDTO) {
         return orderDTO != null && ( orderDTO.getLine1() != null || orderDTO.getLine2() != null );

@@ -7,6 +7,7 @@ package org.mapstruct.ap.test.annotatewith;
 
 import org.mapstruct.AnnotateWith;
 import org.mapstruct.Mapper;
+import org.mapstruct.ap.test.WithProperties;
 
 /**
  * @author Ben Zegveld
@@ -15,13 +16,6 @@ import org.mapstruct.Mapper;
 public interface ErroneousMapperWithClassOnMethod {
 
     @AnnotateWith( value = CustomClassOnlyAnnotation.class )
-    Target toString(Source value);
+    WithProperties toString(String string);
 
-    class Source {
-
-    }
-
-    class Target {
-
-    }
 }

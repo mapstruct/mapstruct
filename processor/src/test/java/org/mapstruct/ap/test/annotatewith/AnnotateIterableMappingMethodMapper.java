@@ -5,10 +5,10 @@
  */
 package org.mapstruct.ap.test.annotatewith;
 
+import java.util.List;
+
 import org.mapstruct.AnnotateWith;
 import org.mapstruct.Mapper;
-
-import java.util.List;
 
 /**
  * @author orange add

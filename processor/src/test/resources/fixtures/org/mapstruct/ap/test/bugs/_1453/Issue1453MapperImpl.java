@@ -40,7 +40,7 @@ public class Issue1453MapperImpl implements Issue1453Mapper {
             return null;
         }
 
-        List<AuctionDto> list = new ArrayList<AuctionDto>( auctions.size() );
+        List<AuctionDto> list = new ArrayList<>( auctions.size() );
         for ( Auction auction : auctions ) {
             list.add( map( auction ) );
         }
@@ -54,7 +54,7 @@ public class Issue1453MapperImpl implements Issue1453Mapper {
             return null;
         }
 
-        List<? super AuctionDto> list = new ArrayList<AuctionDto>( auctions.size() );
+        List<? super AuctionDto> list = new ArrayList<>( auctions.size() );
         for ( Auction auction : auctions ) {
             list.add( map( auction ) );
         }
@@ -68,7 +68,7 @@ public class Issue1453MapperImpl implements Issue1453Mapper {
             return null;
         }
 
-        Map<AuctionDto, AuctionDto> map = new LinkedHashMap<AuctionDto, AuctionDto>( Math.max( (int) ( auctions.size() / .75f ) + 1, 16 ) );
+        Map<AuctionDto, AuctionDto> map = new LinkedHashMap<>( Math.max( (int) ( auctions.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<? extends Auction, ? extends Auction> entry : auctions.entrySet() ) {
             AuctionDto key = map( entry.getKey() );
@@ -85,7 +85,7 @@ public class Issue1453MapperImpl implements Issue1453Mapper {
             return null;
         }
 
-        Map<? super AuctionDto, ? super AuctionDto> map = new LinkedHashMap<AuctionDto, AuctionDto>( Math.max( (int) ( auctions.size() / .75f ) + 1, 16 ) );
+        Map<? super AuctionDto, ? super AuctionDto> map = new LinkedHashMap<>( Math.max( (int) ( auctions.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<Auction, Auction> entry : auctions.entrySet() ) {
             AuctionDto key = map( entry.getKey() );
@@ -113,7 +113,7 @@ public class Issue1453MapperImpl implements Issue1453Mapper {
             return null;
         }
 
-        List<PaymentDto> list1 = new ArrayList<PaymentDto>( list.size() );
+        List<PaymentDto> list1 = new ArrayList<>( list.size() );
         for ( Payment payment : list ) {
             list1.add( paymentToPaymentDto( payment ) );
         }
@@ -126,7 +126,7 @@ public class Issue1453MapperImpl implements Issue1453Mapper {
             return null;
         }
 
-        Map<PaymentDto, PaymentDto> map1 = new LinkedHashMap<PaymentDto, PaymentDto>( Math.max( (int) ( map.size() / .75f ) + 1, 16 ) );
+        Map<PaymentDto, PaymentDto> map1 = new LinkedHashMap<>( Math.max( (int) ( map.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<Payment, Payment> entry : map.entrySet() ) {
             PaymentDto key = paymentToPaymentDto( entry.getKey() );

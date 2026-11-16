@@ -7,13 +7,14 @@ package org.mapstruct.ap.test.bugs._1242;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ObjectFactory;
+import org.mapstruct.ReportingPolicy;
 
 /**
  * Results in an ambiguous factory method error, as there are two methods with matching source types available.
  *
  * @author Andreas Gudian
  */
-@Mapper(uses = TargetFactories.class)
+@Mapper(uses = TargetFactories.class, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public abstract class ErroneousIssue1242MapperMultipleSources {
     abstract TargetA toTargetA(SourceA source);
 

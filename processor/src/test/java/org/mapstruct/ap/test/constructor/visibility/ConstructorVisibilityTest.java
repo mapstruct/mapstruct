@@ -10,6 +10,9 @@ import org.mapstruct.ap.test.constructor.PersonDto;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
+import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
+import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,6 +47,15 @@ public class ConstructorVisibilityTest {
     @WithClasses({
         SimpleWithPublicParameterlessConstructorMapper.class
     })
+    @ExpectedCompilationOutcome(value = CompilationResult.SUCCEEDED,
+        diagnostics = {
+            @Diagnostic(type = SimpleWithPublicParameterlessConstructorMapper.class,
+                kind = javax.tools.Diagnostic.Kind.WARNING,
+                line = 21,
+                message = "No target property found for target " +
+                    "\"SimpleWithPublicParameterlessConstructorMapper.Person\"."),
+        })
+
     public void shouldUsePublicParameterConstructorIfPresent() {
         PersonDto source = new PersonDto();
         source.setName( "Bob" );

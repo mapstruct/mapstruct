@@ -33,7 +33,7 @@ public class DepartmentMapperImpl implements DepartmentMapper {
         entity.setName( dto.getName() );
         if ( dto.getEmployees() != null ) {
             if ( entity.getEmployees() == null ) {
-                entity.setEmployees( new ArrayList<EmployeeEntity>() );
+                entity.setEmployees( new ArrayList<>() );
             }
             externalHandWrittenMapper.toEmployeeEntityList( dto.getEmployees(), entity.getEmployees() );
         }
@@ -42,7 +42,7 @@ public class DepartmentMapperImpl implements DepartmentMapper {
         }
         if ( dto.getSecretaryToEmployee() != null ) {
             if ( entity.getSecretaryToEmployee() == null ) {
-                entity.setSecretaryToEmployee( new LinkedHashMap<SecretaryEntity, EmployeeEntity>() );
+                entity.setSecretaryToEmployee( new LinkedHashMap<>() );
             }
             externalHandWrittenMapper.toSecretaryEmployeeEntityMap( dto.getSecretaryToEmployee(), entity.getSecretaryToEmployee() );
         }

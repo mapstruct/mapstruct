@@ -38,6 +38,8 @@ public class Source {
 
     private Instant forDateConversionWithInstant;
 
+    private LocalDate forLocalDateTimeConversionWithLocalDate;
+
     private Instant forInstantConversionWithString;
 
     private Period forPeriodConversionWithString;
@@ -122,6 +124,14 @@ public class Source {
 
     public void setForDateConversionWithInstant(Instant forDateConversionWithInstant) {
         this.forDateConversionWithInstant = forDateConversionWithInstant;
+    }
+
+    public LocalDate getForLocalDateTimeConversionWithLocalDate() {
+        return forLocalDateTimeConversionWithLocalDate;
+    }
+
+    public void setForLocalDateTimeConversionWithLocalDate(LocalDate forLocalDateTimeConversionWithLocalDate) {
+        this.forLocalDateTimeConversionWithLocalDate = forLocalDateTimeConversionWithLocalDate;
     }
 
     public Instant getForInstantConversionWithString() {

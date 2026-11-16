@@ -18,8 +18,17 @@ public abstract class Issue1460JavaTimeMapper {
 
     public abstract Target map(Source source);
 
-    public abstract String forceUsageOfLocalDate(LocalDate source);
+    public abstract LocalTarget forceUsageOfLocalDate(LocalDate source);
 
     public static class LocalDate {
+    }
+
+    public static class LocalTarget {
+
+        private final LocalDate source;
+
+        public LocalTarget(LocalDate source) {
+            this.source = source;
+        }
     }
 }

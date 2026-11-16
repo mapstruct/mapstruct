@@ -1,0 +1,124 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
+      next:
+        description: 'Next version'
+        required: false
+
+jobs:
+  release:
+    # This job has been inspired by the moditect release (https://github.com/moditect/moditect/blob/main/.github/workflows/release.yml)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          java-version: 21
+          distribution: 'zulu'
+          cache: maven
+
+      - name: Set release version
+        id: version
+        run: |
+          RELEASE_VERSION=${{ github.event.inputs.version }}
+          NEXT_VERSION=${{ github.event.inputs.next }}
+          PLAIN_VERSION=`echo ${RELEASE_VERSION} | awk 'match($0, /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)/) { print substr($0, RSTART, RLENGTH); }'`
+          COMPUTED_NEXT_VERSION="${PLAIN_VERSION}-SNAPSHOT"
+          if [ -z $NEXT_VERSION ]
+          then
+            NEXT_VERSION=$COMPUTED_NEXT_VERSION
+          fi
+          ./mvnw -ntp -B versions:set versions:commit -DnewVersion=$RELEASE_VERSION -pl :mapstruct-parent -DgenerateBackupPoms=false
+          git config --global user.email "${{ vars.GH_BOT_EMAIL }}"
+          git config --global user.name "GitHub Action"
+          git commit -a -m "Releasing version $RELEASE_VERSION"
+          git push
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
+          echo "NEXT_VERSION=$NEXT_VERSION" >> $GITHUB_ENV
+          echo "PLAIN_VERSION=$PLAIN_VERSION" >> $GITHUB_ENV
+
+      - name: Stage
+        run: |
+          export GPG_TTY=$(tty)
+          ./mvnw -ntp -B --file pom.xml \
+            -Dmaven.site.skip=true -Drelease=true -Ppublication,stage
+
+      - name: Release
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          JRELEASER_MAVENCENTRAL_SONATYPE_USERNAME: ${{ secrets.SONATYPE_CENTRAL_USERNAME }}
+          JRELEASER_MAVENCENTRAL_SONATYPE_TOKEN: ${{ secrets.SONATYPE_CENTRAL_TOKEN }}
+          JRELEASER_NEXUS2_MAVEN_CENTRAL_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          JRELEASER_NEXUS2_MAVEN_CENTRAL_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+        run: |
+          ./mvnw -ntp -B --file pom.xml -pl :mapstruct-parent -Pjreleaser jreleaser:release
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: jreleaser-release
+          path: |
+            parent/target/jreleaser/trace.log
+            parent/target/jreleaser/output.properties
+
+      - name: Reset NEXT_RELEASE_CHANGELOG.md
+        run: |
+          echo -e "### Features\n\n### Enhancements\n\n### Bugs\n\n### Documentation\n\n### Build\n" > NEXT_RELEASE_CHANGELOG.md
+
+      - name: Set next version
+        run: |
+          ./mvnw -ntp -B versions:set versions:commit -DnewVersion=${{ env.NEXT_VERSION }} -pl :mapstruct-parent -DgenerateBackupPoms=false
+          sed -i -e "s@project.build.outputTimestamp>.*</project.build.outputTimestamp@project.build.outputTimestamp>\${git.commit.author.time}</project.build.outputTimestamp@g" parent/pom.xml
+          git config --global user.email "${{ vars.GH_BOT_EMAIL }}"
+          git config --global user.name "GitHub Action"
+          git commit -a -m "Next version ${{ env.NEXT_VERSION }}"
+          git push
+
+  update-website:
+    # This job has been inspired by the JReleaser update-website job (https://github.com/jreleaser/jreleaser/blob/main/.github/workflows/release.yml)
+    name: Update Website
+    needs: [release]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: mapstruct/mapstruct.org
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GIT_WEBSITE_ACCESS_TOKEN }}
+
+      - name: Download assets
+        shell: bash
+        run: |
+          curl -sL https://raw.githubusercontent.com/mapstruct/mapstruct/main/.github/scripts/update-website.sh --output update-website.sh --create-dirs --output-dir tmp
+          curl -sL "https://github.com/mapstruct/mapstruct/releases/download/${VERSION}/mapstruct-${VERSION}-dist.tar.gz" --output mapstruct-${VERSION}-dist.tar.gz --create-dirs --output-dir tmp
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+
+      - name: Commit
+        shell: bash
+        env:
+          VERSION: ${{ github.event.inputs.version }}
+          GH_BOT_EMAIL: ${{ vars.GH_BOT_EMAIL }}
+        run: |
+          chmod +x tmp/update-website.sh
+          tmp/update-website.sh

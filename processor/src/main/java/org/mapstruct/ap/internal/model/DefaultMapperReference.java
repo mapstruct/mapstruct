@@ -36,7 +36,7 @@ public class DefaultMapperReference extends MapperReference {
     public static DefaultMapperReference getInstance(Type type, boolean isAnnotatedMapper, boolean isSingleton,
                                                      TypeFactory typeFactory, List<String> otherMapperReferences) {
         Set<Type> importTypes = Collections.asSet( type );
-        if ( isAnnotatedMapper && !isSingleton) {
+        if ( isAnnotatedMapper && !isSingleton ) {
             importTypes.add( typeFactory.getType( "org.mapstruct.factory.Mappers" ) );
         }
 

@@ -47,7 +47,7 @@ public class SourceConstantsTest {
         assertThat( target.getStringConstant() ).isEqualTo( "stringConstant" );
         assertThat( target.getEmptyStringConstant() ).isEqualTo( "" );
         assertThat( target.getIntegerConstant() ).isEqualTo( 14 );
-        assertThat( target.getLongWrapperConstant() ).isEqualTo( new Long( 3001L ) );
+        assertThat( target.getLongWrapperConstant() ).isEqualTo( Long.valueOf( 3001L ) );
         assertThat( target.getDateConstant() ).isEqualTo( getDate( "dd-MM-yyyy", "09-01-2014" ) );
         assertThat( target.getNameConstants() ).isEqualTo( Arrays.asList( "jack", "jill", "tom" ) );
         assertThat( target.getCountry() ).isEqualTo( CountryEnum.THE_NETHERLANDS );

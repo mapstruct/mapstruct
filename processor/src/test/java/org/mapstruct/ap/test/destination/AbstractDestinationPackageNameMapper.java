@@ -16,5 +16,5 @@ public abstract class AbstractDestinationPackageNameMapper {
     public static final AbstractDestinationPackageNameMapper INSTANCE =
         Mappers.getMapper( AbstractDestinationPackageNameMapper.class );
 
-    public abstract String intToString(Integer source);
+    public abstract Target map(Integer source);
 }

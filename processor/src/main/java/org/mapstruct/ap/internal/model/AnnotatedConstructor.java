@@ -36,14 +36,14 @@ public class AnnotatedConstructor extends ModelElement implements Constructor {
         if ( constructor instanceof NoArgumentConstructor ) {
             noArgumentConstructor = (NoArgumentConstructor) constructor;
         }
-        NoArgumentConstructor noArgConstructorToInBecluded = null;
+        NoArgumentConstructor noArgConstructorToBeIncluded = null;
         Set<SupportingConstructorFragment> fragmentsToBeIncluded = Collections.emptySet();
         if ( includeNoArgConstructor ) {
             if ( noArgumentConstructor != null ) {
-                noArgConstructorToInBecluded = noArgumentConstructor;
+                noArgConstructorToBeIncluded = noArgumentConstructor;
             }
             else {
-                noArgConstructorToInBecluded = new NoArgumentConstructor( name, fragmentsToBeIncluded );
+                noArgConstructorToBeIncluded = new NoArgumentConstructor( name, fragmentsToBeIncluded );
             }
         }
         else if ( noArgumentConstructor != null ) {
@@ -53,7 +53,7 @@ public class AnnotatedConstructor extends ModelElement implements Constructor {
             name,
             mapperReferences,
             annotations,
-            noArgConstructorToInBecluded,
+            noArgConstructorToBeIncluded,
             fragmentsToBeIncluded
         );
     }

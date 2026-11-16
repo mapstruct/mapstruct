@@ -34,17 +34,10 @@ public class TestMapperImpl implements TestMapper {
     }
 
     private String tenantInnerId(TenantDTO tenantDTO) {
-        if ( tenantDTO == null ) {
-            return null;
-        }
         Inner inner = tenantDTO.getInner();
         if ( inner == null ) {
             return null;
         }
-        String id = inner.getId();
-        if ( id == null ) {
-            return null;
-        }
-        return id;
+        return inner.getId();
     }
 }

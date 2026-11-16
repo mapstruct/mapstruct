@@ -5,6 +5,7 @@
  */
 package org.mapstruct.ap.test.selection.methodgenerics.wildcards;
 
+import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.Compiler;
@@ -53,5 +54,24 @@ public class WildCardTest {
         // verify target
         assertThat( target ).isNotNull();
         assertThat( target.getProp() ).isEqualTo( typeC );
+    }
+
+    // Eclipse does not handle intersection types correctly (TODO: worthwhile to investigate?)
+    @ProcessorTest(Compiler.JDK)
+    @WithClasses(LifecycleIntersectionMapper.class)
+    @IssueKey("3036")
+    public void testLifecycleIntersection() {
+
+        LifecycleIntersectionMapper.RealmTarget realmTarget = LifecycleIntersectionMapper.INSTANCE.mapRealm( "test" );
+        assertThat( realmTarget.getRealm() ).isNull();
+
+        LifecycleIntersectionMapper.UniqueRealmTarget uniqueRealmTarget =
+            LifecycleIntersectionMapper.INSTANCE.mapUniqueRealm( "test" );
+        assertThat( uniqueRealmTarget.getUniqueRealm() ).isNull();
+
+        LifecycleIntersectionMapper.BothRealmsTarget bothRealmsTarget =
+            LifecycleIntersectionMapper.INSTANCE.mapBothRealms( "test" );
+        assertThat( bothRealmsTarget.getRealm() ).isEqualTo( "realm_test" );
+        assertThat( bothRealmsTarget.getUniqueRealm() ).isEqualTo( "uniqueRealm_test" );
     }
 }

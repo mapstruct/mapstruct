@@ -1,12 +1,15 @@
 ﻿Contributors
 ============
 
+Aleksey Ivashin - https://github.com/xumk
 Alexandr Shalugin - https://github.com/shalugin
 Amine Touzani - https://github.com/ttzn
 Andreas Gudian - https://github.com/agudian
 Andrei Arlou - https://github.com/Captain1653
 Andres Jose Sebastian Rincon Gonzalez - https://github.com/stianrincon
 Arne Seime - https://github.com/seime
+Burak Yildirim - https://github.com/bydrim
+Cause Chung - https://github.com/cuzfrog
 Christian Bandowski - https://github.com/chris922
 Chris DeLashmutt - https://github.com/cdelashmutt-pivotal
 Christian Kosmowski - https://github.com/ckosmowski
@@ -15,6 +18,7 @@ Christophe Labouisse - https://github.com/ggtools
 Ciaran Liedeman - https://github.com/cliedeman
 Cindy Wang - https://github.com/birdfriend
 Cornelius Dirmeier - https://github.com/cornzy
+Dennis Melzer - https://github.com/
 David Feinblum - https://github.com/dvfeinblum
 Darren Rambaud - https://github.com/xyzst
 Dekel Pilli - https://github.com/dekelpilli
@@ -28,42 +32,64 @@ Florian Tavares - https://github.com/neoXfire
 Gervais Blaise - https://github.com/gervaisb
 Gibou Damien - https://github.com/dmngb
 Gunnar Morling - https://github.com/gunnarmorling
+hduelme - https://github.com/hduelme
 Ivo Smid - https://github.com/bedla
 Jason Bodnar - https://github.com/Blackbaud-JasonBodnar
 Jeroen van Wilgenburg - https://github.com/jvwilge
 Jeff Smyth - https://github.com/smythie86
+jmwbRyDWLeNsvtzrihGoY - https://github.com/jmwbRyDWLeNsvtzrihGoY
 João Paulo Bassinello - https://github.com/jpbassinello
 Jonathan Kraska - https://github.com/jakraska
 Joshua Spoerri - https://github.com/spoerri
 Jude Niroshan - https://github.com/JudeNiroshan
 Justyna Kubica-Ledzion - https://github.com/JKLedzion
 Kemal Özcan - https://github.com/yekeoe
+Ken Wang - https://github.com/ro0sterjam
 Kevin Grüneberg - https://github.com/kevcodez
 Lukas Lazar - https://github.com/LukeLaz
 Nikolas Charalambidis - https://github.com/Nikolas-Charalambidis
+Maciej Kucharczyk - https://github.com/mk868
 Michael Pardo - https://github.com/pardom
+Muhammad Usama - https://github.com/the-mgi
 Mustafa Caylak - https://github.com/luxmeter
+Neale Upstone - https://github.com/nealeu
 Oliver Ehrenmüller - https://github.com/greuelpirat
+Oliver Erhart - https://github.com/thunderhook
 Paul Strugnell - https://github.com/ps-powa
 Pascal Grün - https://github.com/pascalgn
 Pavel Makhov - https://github.com/streetturtle
 Peter Larson - https://github.com/pjlarson
+Raimund Klein - https://github.com/Chessray
 Remko Plantenga - https://github.com/sonata82
 Remo Meier - https://github.com/remmeier
+Roel Mangelschots - https://github.com/rmschots
+Ritesh Chopade - https://github.com/codeswithritesh
 Richard Lea - https://github.com/chigix
+Roman Obolonskyi - https://github.com/Obolrom
+Samil Can - https://github.com/SamilCan
 Saheb Preet Singh - https://github.com/sahebpreet
 Samuel Wright - https://github.com/samwright
 Sebastian Haberey - https://github.com/sebastianhaberey
 Sebastian Hasait - https://github.com/shasait
 Sean Huang - https://github.com/seanjob
+seonwoojung - https://github.com/seonwooj0810
 Sjaak Derksen - https://github.com/sjaakd
 Stefan May - https://github.com/osthus-sm
+Takch02 - https://github.com/Takch02
 Taras Mychaskiw - https://github.com/twentylemon
 Thibault Duperron - https://github.com/Zomzog
 Tomáš Poledný - https://github.com/Saljack
 Tobias Meggendorfer - https://github.com/incaseoftrouble
+Tran Ngoc Nhan - https://github.com/
 Tillmann Gaida - https://github.com/Tillerino
 Timo Eckhardt - https://github.com/timoe
 Tomek Gubala - https://github.com/vgtworld
 Valentin Kulesh - https://github.com/unshare
 Vincent Alexander Beelte - https://github.com/grandmasterpixel
+Winter Andreas - https://github.dev/wandi34
+Xiu Hong Kooi - https://github.com/kooixh
+Yang Tang - https://github.com/tangyang9464
+Yevhen Vasyliev - https://github.com/yvasyliev
+Zegveld - https://github.com/Zegveld
+znight1020 - https://github.com/znight1020
+zral - https://github.com/zyberzebra

@@ -15,5 +15,6 @@ public enum NullValuePropertyMappingStrategyGem {
 
     SET_TO_NULL,
     SET_TO_DEFAULT,
-    IGNORE;
+    IGNORE,
+    CLEAR;
 }

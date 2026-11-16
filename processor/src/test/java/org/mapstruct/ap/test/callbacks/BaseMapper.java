@@ -24,7 +24,7 @@ public abstract class BaseMapper {
     @Qualified
     public abstract Target sourceToTargetQualified(Source source);
 
-    private static final List<Invocation> INVOCATIONS = new ArrayList<Invocation>();
+    private static final List<Invocation> INVOCATIONS = new ArrayList<>();
 
     @BeforeMapping
     public void noArgsBeforeMapping() {

@@ -8,7 +8,7 @@ package org.mapstruct;
 /**
  * Strategy for dealing with null source values.
  *
- * <b>Note:</b> This strategy is not in effect when the a specific source presence check method is defined
+ * <b>Note:</b> This strategy is not in effect when a specific source presence check method is defined
  * in the service provider interface (SPI).
  *  <p>
  *  <b>Note</b>: some types of mappings (collections, maps), in which MapStruct is instructed to use a getter or adder

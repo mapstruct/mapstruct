@@ -47,7 +47,7 @@ public class SupportingField extends Field {
         for ( SupportingMappingMethod supportingMappingMethod : supportingMappingMethods ) {
             Field field = supportingMappingMethod.getSupportingField();
             if ( field != null ) {
-                targets.add( supportingMappingMethod.getSupportingField() );
+                targets.add( field );
             }
         }
     }

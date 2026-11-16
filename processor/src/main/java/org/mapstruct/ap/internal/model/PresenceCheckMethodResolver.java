@@ -6,23 +6,28 @@
 package org.mapstruct.ap.internal.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.mapstruct.ap.internal.gem.ConditionStrategyGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
-import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.ParameterProvidedMethods;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
+import org.mapstruct.ap.internal.model.source.selector.SelectionContext;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 
 /**
+ * Factory for creating {@link PresenceCheck}s.
+ *
  * @author Filip Hrisafov
  */
 public final class PresenceCheckMethodResolver {
@@ -36,42 +41,10 @@ public final class PresenceCheckMethodResolver {
         SelectionParameters selectionParameters,
         MappingBuilderContext ctx
     ) {
-        SelectedMethod<SourceMethod> matchingMethod = findMatchingPresenceCheckMethod(
+        List<SelectedMethod<SourceMethod>> matchingMethods = findMatchingMethods(
             method,
-            selectionParameters,
+            SelectionContext.forPresenceCheckMethods( method, selectionParameters, ctx.getTypeFactory() ),
             ctx
-        );
-
-        if ( matchingMethod == null ) {
-            return null;
-        }
-
-        MethodReference methodReference = getPresenceCheckMethodReference( method, matchingMethod, ctx );
-
-        return new MethodReferencePresenceCheck( methodReference );
-
-    }
-
-    private static SelectedMethod<SourceMethod> findMatchingPresenceCheckMethod(
-        Method method,
-        SelectionParameters selectionParameters,
-        MappingBuilderContext ctx
-    ) {
-        MethodSelectors selectors = new MethodSelectors(
-            ctx.getTypeUtils(),
-            ctx.getElementUtils(),
-            ctx.getTypeFactory(),
-            ctx.getMessager()
-        );
-
-        Type booleanType = ctx.getTypeFactory().getType( Boolean.class );
-        List<SelectedMethod<SourceMethod>> matchingMethods = selectors.getMatchingMethods(
-            method,
-            getAllAvailableMethods( method, ctx.getSourceModel() ),
-            Collections.emptyList(),
-            booleanType,
-            booleanType,
-            SelectionCriteria.forPresenceCheckMethods( selectionParameters )
         );
 
         if ( matchingMethods.isEmpty() ) {
@@ -92,7 +65,89 @@ public final class PresenceCheckMethodResolver {
             return null;
         }
 
-        return matchingMethods.get( 0 );
+        SelectedMethod<SourceMethod> matchingMethod = matchingMethods.get( 0 );
+
+        MethodReference methodReference = getPresenceCheckMethodReference( method, matchingMethod, ctx );
+
+        return new MethodReferencePresenceCheck( methodReference );
+
+    }
+
+    public static PresenceCheck getPresenceCheckForSourceParameter(
+        Method method,
+        SelectionParameters selectionParameters,
+        Parameter sourceParameter,
+        MappingBuilderContext ctx
+    ) {
+        List<SelectedMethod<SourceMethod>> matchingMethods = findMatchingMethods(
+            method,
+            SelectionContext.forSourceParameterPresenceCheckMethods(
+                method,
+                selectionParameters,
+                sourceParameter,
+                ctx.getTypeFactory()
+            ),
+            ctx
+        );
+
+        if ( matchingMethods.isEmpty() ) {
+            if ( sourceParameter.getType().isOptionalType() ) {
+                return new OptionalPresenceCheck( sourceParameter.getName(), ctx.getVersionInformation() );
+            }
+            else if ( !sourceParameter.getType().isPrimitive() ) {
+                // If the source parameter is @NonNull (JSpecify), skip the null guard entirely.
+                // Resolved in the mapper's @NullMarked scope since the parameter is declared in the mapper interface.
+                if ( ctx.getNullabilityInMapperScope( sourceParameter.getElement() )
+                    == NullabilityResolver.Nullability.NON_NULL ) {
+                    ctx.getMessager().note( 2,
+                        Message.PROPERTYMAPPING_JSPECIFY_SKIP_METHOD_GUARD_NON_NULL_PARAM,
+                        sourceParameter.getName()
+                    );
+                    return null;
+                }
+                return new NullPresenceCheck( sourceParameter.getName() );
+            }
+            return null;
+        }
+
+        if ( matchingMethods.size() > 1 ) {
+            ctx.getMessager().printMessage(
+                method.getExecutable(),
+                Message.GENERAL_AMBIGUOUS_SOURCE_PARAMETER_CHECK_METHOD,
+                sourceParameter.getType().describe(),
+                matchingMethods.stream()
+                    .map( SelectedMethod::getMethod )
+                    .map( Method::describe )
+                    .collect( Collectors.joining( ", " ) )
+            );
+
+            return null;
+        }
+
+        SelectedMethod<SourceMethod> matchingMethod = matchingMethods.get( 0 );
+
+        MethodReference methodReference = getPresenceCheckMethodReference( method, matchingMethod, ctx );
+
+        return new MethodReferencePresenceCheck( methodReference );
+
+    }
+
+    private static List<SelectedMethod<SourceMethod>> findMatchingMethods(
+        Method method,
+        SelectionContext selectionContext,
+        MappingBuilderContext ctx
+    ) {
+        MethodSelectors selectors = new MethodSelectors(
+            ctx.getTypeUtils(),
+            ctx.getElementUtils(),
+            ctx.getMessager(),
+            null
+        );
+
+        return selectors.getMatchingMethods(
+            getAllAvailableMethods( method, ctx.getSourceModel(), selectionContext.getSelectionCriteria() ),
+            selectionContext
+        );
     }
 
     private static MethodReference getPresenceCheckMethodReference(
@@ -124,7 +179,8 @@ public final class PresenceCheckMethodResolver {
         }
     }
 
-    private static List<SourceMethod> getAllAvailableMethods(Method method, List<SourceMethod> sourceModelMethods) {
+    private static List<SourceMethod> getAllAvailableMethods(Method method, List<SourceMethod> sourceModelMethods,
+                                                             SelectionCriteria selectionCriteria) {
         ParameterProvidedMethods contextProvidedMethods = method.getContextProvidedMethods();
         if ( contextProvidedMethods.isEmpty() ) {
             return sourceModelMethods;
@@ -137,9 +193,19 @@ public final class PresenceCheckMethodResolver {
             new ArrayList<>( methodsProvidedByParams.size() + sourceModelMethods.size() );
 
         for ( SourceMethod methodProvidedByParams : methodsProvidedByParams ) {
-            // add only methods from context that do have the @Condition annotation
-            if ( methodProvidedByParams.isPresenceCheck() ) {
-                availableMethods.add( methodProvidedByParams );
+            if ( selectionCriteria.isPresenceCheckRequired() ) {
+                // add only methods from context that do have the @Condition for properties annotation
+                if ( methodProvidedByParams.getConditionOptions()
+                    .isStrategyApplicable( ConditionStrategyGem.PROPERTIES ) ) {
+                    availableMethods.add( methodProvidedByParams );
+                }
+            }
+            else if ( selectionCriteria.isSourceParameterCheckRequired() ) {
+                // add only methods from context that do have the @Condition for source parameters annotation
+                if ( methodProvidedByParams.getConditionOptions()
+                    .isStrategyApplicable( ConditionStrategyGem.SOURCE_PARAMETERS ) ) {
+                    availableMethods.add( methodProvidedByParams );
+                }
             }
         }
         availableMethods.addAll( sourceModelMethods );

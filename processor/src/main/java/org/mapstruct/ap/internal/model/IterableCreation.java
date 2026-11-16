@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ModelElement;
+import org.mapstruct.ap.internal.model.common.NewInstanceCreation;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 
@@ -27,6 +28,7 @@ public class IterableCreation extends ModelElement {
     private final Type resultType;
     private final Parameter sourceParameter;
     private final MethodReference factoryMethod;
+    private final NewInstanceCreation newInstance;
     private final boolean canUseSize;
     private final boolean loadFactorAdjustment;
 
@@ -34,6 +36,7 @@ public class IterableCreation extends ModelElement {
         this.resultType = resultType;
         this.sourceParameter = sourceParameter;
         this.factoryMethod = factoryMethod;
+        this.newInstance = factoryMethod == null ? NewInstanceCreation.forType( resultType ) : null;
         this.canUseSize = ( sourceParameter.getType().isCollectionOrMapType() ||
             sourceParameter.getType().isArrayType() )
             && resultType.getImplementation() != null && resultType.getImplementation().hasInitialCapacityConstructor();
@@ -57,6 +60,10 @@ public class IterableCreation extends ModelElement {
         return this.factoryMethod;
     }
 
+    public NewInstanceCreation getNewInstance() {
+        return newInstance;
+    }
+
     public boolean isCanUseSize() {
         return canUseSize;
     }
@@ -68,8 +75,8 @@ public class IterableCreation extends ModelElement {
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = new HashSet<>();
-        if ( factoryMethod == null && resultType.getImplementationType() != null ) {
-            types.addAll( resultType.getImplementationType().getImportTypes() );
+        if ( newInstance != null ) {
+            types.addAll( newInstance.getImportTypes() );
         }
 
         if ( isEnumSet() ) {

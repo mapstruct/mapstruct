@@ -5,9 +5,9 @@
  */
 package org.mapstruct.itest.spring;
 
+import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.DecoratedWith;
 import org.mapstruct.itest.spring.other.DateMapper;
 
 @Mapper( componentModel = MappingConstants.ComponentModel.SPRING, uses = DateMapper.class )

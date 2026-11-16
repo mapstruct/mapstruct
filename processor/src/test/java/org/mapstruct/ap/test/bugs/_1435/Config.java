@@ -5,11 +5,11 @@
  */
 package org.mapstruct.ap.test.bugs._1435;
 
+import java.util.Objects;
+
 import org.mapstruct.MapperConfig;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingInheritanceStrategy;
-
-import java.util.Objects;
 
 @MapperConfig(mappingInheritanceStrategy = MappingInheritanceStrategy.AUTO_INHERIT_FROM_CONFIG, imports = Objects.class)
 public interface Config {

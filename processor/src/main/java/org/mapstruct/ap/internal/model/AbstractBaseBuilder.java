@@ -5,10 +5,10 @@
  */
 package org.mapstruct.ap.internal.model;
 
+import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
-import org.mapstruct.ap.internal.model.common.BuilderType;
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -40,7 +40,7 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
     }
 
     /**
-     * Checks if MapStruct is allowed to generate an automatic sub-mapping between {@code sourceType} and @{code
+     * Checks if MapStruct is allowed to generate an automatic sub-mapping between {@code sourceType} and {@code
      * targetType}.
      * This will evaluate to {@code true}, when:
      * <li>
@@ -65,14 +65,36 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
 
     /**
      * Creates a forged assignment from the provided {@code sourceRHS} and {@code forgedMethod}. If a mapping method
-     * for the {@code forgedMethod} already exists, then this method used for the assignment.
+     * for the {@code forgedMethod} already exists, this method will be used for the assignment.
      *
      * @param sourceRHS that needs to be used for the assignment
      * @param forgedMethod the forged method for which we want to create an {@link Assignment}
      *
      * @return See above
      */
-    Assignment createForgedAssignment(SourceRHS sourceRHS, BuilderType builderType, ForgedMethod forgedMethod) {
+    Assignment createForgedAssignment(SourceRHS sourceRHS, ForgedMethod forgedMethod) {
+
+        Supplier<MappingMethod> forgedMappingMethodCreator;
+        if ( MappingMethodUtils.isEnumMapping( forgedMethod ) ) {
+            forgedMappingMethodCreator = () -> new ValueMappingMethod.Builder()
+                .method( forgedMethod )
+                .valueMappings( forgedMethod.getOptions().getValueMappings() )
+                .enumMapping( forgedMethod.getOptions().getEnumMappingOptions() )
+                .mappingContext( ctx )
+                .build();
+        }
+        else {
+            forgedMappingMethodCreator = () -> new BeanMappingMethod.Builder()
+                .forgedMethod( forgedMethod )
+                .mappingContext( ctx )
+                .build();
+        }
+
+        return getOrCreateForgedAssignment( sourceRHS, forgedMethod, forgedMappingMethodCreator );
+    }
+
+    Assignment getOrCreateForgedAssignment(SourceRHS sourceRHS, ForgedMethod forgedMethod,
+                                           Supplier<MappingMethod> mappingMethodCreator) {
 
         if ( ctx.getForgedMethodsUnderCreation().containsKey( forgedMethod ) ) {
             return createAssignment( sourceRHS, ctx.getForgedMethodsUnderCreation().get( forgedMethod ) );
@@ -81,25 +103,11 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
             ctx.getForgedMethodsUnderCreation().put( forgedMethod, forgedMethod );
         }
 
-        MappingMethod forgedMappingMethod;
-        if ( MappingMethodUtils.isEnumMapping( forgedMethod ) ) {
-            forgedMappingMethod = new ValueMappingMethod.Builder()
-                .method( forgedMethod )
-                .valueMappings( forgedMethod.getOptions().getValueMappings() )
-                .enumMapping( forgedMethod.getOptions().getEnumMappingOptions() )
-                .mappingContext( ctx )
-                .build();
-        }
-        else {
-            forgedMappingMethod = new BeanMappingMethod.Builder()
-                .forgedMethod( forgedMethod )
-                .returnTypeBuilder( builderType )
-                .mappingContext( ctx )
-                .build();
-        }
+        MappingMethod forgedMappingMethod = mappingMethodCreator.get();
 
         Assignment forgedAssignment = createForgedAssignment( sourceRHS, forgedMethod, forgedMappingMethod );
         ctx.getForgedMethodsUnderCreation().remove( forgedMethod );
+
         return forgedAssignment;
     }
 
@@ -107,8 +115,8 @@ class AbstractBaseBuilder<B extends AbstractBaseBuilder<B>> {
         if ( mappingMethod == null ) {
             return null;
         }
-        if (methodRef.getMappingReferences().isRestrictToDefinedMappings() ||
-            !ctx.getMappingsToGenerate().contains( mappingMethod )) {
+        if ( methodRef.getMappingReferences().isRestrictToDefinedMappings() ||
+            !ctx.getMappingsToGenerate().contains( mappingMethod ) ) {
             // If the mapping options are restricted only to the defined mappings, then use the mapping method.
             // See https://github.com/mapstruct/mapstruct/issues/1148
             ctx.getMappingsToGenerate().add( mappingMethod );

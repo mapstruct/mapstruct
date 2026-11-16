@@ -28,7 +28,7 @@ class JavaxXmlElementDeclSelector extends XmlElementDeclSelector {
     XmlElementDeclInfo getXmlElementDeclInfo(Element element) {
         XmlElementDeclGem gem = XmlElementDeclGem.instanceOn( element );
 
-        if (gem == null) {
+        if ( gem == null ) {
             return null;
         }
 
@@ -39,7 +39,7 @@ class JavaxXmlElementDeclSelector extends XmlElementDeclSelector {
     XmlElementRefInfo getXmlElementRefInfo(Element element) {
         XmlElementRefGem gem = XmlElementRefGem.instanceOn( element );
 
-        if (gem == null) {
+        if ( gem == null ) {
             return null;
         }
 

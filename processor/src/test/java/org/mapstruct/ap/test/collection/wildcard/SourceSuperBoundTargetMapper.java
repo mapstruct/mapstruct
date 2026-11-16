@@ -8,7 +8,6 @@ package org.mapstruct.ap.test.collection.wildcard;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-
 /**
  *
  * @author Sjaak Derksen

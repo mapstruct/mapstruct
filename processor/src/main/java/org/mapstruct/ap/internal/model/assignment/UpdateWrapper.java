@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
+import org.mapstruct.ap.internal.model.common.NewInstanceCreation;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
@@ -22,10 +23,11 @@ public class UpdateWrapper extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
     private final Assignment factoryMethod;
-    private final Type targetImplementationType;
+    private final NewInstanceCreation newInstance;
     private final boolean includeSourceNullCheck;
     private final boolean setExplicitlyToNull;
     private final boolean setExplicitlyToDefault;
+    private final boolean mustCastForNull;
 
     public UpdateWrapper( Assignment decoratedAssignment,
                           List<Type> thrownTypesToExclude,
@@ -34,28 +36,16 @@ public class UpdateWrapper extends AssignmentWrapper {
                           Type targetType,
                           boolean includeSourceNullCheck,
                           boolean setExplicitlyToNull,
-                          boolean setExplicitlyToDefault ) {
+                          boolean setExplicitlyToDefault,
+                          boolean mustCastForNull) {
         super( decoratedAssignment, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
         this.factoryMethod = factoryMethod;
-        this.targetImplementationType = determineImplType( factoryMethod, targetType );
+        this.newInstance = ( factoryMethod == null ) ? NewInstanceCreation.forType( targetType ) : null;
         this.includeSourceNullCheck = includeSourceNullCheck;
         this.setExplicitlyToDefault = setExplicitlyToDefault;
         this.setExplicitlyToNull = setExplicitlyToNull;
-    }
-
-    private static Type determineImplType(Assignment factoryMethod, Type targetType) {
-        if ( factoryMethod != null ) {
-            //If we have factory method then we won't use the targetType
-            return null;
-        }
-        if ( targetType.getImplementationType() != null ) {
-            // it's probably a collection or something
-            return targetType.getImplementationType();
-        }
-
-        // no factory method means we create a new instance ourselves and thus need to import the type
-        return targetType;
+        this.mustCastForNull = mustCastForNull;
     }
 
     @Override
@@ -78,15 +68,18 @@ public class UpdateWrapper extends AssignmentWrapper {
         if ( factoryMethod != null ) {
             imported.addAll( factoryMethod.getImportTypes() );
         }
-        if ( targetImplementationType != null ) {
-            imported.add( targetImplementationType );
-            imported.addAll( targetImplementationType.getTypeParameters() );
+        if ( newInstance != null ) {
+            imported.addAll( newInstance.getImportTypes() );
         }
         return imported;
     }
 
     public Assignment getFactoryMethod() {
         return factoryMethod;
+    }
+
+    public NewInstanceCreation getNewInstance() {
+        return newInstance;
     }
 
     public boolean isIncludeSourceNullCheck() {
@@ -99,5 +92,9 @@ public class UpdateWrapper extends AssignmentWrapper {
 
     public boolean isSetExplicitlyToDefault() {
         return setExplicitlyToDefault;
+    }
+
+    public boolean isMustCastForNull() {
+        return mustCastForNull;
     }
 }

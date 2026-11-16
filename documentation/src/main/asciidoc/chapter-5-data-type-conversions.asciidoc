@@ -107,6 +107,16 @@ public interface CarMapper {
 
 * Between `java.time.Instant` from Java 8 Date-Time package and `java.util.Date`.
 
+* Between `java.time.LocalDateTime` from Java 8 Date-Time package and `java.time.LocalDate` from the same package.
+
+* Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.time.LocalDateTime` from the same package.
+
+* Between `java.time.OffsetDateTime` from Java 8 Date-Time package and `java.time.LocalDateTime` from the same package.
+
+* Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.time.Instant` from the same package.
+
+* Between `java.time.OffsetDateTime` from Java 8 Date-Time package and `java.time.Instant` from the same package.
+
 * Between `java.time.ZonedDateTime` from Java 8 Date-Time package and `java.util.Calendar`.
 
 * Between `java.sql.Date` and `java.util.Date`
@@ -125,8 +135,22 @@ public interface CarMapper {
 
 * Between `String` and `StringBuilder`
 
+* Between `java.net.URI` and `String`.
+** When converting from a `String`, the value needs to be a valid https://datatracker.ietf.org/doc/html/rfc2396[RFC 2396 URI] otherwise an `IllegalArgumentException` is thrown.
+
 * Between `java.net.URL` and `String`.
 ** When converting from a `String`, the value needs to be a valid https://en.wikipedia.org/wiki/URL[URL] otherwise a `MalformedURLException` is thrown.
+
+* Between `java.util.Locale` and `String`.
+** When converting from a `Locale`, the resulting `String` will be a well-formed IETF BCP 47 language tag representing the locale. When converting from a `String`, the locale that best represents the language tag will be returned. See https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#forLanguageTag-java.lang.String-[Locale.forLanguageTag()] and https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html#toLanguageTag--[Locale.toLanguageTag()] for more information.
+
+[NOTE]
+====
+All the above conversions also work when the source or target type is wrapped in `java.util.Optional`, `java.util.OptionalDouble`, `java.util.OptionalLong` or `java.util.OptionalInt`.
+For example, `Optional<Integer>` can be converted to `String`, `int` can be converted to `Optional<String>`,
+or `Optional<Long>` can be converted to `Integer`.
+The same conversion rules apply, with MapStruct automatically handling the wrapping and unwrapping of `Optional` values.
+====
 
 [[mapping-object-references]]
 === Mapping object references
@@ -275,6 +299,13 @@ This puts the configuration of the nested mapping into one place (method) where 
 instead of re-configuring the same things on all of those upper methods.
 ====
 
+[TIP]
+====
+When ignoring multiple properties instead of defining multiple `@Mapping` annotations, you can use the `@Ignored` annotation to group them together.
+e.g. for the `FishTankMapperWithDocument` example above, you could write:
+`@Ignored(targets = { "plant", "ornament", "material" })`
+====
+
 [NOTE]
 ====
 In some cases the `ReportingPolicy` that is going to be used for the generated nested method would be `IGNORE`.
@@ -395,6 +426,39 @@ Generated mappers retrieve referenced mappers using the component model configur
 When having a custom mapper hooked into the generated mapper with `@Mapper#uses()`, an additional parameter of type `Class` (or a super-type of it) can be defined in the custom mapping method in order to perform general mapping tasks for specific target object types. That attribute must be annotated with `@TargetType` for MapStruct to generate calls that pass the `Class` instance representing the corresponding property type of the target bean.
 
 For instance, the `CarDto` could have a property `owner` of type `Reference` that contains the primary key of a `Person` entity. You could now create a generic custom mapper that resolves any `Reference` objects to their corresponding managed JPA entity instances.
+
+e.g.
+
+.Example classes for the passing target type example
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+public class Car {
+
+    private Person owner;
+    // ...
+}
+
+public class Person extends BaseEntity {
+
+    // ...
+}
+
+public class Reference {
+
+    private String pk;
+    // ...
+}
+
+public class CarDto {
+
+    private Reference owner;
+    // ...
+}
+----
+====
+
 
 .Mapping method expecting mapping target type as parameter
 ====

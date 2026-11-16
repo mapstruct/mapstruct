@@ -8,9 +8,9 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.Set;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import org.mapstruct.ap.internal.util.ElementUtils;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.ClassAccessibilityGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
 import org.mapstruct.ap.internal.gem.MapperConfigGem;
@@ -20,6 +20,7 @@ import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.ReportingPolicyGem;
 import org.mapstruct.ap.internal.gem.SubclassExhaustiveStrategyGem;
+import org.mapstruct.ap.internal.util.ElementUtils;
 
 public class MapperConfigOptions extends DelegatingOptions {
 
@@ -141,6 +142,12 @@ public class MapperConfigOptions extends DelegatingOptions {
             next().getSubclassExhaustiveStrategy();
     }
 
+    public TypeMirror getSubclassExhaustiveException() {
+        return mapperConfig.subclassExhaustiveException().hasValue() ?
+            mapperConfig.subclassExhaustiveException().get() :
+            next().getSubclassExhaustiveException();
+    }
+
     @Override
     public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
         if ( mapperConfig.nullValueIterableMappingStrategy().hasValue() ) {
@@ -161,6 +168,13 @@ public class MapperConfigOptions extends DelegatingOptions {
             return NullValueMappingStrategyGem.valueOf( mapperConfig.nullValueMappingStrategy().get() );
         }
         return next().getNullValueMapMappingStrategy();
+    }
+
+    @Override
+    public ClassAccessibilityGem accessibility() {
+        return mapperConfig.accessibility().hasValue() ?
+            ClassAccessibilityGem.valueOf( mapperConfig.accessibility().get() ) :
+            next().accessibility();
     }
 
     @Override

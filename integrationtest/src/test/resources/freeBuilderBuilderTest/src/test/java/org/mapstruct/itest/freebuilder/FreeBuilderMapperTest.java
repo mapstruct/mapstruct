@@ -5,7 +5,7 @@
  */
 package org.mapstruct.itest.freebuilder;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,10 +14,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eric Martineau
  */
-public class FreeBuilderMapperTest {
+class FreeBuilderMapperTest {
 
     @Test
-    public void testSimpleImmutableBuilderHappyPath() {
+    void testSimpleImmutableBuilderHappyPath() {
         PersonDto personDto = PersonMapper.INSTANCE.toDto( Person.builder()
             .setAge( 33 )
             .setName( "Bob" )
@@ -32,7 +32,7 @@ public class FreeBuilderMapperTest {
     }
 
     @Test
-    public void testLombokToImmutable() {
+    void testLombokToImmutable() {
         Person person = PersonMapper.INSTANCE.fromDto( new PersonDto( "Bob", 33, new AddressDto( "Wild Drive" ) ) );
         assertThat( person.getAge() ).isEqualTo( 33 );
         assertThat( person.getName() ).isEqualTo( "Bob" );

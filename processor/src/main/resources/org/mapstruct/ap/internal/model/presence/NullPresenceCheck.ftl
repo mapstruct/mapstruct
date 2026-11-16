@@ -6,4 +6,4 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.presence.NullPresenceCheck" -->
-${sourceReference} != null
+${sourceReference} <#if isNegate()>==<#else>!=</#if> null

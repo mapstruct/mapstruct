@@ -40,10 +40,15 @@ import java.lang.annotation.Target;
  *
  * @author Sjaak Derksen
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.CLASS)
 public @interface ValueMappings {
 
+    /**
+     * The value mappings that should be applied.
+     *
+     * @return the value mappings
+     */
     ValueMapping[] value();
 
 }

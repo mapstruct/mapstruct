@@ -166,7 +166,7 @@ public class MappingMethodOptions {
             }
 
             if ( !getBeanMapping().hasAnnotation() && templateOptions.getBeanMapping().hasAnnotation() ) {
-                setBeanMapping( BeanMappingOptions.forInheritance( templateOptions.getBeanMapping( ) ) );
+                setBeanMapping( BeanMappingOptions.forInheritance( templateOptions.getBeanMapping( ), isInverse ) );
             }
 
             if ( !getEnumMappingOptions().hasAnnotation() && templateOptions.getEnumMappingOptions().hasAnnotation() ) {
@@ -204,8 +204,15 @@ public class MappingMethodOptions {
             }
 
             if ( isInverse ) {
-                // normal inheritence of subclass mappings will result runtime in infinite loops.
                 List<SubclassMappingOptions> inheritedMappings = SubclassMappingOptions.copyForInverseInheritance(
+                                              templateOptions.getSubclassMappings(),
+                                              getBeanMapping() );
+                addAllNonRedefined( sourceMethod, annotationMirror, inheritedMappings );
+            }
+            else if ( methodsHaveIdenticalSignature( templateMethod, sourceMethod ) ) {
+                List<SubclassMappingOptions> inheritedMappings =
+                    SubclassMappingOptions
+                                          .copyForInheritance(
                                               templateOptions.getSubclassMappings(),
                                               getBeanMapping() );
                 addAllNonRedefined( sourceMethod, annotationMirror, inheritedMappings );
@@ -231,6 +238,28 @@ public class MappingMethodOptions {
         }
     }
 
+    private boolean methodsHaveIdenticalSignature(SourceMethod templateMethod, SourceMethod sourceMethod) {
+        return parametersAreOfIdenticalTypeAndOrder( templateMethod, sourceMethod )
+            && resultTypeIsTheSame( templateMethod, sourceMethod );
+    }
+
+    private boolean parametersAreOfIdenticalTypeAndOrder(SourceMethod templateMethod, SourceMethod sourceMethod) {
+        if ( templateMethod.getParameters().size() != sourceMethod.getParameters().size() ) {
+            return false;
+        }
+        for ( int i = 0; i < templateMethod.getParameters().size(); i++ ) {
+            if ( !templateMethod.getParameters().get( i ).getType().equals(
+                                       sourceMethod.getParameters().get( i ).getType() ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean resultTypeIsTheSame(SourceMethod templateMethod, SourceMethod sourceMethod) {
+        return templateMethod.getResultType().equals( sourceMethod.getResultType() );
+    }
+
     private void addAllNonRedefined(SourceMethod sourceMethod, AnnotationMirror annotationMirror,
                                     List<SubclassMappingOptions> inheritedMappings) {
         Set<SubclassMappingOptions> redefinedSubclassMappings = new HashSet<>( subclassMappings );
@@ -247,20 +276,16 @@ public class MappingMethodOptions {
     }
 
     private void addAllNonRedefined(Set<MappingOptions> inheritedMappings) {
-        Set<String> redefinedSources = new HashSet<>();
+        // We are only adding the targets here since this mappings have already been reversed
         Set<String> redefinedTargets = new HashSet<>();
         for ( MappingOptions redefinedMappings : mappings ) {
-            if ( redefinedMappings.getSourceName() != null ) {
-                redefinedSources.add( redefinedMappings.getSourceName() );
-            }
             if ( redefinedMappings.getTargetName() != null ) {
                 redefinedTargets.add( redefinedMappings.getTargetName() );
             }
         }
         for ( MappingOptions inheritedMapping : inheritedMappings ) {
             if ( inheritedMapping.isIgnored()
-                || ( !isRedefined( redefinedSources, inheritedMapping.getSourceName() )
-                && !isRedefined( redefinedTargets, inheritedMapping.getTargetName() ) )
+                || !isRedefined( redefinedTargets, inheritedMapping.getTargetName() )
             ) {
                 mappings.add( inheritedMapping );
             }
@@ -364,7 +389,20 @@ public class MappingMethodOptions {
             options.mappings,
             options.iterableMapping,
             options.mapMapping,
-            options.beanMapping,
+            BeanMappingOptions.forForgedMethods( options.beanMapping ),
+            options.enumMappingOptions,
+            options.valueMappings,
+            Collections.emptySet(),
+            null );
+    }
+
+    public static MappingMethodOptions getSubclassForgedMethodInheritedOptions(MappingMethodOptions options) {
+        return new MappingMethodOptions(
+            options.mapper,
+            options.mappings,
+            options.iterableMapping,
+            options.mapMapping,
+            BeanMappingOptions.forSubclassForgedMethods( options.beanMapping ),
             options.enumMappingOptions,
             options.valueMappings,
             Collections.emptySet(),

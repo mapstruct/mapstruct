@@ -5,12 +5,9 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import static org.mapstruct.ap.internal.util.Collections.first;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 
@@ -23,10 +20,13 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.SourceMethod;
 import org.mapstruct.ap.internal.model.source.selector.MethodSelectors;
 import org.mapstruct.ap.internal.model.source.selector.SelectedMethod;
-import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
+import org.mapstruct.ap.internal.model.source.selector.SelectionContext;
 import org.mapstruct.ap.internal.util.Message;
 
+import static org.mapstruct.ap.internal.util.Collections.first;
+
 /**
+ * Factory for creating the appropriate object factory method.
  *
  * @author Sjaak Derksen
  */
@@ -74,7 +74,7 @@ public class ObjectFactoryMethodResolver {
             ctx
         );
 
-        if (matchingFactoryMethods.isEmpty()) {
+        if ( matchingFactoryMethods.isEmpty() ) {
             return null;
         }
 
@@ -126,20 +126,20 @@ public class ObjectFactoryMethodResolver {
         MappingBuilderContext ctx) {
 
         MethodSelectors selectors =
-            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getTypeFactory(), ctx.getMessager() );
+            new MethodSelectors( ctx.getTypeUtils(), ctx.getElementUtils(), ctx.getMessager(), null );
 
         return selectors.getMatchingMethods(
-            method,
             getAllAvailableMethods( method, ctx.getSourceModel() ),
-            java.util.Collections.emptyList(),
-            alternativeTarget,
-            alternativeTarget,
-            SelectionCriteria.forFactoryMethods( selectionParameters )
+            SelectionContext.forFactoryMethods( method, alternativeTarget, selectionParameters, ctx.getTypeFactory() )
         );
     }
 
     public static MethodReference getBuilderFactoryMethod(Method method, BuilderType builder ) {
-        return getBuilderFactoryMethod( method.getReturnType(), builder );
+        Type returnType = method.getReturnType();
+        if ( returnType.isOptionalType() ) {
+            returnType = returnType.getOptionalBaseType();
+        }
+        return getBuilderFactoryMethod( returnType, builder );
     }
 
     public static MethodReference getBuilderFactoryMethod(Type typeToBuild, BuilderType builder ) {

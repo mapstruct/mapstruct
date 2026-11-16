@@ -12,6 +12,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import javax.lang.model.type.TypeKind;
 
+import org.mapstruct.ap.internal.gem.ClassAccessibilityGem;
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
@@ -30,9 +31,9 @@ public abstract class GeneratedType extends ModelElement {
 
     private static final String JAVA_LANG_PACKAGE = "java.lang";
 
-    protected abstract static class GeneratedTypeBuilder<T extends GeneratedTypeBuilder> {
+    protected abstract static class GeneratedTypeBuilder<T extends GeneratedTypeBuilder<T>> {
 
-        private T myself;
+        private final T myself;
         protected TypeFactory typeFactory;
         protected ElementUtils elementUtils;
         protected Options options;
@@ -40,6 +41,7 @@ public abstract class GeneratedType extends ModelElement {
         protected SortedSet<Type> extraImportedTypes;
 
         protected List<MappingMethod> methods;
+        protected ClassAccessibilityGem classAccessibility;
 
         GeneratedTypeBuilder(Class<T> selfType) {
             myself = selfType.cast( this );
@@ -75,6 +77,10 @@ public abstract class GeneratedType extends ModelElement {
             return myself;
         }
 
+        public T classAccessibility(ClassAccessibilityGem classAccessibility) {
+            this.classAccessibility = classAccessibility;
+            return myself;
+        }
     }
 
     private final String packageName;
@@ -82,7 +88,7 @@ public abstract class GeneratedType extends ModelElement {
     private final Type mapperDefinitionType;
 
     private final List<Annotation> annotations;
-    private final List<MappingMethod> methods;
+    private final List<GeneratedTypeMethod> methods;
     private final SortedSet<Type> extraImportedTypes;
 
     private final boolean suppressGeneratorTimestamp;
@@ -110,7 +116,7 @@ public abstract class GeneratedType extends ModelElement {
         this.extraImportedTypes = extraImportedTypes;
 
         this.annotations = new ArrayList<>();
-        this.methods = methods;
+        this.methods = new ArrayList<>(methods);
         this.fields = fields;
 
         this.suppressGeneratorTimestamp = suppressGeneratorTimestamp;
@@ -161,7 +167,7 @@ public abstract class GeneratedType extends ModelElement {
         annotations.add( annotation );
     }
 
-    public List<MappingMethod> getMethods() {
+    public List<GeneratedTypeMethod> getMethods() {
         return methods;
     }
 
@@ -204,7 +210,7 @@ public abstract class GeneratedType extends ModelElement {
 
         addIfImportRequired( importedTypes, mapperDefinitionType );
 
-        for ( MappingMethod mappingMethod : methods ) {
+        for ( GeneratedTypeMethod mappingMethod : methods ) {
             for ( Type type : mappingMethod.getImportTypes() ) {
                 addIfImportRequired( importedTypes, type );
             }
@@ -251,6 +257,10 @@ public abstract class GeneratedType extends ModelElement {
 
     public void removeConstructor() {
         constructor = null;
+    }
+
+    public Javadoc getJavadoc() {
+        return null;
     }
 
     protected void addIfImportRequired(Collection<Type> collection, Type typeToAdd) {

@@ -15,7 +15,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
-import org.mapstruct.ap.internal.gem.ConditionGem;
 import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
 import org.mapstruct.ap.internal.model.common.Accessibility;
 import org.mapstruct.ap.internal.model.common.Parameter;
@@ -47,13 +46,14 @@ public class SourceMethod implements Method {
     private final List<Parameter> parameters;
     private final Parameter mappingTargetParameter;
     private final Parameter targetTypeParameter;
+    private final Parameter sourcePropertyNameParameter;
     private final Parameter targetPropertyNameParameter;
     private final boolean isObjectFactory;
-    private final boolean isPresenceCheck;
     private final Type returnType;
     private final Accessibility accessibility;
     private final List<Type> exceptionTypes;
     private final MappingMethodOptions mappingMethodOptions;
+    private final ConditionMethodOptions conditionMethodOptions;
     private final List<SourceMethod> prototypeMethods;
     private final Type mapperToImplement;
 
@@ -94,6 +94,7 @@ public class SourceMethod implements Method {
         private List<ValueMappingOptions> valueMappings;
         private EnumMappingOptions enumMappingOptions;
         private ParameterProvidedMethods contextProvidedMethods;
+        private Set<ConditionOptions> conditionOptions;
         private List<Type> typeParameters;
         private Set<SubclassMappingOptions> subclassMappings;
 
@@ -185,13 +186,18 @@ public class SourceMethod implements Method {
             return this;
         }
 
-        public Builder setDefininingType(Type definingType) {
+        public Builder setDefiningType(Type definingType) {
             this.definingType = definingType;
             return this;
         }
 
         public Builder setContextProvidedMethods(ParameterProvidedMethods contextProvidedMethods) {
             this.contextProvidedMethods = contextProvidedMethods;
+            return this;
+        }
+
+        public Builder setConditionOptions(Set<ConditionOptions> conditionOptions) {
+            this.conditionOptions = conditionOptions;
             return this;
         }
 
@@ -222,17 +228,22 @@ public class SourceMethod implements Method {
                 subclassValidator
             );
 
+            ConditionMethodOptions conditionMethodOptions =
+                conditionOptions != null ? new ConditionMethodOptions( conditionOptions ) :
+                    ConditionMethodOptions.empty();
+
             this.typeParameters = this.executable.getTypeParameters()
                 .stream()
                 .map( Element::asType )
                 .map( typeFactory::getType )
                 .collect( Collectors.toList() );
 
-            return new SourceMethod( this, mappingMethodOptions );
+            return new SourceMethod( this, mappingMethodOptions, conditionMethodOptions );
         }
     }
 
-    private SourceMethod(Builder builder, MappingMethodOptions mappingMethodOptions) {
+    private SourceMethod(Builder builder, MappingMethodOptions mappingMethodOptions,
+                         ConditionMethodOptions conditionMethodOptions) {
         this.declaringMapper = builder.declaringMapper;
         this.executable = builder.executable;
         this.parameters = builder.parameters;
@@ -241,6 +252,7 @@ public class SourceMethod implements Method {
         this.accessibility = Accessibility.fromModifiers( builder.executable.getModifiers() );
 
         this.mappingMethodOptions = mappingMethodOptions;
+        this.conditionMethodOptions = conditionMethodOptions;
 
         this.sourceParameters = Parameter.getSourceParameters( parameters );
         this.contextParameters = Parameter.getContextParameters( parameters );
@@ -249,10 +261,10 @@ public class SourceMethod implements Method {
 
         this.mappingTargetParameter = Parameter.getMappingTargetParameter( parameters );
         this.targetTypeParameter = Parameter.getTargetTypeParameter( parameters );
+        this.sourcePropertyNameParameter = Parameter.getSourcePropertyNameParameter( parameters );
         this.targetPropertyNameParameter = Parameter.getTargetPropertyNameParameter( parameters );
         this.hasObjectFactoryAnnotation = ObjectFactoryGem.instanceOn( executable ) != null;
         this.isObjectFactory = determineIfIsObjectFactory();
-        this.isPresenceCheck = determineIfIsPresenceCheck();
 
         this.typeUtils = builder.typeUtils;
         this.typeFactory = builder.typeFactory;
@@ -265,23 +277,11 @@ public class SourceMethod implements Method {
     private boolean determineIfIsObjectFactory() {
         boolean hasNoSourceParameters = getSourceParameters().isEmpty();
         boolean hasNoMappingTargetParam = getMappingTargetParameter() == null;
+        boolean hasNoSourcePropertyNameParam = getSourcePropertyNameParameter() == null;
         boolean hasNoTargetPropertyNameParam = getTargetPropertyNameParameter() == null;
         return !isLifecycleCallbackMethod() && !returnType.isVoid()
-            && hasNoMappingTargetParam && hasNoTargetPropertyNameParam
+            && hasNoMappingTargetParam && hasNoSourcePropertyNameParam && hasNoTargetPropertyNameParam
             && ( hasObjectFactoryAnnotation || hasNoSourceParameters );
-    }
-
-    private boolean determineIfIsPresenceCheck() {
-        if ( returnType.isPrimitive() ) {
-            if ( !returnType.getName().equals( "boolean" ) ) {
-                return false;
-            }
-        }
-        else if ( !returnType.getFullyQualifiedName().equals( Boolean.class.getCanonicalName() ) ) {
-            return false;
-        }
-
-        return ConditionGem.instanceOn( executable ) != null;
     }
 
     @Override
@@ -380,6 +380,10 @@ public class SourceMethod implements Method {
     @Override
     public Parameter getTargetTypeParameter() {
         return targetTypeParameter;
+    }
+
+    public Parameter getSourcePropertyNameParameter() {
+        return sourcePropertyNameParameter;
     }
 
     public Parameter getTargetPropertyNameParameter() {
@@ -541,6 +545,11 @@ public class SourceMethod implements Method {
     }
 
     @Override
+    public ConditionMethodOptions getConditionOptions() {
+        return conditionMethodOptions;
+    }
+
+    @Override
     public boolean isStatic() {
         return executable.getModifiers().contains( Modifier.STATIC );
     }
@@ -558,11 +567,6 @@ public class SourceMethod implements Method {
     @Override
     public boolean isLifecycleCallbackMethod() {
         return Executables.isLifecycleCallbackMethod( getExecutable() );
-    }
-
-    @Override
-    public boolean isPresenceCheck() {
-        return isPresenceCheck;
     }
 
     public boolean isAfterMappingMethod() {

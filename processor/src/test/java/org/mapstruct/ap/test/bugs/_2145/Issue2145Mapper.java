@@ -73,12 +73,12 @@ public interface Issue2145Mapper {
 
         @XmlElementDecl(namespace = "http://www.test.com/test", name = "Nested")
         public JAXBElement<Nested> createNested(Nested value) {
-            return new JAXBElement<Nested>( Q_NAME, Nested.class, null, value );
+            return new JAXBElement<>( Q_NAME, Nested.class, null, value );
         }
 
         @XmlElementDecl(namespace = "http://www.test.com/test", name = "nested", scope = Nested.class)
         public JAXBElement<Nested> createNestedInNestedTarget(Nested value) {
-            return new JAXBElement<Nested>( Q_NAME_NESTED, Nested.class, Target.class, value );
+            return new JAXBElement<>( Q_NAME_NESTED, Nested.class, Target.class, value );
         }
 
     }

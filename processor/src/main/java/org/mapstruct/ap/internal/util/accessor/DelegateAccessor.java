@@ -11,6 +11,8 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeMirror;
 
 /**
+ * An {@link Accessor} which delegates all calls to another {@link Accessor}.
+ *
  * @author Filip Hrisafov
  */
 public abstract class DelegateAccessor implements Accessor {

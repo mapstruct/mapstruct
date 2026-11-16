@@ -11,7 +11,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.NullValueCheckStrategyGem;
@@ -37,6 +41,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.presence.AllPresenceChecksPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.JavaExpressionPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.NullPresenceCheck;
+import org.mapstruct.ap.internal.model.presence.OptionalPresenceCheck;
 import org.mapstruct.ap.internal.model.presence.SuffixPresenceCheck;
 import org.mapstruct.ap.internal.model.source.DelegatingOptions;
 import org.mapstruct.ap.internal.model.source.MappingControl;
@@ -46,6 +51,7 @@ import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.NativeTypes;
+import org.mapstruct.ap.internal.util.NullabilityResolver;
 import org.mapstruct.ap.internal.util.Strings;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.mapstruct.ap.internal.util.accessor.AccessorType;
@@ -70,6 +76,7 @@ import static org.mapstruct.ap.internal.model.common.Assignment.AssignmentType.D
 public class PropertyMapping extends ModelElement {
 
     private final String name;
+    private final String sourcePropertyName;
     private final String sourceBeanName;
     private final String targetWriteAccessorName;
     private final ReadAccessor targetReadAccessorProvider;
@@ -268,6 +275,33 @@ public class PropertyMapping extends ModelElement {
                 assignment = forge();
             }
 
+            // JSpecify: raise a hard compile error when a source that is not guaranteed @NonNull
+            // (either explicit @Nullable or unknown nullability outside a @NullMarked scope) is
+            // mapped to a @NonNull constructor parameter without a default value. Neither a null
+            // check (which would leave the variable null, violating the @NonNull contract) nor
+            // passing the value through is safe here — defaultValue / defaultExpression are the
+            // supported remedies.
+            // Skip when assignment resolution already failed: the user sees the primary
+            // "can't find mapping" error and a duplicate would only obscure the root cause.
+            if ( assignment != null
+                && targetWriteAccessorType == AccessorType.PARAMETER
+                && !hasDefaultValueOrDefaultExpression() ) {
+                NullabilityResolver.Nullability sourceNullability = getSourceJSpecifyNullability();
+                NullabilityResolver.Nullability targetNullability = ctx.getNullabilityResolver().getSetterNullability(
+                    targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked
+                );
+                if ( sourceNullability != NullabilityResolver.Nullability.NON_NULL
+                    && targetNullability == NullabilityResolver.Nullability.NON_NULL ) {
+                    ctx.getMessager().printMessage(
+                        method.getExecutable(),
+                        positionHint,
+                        Message.PROPERTYMAPPING_NULLABLE_SOURCE_TO_NON_NULL_CONSTRUCTOR_PARAM,
+                        sourcePropertyName != null ? sourcePropertyName : targetPropertyName,
+                        targetPropertyName
+                    );
+                }
+            }
+
             Type sourceType = rightHandSide.getSourceType();
             if ( assignment != null ) {
                 ctx.getMessager().note( 2,  Message.PROPERTYMAPPING_SELECT_NOTE,  assignment );
@@ -286,8 +320,9 @@ public class PropertyMapping extends ModelElement {
             }
 
             return new PropertyMapping(
+                sourcePropertyName,
                 targetPropertyName,
-                rightHandSide.getSourceParameterName(),
+                sourceReference.getParameter().getOriginalName(),
                 targetWriteAccessor.getSimpleName(),
                 targetReadAccessor,
                 targetType,
@@ -301,13 +336,14 @@ public class PropertyMapping extends ModelElement {
         private Assignment forge( ) {
             Assignment assignment;
             Type sourceType = rightHandSide.getSourceType();
-            if ( (sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType() ) {
+            if ( ( sourceType.isCollectionType() || sourceType.isArrayType()) && targetType.isIterableType()
+                    || ( sourceType.isIterableType() && targetType.isCollectionType() ) ) {
                 assignment = forgeIterableMapping( sourceType, targetType, rightHandSide );
             }
             else if ( sourceType.isMapType() && targetType.isMapType() ) {
                 assignment = forgeMapMapping( sourceType, targetType, rightHandSide );
             }
-            else if ( sourceType.isMapType() && !targetType.isMapType()) {
+            else if ( sourceType.isMapType() && !targetType.isMapType() ) {
                 assignment = forgeMapping( sourceType, targetType.withoutBounds(), rightHandSide );
             }
             else if ( ( sourceType.isIterableType() && targetType.isStreamType() )
@@ -420,7 +456,7 @@ public class PropertyMapping extends ModelElement {
                 Assignment factory = ObjectFactoryMethodResolver
                     .getFactoryMethod( method, targetType, SelectionParameters.forSourceRHS( rightHandSide ), ctx );
 
-                if ( factory == null && targetBuilderType != null) {
+                if ( factory == null && targetBuilderType != null ) {
                     // If there is no dedicated factory method and the target has a builder we will try to use that
                     MethodReference builderFactoryMethod = ObjectFactoryMethodResolver.getBuilderFactoryMethod(
                         targetType,
@@ -441,15 +477,30 @@ public class PropertyMapping extends ModelElement {
                     }
 
                 }
+                boolean includeSourceNullCheck = !rhs.isSourceReferenceParameter();
+                if ( includeSourceNullCheck ) {
+                    // JSpecify: source @NonNull means no null check needed
+                    NullabilityResolver.Nullability sourceNullability = getSourceJSpecifyNullability();
+                    if ( sourceNullability == NullabilityResolver.Nullability.NON_NULL ) {
+                        includeSourceNullCheck = false;
+                    }
+                }
+                if ( !includeSourceNullCheck ) {
+                    // solution for #834 introduced a local var and null check for nested properties always.
+                    // however, a local var is not needed if there's no need to check for null.
+                    rhs.setSourceLocalVarName( null );
+                }
+                reportErrorWhenSetToDefaultCannotConstructTarget( targetType, factory );
                 return new UpdateWrapper(
                     rhs,
                     method.getThrownTypes(),
                     factory,
                     isFieldAssignment(),
                     targetType,
-                    !rhs.isSourceReferenceParameter(),
+                    includeSourceNullCheck,
                     nvpms == SET_TO_NULL && !targetType.isPrimitive(),
-                    nvpms == SET_TO_DEFAULT
+                    nvpms == SET_TO_DEFAULT,
+                    hasTwoOrMoreSettersWithName()
                 );
             }
             else {
@@ -460,13 +511,52 @@ public class PropertyMapping extends ModelElement {
                     // however, a local var is not needed if there's no need to check for null.
                     rhs.setSourceLocalVarName( null );
                 }
+                reportErrorWhenSetToDefaultCannotConstructTarget( targetType, null );
                 return new SetterWrapper(
                     rhs,
                     method.getThrownTypes(),
                     isFieldAssignment(),
                     includeSourceNullCheck,
                     includeSourceNullCheck && nvpms == SET_TO_NULL && !targetType.isPrimitive(),
-                    nvpms == SET_TO_DEFAULT );
+                    nvpms == SET_TO_DEFAULT,
+                    hasTwoOrMoreSettersWithName(),
+                    targetType
+                );
+            }
+        }
+
+        /**
+         * For {@code NullValuePropertyMappingStrategy.SET_TO_DEFAULT} the target property is reset to a new
+         * default instance when the source is {@code null}. When that default instance is constructed via a
+         * parameterless constructor ({@code new Target()}) and the target type does not provide one, MapStruct
+         * would generate uncompilable code such as {@code target.setLocalDate( new LocalDate() )}. Report a
+         * compilation error in that case instead.
+         *
+         * @param targetType the type of the target property
+         * @param factory the factory used to construct the default instance, or {@code null} if none is used
+         */
+        private void reportErrorWhenSetToDefaultCannotConstructTarget(Type targetType, Assignment factory) {
+            if ( nvpms != SET_TO_DEFAULT || factory != null ) {
+                // the default instance is either not created or created through a factory / builder method
+                return;
+            }
+
+            Type typeToConstruct = targetType.isOptionalType() ? targetType.getOptionalBaseType() : targetType;
+            if ( typeToConstruct.getImplementationType() != null
+                || typeToConstruct.isArrayType()
+                || typeToConstruct.isOptionalType()
+                || typeToConstruct.getSensibleDefault() != null ) {
+                // these are initialized without invoking a parameterless constructor on the target type
+                return;
+            }
+
+            if ( !typeToConstruct.hasAccessibleParameterlessConstructor() ) {
+                ctx.getMessager().printMessage(
+                    method.getExecutable(),
+                    positionHint,
+                    Message.PROPERTYMAPPING_NO_ACCESSIBLE_PARAMETERLESS_CONSTRUCTOR,
+                    typeToConstruct.describe()
+                );
             }
         }
 
@@ -485,9 +575,14 @@ public class PropertyMapping extends ModelElement {
                 return false;
             }
 
-            if ( nvcs == ALWAYS ) {
-                // NullValueCheckStrategy is ALWAYS -> do a null check
-                return true;
+            // JSpecify: source @NonNull means the value is guaranteed non-null, skip all checks
+            NullabilityResolver.Nullability sourceNullability = getSourceJSpecifyNullability();
+            if ( sourceNullability == NullabilityResolver.Nullability.NON_NULL ) {
+                ctx.getMessager().note( 2,
+                    Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE,
+                    targetPropertyName
+                );
+                return false;
             }
 
             if ( rhs.getSourcePresenceCheckerReference() != null ) {
@@ -510,12 +605,98 @@ public class PropertyMapping extends ModelElement {
                 return true;
             }
 
-            if ( defaultValue != null || defaultJavaExpression != null ) {
+            if ( hasDefaultValueOrDefaultExpression() ) {
                 // If there is default value defined then a check is needed
                 return true;
             }
 
+            // JSpecify annotations take precedence over NullValueCheckStrategy
+            NullabilityResolver resolver = ctx.getNullabilityResolver();
+            NullabilityResolver.Nullability targetNullability = resolver.getSetterNullability(
+                targetWriteAccessor.getElement(), this::targetDeclaringTypeIsNullMarked
+            );
+            Boolean jspecifyDecision = resolver.requiresNullCheck( sourceNullability, targetNullability );
+            if ( jspecifyDecision != null ) {
+                ctx.getMessager().note( 2,
+                    jspecifyDecision
+                        ? Message.PROPERTYMAPPING_JSPECIFY_ADD_NULL_CHECK
+                        : Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK,
+                    targetPropertyName,
+                    sourceNullability,
+                    targetNullability
+                );
+                return jspecifyDecision;
+            }
+
+            if ( nvcs == ALWAYS ) {
+                // NullValueCheckStrategy is ALWAYS -> do a null check
+                return true;
+            }
+
             return false;
+        }
+
+        private NullabilityResolver.Nullability getSourceJSpecifyNullability() {
+            if ( sourceReference == null ) {
+                return NullabilityResolver.Nullability.UNKNOWN;
+            }
+            List<PropertyEntry> entries = sourceReference.getPropertyEntries();
+            if ( !entries.isEmpty() ) {
+                // A source chain can only be treated as @NonNull when every accessor along the
+                // chain is @NonNull. If any intermediate accessor is @Nullable, the chain may
+                // yield null even when the deepest accessor is @NonNull.
+                Type enclosingType = sourceReference.getParameter().getType();
+                NullabilityResolver.Nullability chain = NullabilityResolver.Nullability.NON_NULL;
+                for ( PropertyEntry entry : entries ) {
+                    if ( entry.getReadAccessor() == null ) {
+                        return NullabilityResolver.Nullability.UNKNOWN;
+                    }
+                    NullabilityResolver.Nullability current = ctx.getNullabilityResolver().getNullability(
+                        entry.getReadAccessor().getElement(), enclosingType::isNullMarked
+                    );
+                    if ( current == NullabilityResolver.Nullability.NULLABLE ) {
+                        return NullabilityResolver.Nullability.NULLABLE;
+                    }
+                    if ( current == NullabilityResolver.Nullability.UNKNOWN ) {
+                        chain = NullabilityResolver.Nullability.UNKNOWN;
+                    }
+                    enclosingType = entry.getType();
+                }
+                return chain;
+            }
+            // Direct parameter mapping: no property entries, the source is the parameter itself.
+            // Use the mapper type for @NullMarked scope resolution since the parameter is declared there.
+            Parameter parameter = sourceReference.getParameter();
+            if ( parameter != null && parameter.getElement() != null ) {
+                return ctx.getNullabilityInMapperScope( parameter.getElement() );
+            }
+            return NullabilityResolver.Nullability.UNKNOWN;
+        }
+
+        /**
+         * Resolves whether the type that declares the target write accessor (i.e. the bean that
+         * owns the setter or field) is in a JSpecify {@code @NullMarked} scope. This is the correct
+         * scope for deciding whether an unannotated setter parameter or field should be treated as
+         * {@code @NonNull} — walking from the property value type (e.g. {@code String}) does not
+         * reach the bean's declaration.
+         */
+        private boolean targetDeclaringTypeIsNullMarked() {
+            Element targetElement = targetWriteAccessor.getElement();
+            if ( targetElement == null ) {
+                return false;
+            }
+            Element declaring = targetElement.getEnclosingElement();
+            while ( declaring != null && !( declaring instanceof TypeElement ) ) {
+                declaring = declaring.getEnclosingElement();
+            }
+            if ( declaring == null ) {
+                return false;
+            }
+            return ctx.getTypeFactory().getType( declaring.asType() ).isNullMarked();
+        }
+
+        private boolean hasDefaultValueOrDefaultExpression() {
+            return defaultValue != null || defaultJavaExpression != null;
         }
 
         private Assignment assignToPlainViaAdder( Assignment rightHandSide) {
@@ -523,7 +704,7 @@ public class PropertyMapping extends ModelElement {
             Assignment result = rightHandSide;
 
             String adderIteratorName = sourcePropertyName == null ? targetPropertyName : sourcePropertyName;
-            if ( result.getSourceType().isCollectionType() ) {
+            if ( result.getSourceType().isIterableType() ) {
                 result = new AdderWrapper( result, method.getThrownTypes(), isFieldAssignment(), adderIteratorName );
             }
             else if ( result.getSourceType().isStreamType() ) {
@@ -538,10 +719,31 @@ public class PropertyMapping extends ModelElement {
                     isFieldAssignment(),
                     true,
                     nvpms == SET_TO_NULL && !targetType.isPrimitive(),
-                    nvpms == SET_TO_DEFAULT
+                    nvpms == SET_TO_DEFAULT,
+                    hasTwoOrMoreSettersWithName(),
+                    targetType
                 );
             }
             return result;
+        }
+
+        private boolean hasTwoOrMoreSettersWithName() {
+            Element enclosingClass = this.targetWriteAccessor.getElement().getEnclosingElement();
+            if ( enclosingClass == null || !( ElementKind.CLASS.equals( enclosingClass.getKind() )
+                    || ElementKind.INTERFACE.equals( enclosingClass.getKind() ) ) ) {
+                return false;
+            }
+            String simpleWriteAccessorName = this.targetWriteAccessor.getSimpleName();
+            boolean firstMatchFound = false;
+            for ( Accessor setter : ctx.getTypeFactory().getType( enclosingClass.asType() ).getSetters() ) {
+                if ( setter.getSimpleName().equals( simpleWriteAccessorName ) ) {
+                    if ( firstMatchFound ) {
+                        return true;
+                    }
+                    firstMatchFound = true;
+                }
+            }
+            return false;
         }
 
         private Assignment assignToCollection(Type targetType, AccessorType targetAccessorType,
@@ -555,8 +757,9 @@ public class PropertyMapping extends ModelElement {
                 .targetAccessorType( targetAccessorType )
                 .rightHandSide( rightHandSide )
                 .assignment( rhs )
-                .nullValueCheckStrategy( nvcs )
+                .nullValueCheckStrategy( hasDefaultValueOrDefaultExpression() ? ALWAYS : nvcs )
                 .nullValuePropertyMappingStrategy( nvpms )
+                .sourceJSpecifyNullability( getSourceJSpecifyNullability() )
                 .build();
         }
 
@@ -695,15 +898,26 @@ public class PropertyMapping extends ModelElement {
 
                     String variableName = sourceParam.getName() + "."
                         + propertyEntry.getReadAccessor().getReadValueSource();
-                    for (int i = 1; i < sourceReference.getPropertyEntries().size(); i++) {
+                    Type variableType = propertyEntry.getType();
+                    for ( int i = 1; i < sourceReference.getPropertyEntries().size(); i++ ) {
                         PropertyEntry entry = sourceReference.getPropertyEntries().get( i );
-                        if (entry.getPresenceChecker() != null && entry.getReadAccessor() != null) {
-                            presenceChecks.add( new NullPresenceCheck( variableName ) );
+                        if ( entry.getPresenceChecker() != null && entry.getReadAccessor() != null ) {
+                            if ( variableType.isOptionalType() ) {
+                                presenceChecks.add( new OptionalPresenceCheck(
+                                    variableName,
+                                    ctx.getVersionInformation()
+                                ) );
+                                variableName = variableName + ".get()";
+                            }
+                            else {
+                                presenceChecks.add( new NullPresenceCheck( variableName ) );
+                            }
                             presenceChecks.add( new SuffixPresenceCheck(
                                 variableName,
                                 entry.getPresenceChecker().getPresenceCheckSuffix()
                             ) );
                             variableName = variableName + "." + entry.getReadAccessor().getSimpleName() + "()";
+                            variableType = entry.getType();
                         }
                         else {
                             break;
@@ -735,11 +949,11 @@ public class PropertyMapping extends ModelElement {
 
         private Assignment forgeWithElementMapping(Type sourceType, Type targetType, SourceRHS source,
             ContainerMappingMethodBuilder<?, ? extends ContainerMappingMethod> builder) {
-
+            sourceType = sourceType.replaceSuperBoundWith( targetType, ctx.getTypeFactory().getType( Object.class ) );
             targetType = targetType.withoutBounds();
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "[]" );
 
-            ContainerMappingMethod iterableMappingMethod = builder
+            Supplier<MappingMethod> mappingMethodCreator = () -> builder
                 .mappingContext( ctx )
                 .method( methodRef )
                 .selectionParameters( selectionParameters )
@@ -747,7 +961,7 @@ public class PropertyMapping extends ModelElement {
                 .positionHint( positionHint )
                 .build();
 
-            return createForgedAssignment( source, methodRef, iterableMappingMethod );
+            return getOrCreateForgedAssignment( source, methodRef, mappingMethodCreator );
         }
 
         private ForgedMethod prepareForgedMethod(Type sourceType, Type targetType, SourceRHS source, String suffix) {
@@ -765,12 +979,12 @@ public class PropertyMapping extends ModelElement {
             ForgedMethod methodRef = prepareForgedMethod( sourceType, targetType, source, "{}" );
 
             MapMappingMethod.Builder builder = new MapMappingMethod.Builder();
-            MapMappingMethod mapMappingMethod = builder
+            Supplier<MappingMethod> mapMappingMethodCreator = () -> builder
                 .mappingContext( ctx )
                 .method( methodRef )
                 .build();
 
-            return createForgedAssignment( source, methodRef, mapMappingMethod );
+            return getOrCreateForgedAssignment( source, methodRef, mapMappingMethodCreator );
         }
 
         private Assignment forgeMapping(SourceRHS sourceRHS) {
@@ -805,7 +1019,7 @@ public class PropertyMapping extends ModelElement {
             // because we are forging a Mapping for a method with multiple source parameters.
             // If the target type is enum, then we can't create an update method
             if ( !targetType.isEnumType() && ( method.isUpdateMethod() || forceUpdateMethod )
-                && targetWriteAccessorType != AccessorType.ADDER) {
+                && targetWriteAccessorType != AccessorType.ADDER ) {
                 parameters.add( Parameter.forForgedMappingTarget( targetType ) );
                 returnType = ctx.getTypeFactory().createVoidType();
             }
@@ -821,7 +1035,7 @@ public class PropertyMapping extends ModelElement {
                 forgeMethodWithMappingReferences,
                 forgedNamedBased
             );
-            return createForgedAssignment( sourceRHS, targetBuilderType, forgedMethod );
+            return createForgedAssignment( sourceRHS, forgedMethod );
         }
 
         private ForgedMethodHistory getForgedMethodHistory(SourceRHS sourceRHS) {
@@ -971,6 +1185,7 @@ public class PropertyMapping extends ModelElement {
                             targetType,
                             false,
                             false,
+                            false,
                             false );
                     }
                     else {
@@ -1094,16 +1309,17 @@ public class PropertyMapping extends ModelElement {
         ReadAccessor targetReadAccessorProvider,
         Type targetType, Assignment propertyAssignment,
         Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
-        this( name, null, targetWriteAccessorName, targetReadAccessorProvider,
+        this( name, null, null, targetWriteAccessorName, targetReadAccessorProvider,
             targetType, propertyAssignment, dependsOn, defaultValueAssignment,
             constructorMapping
         );
     }
 
-    private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
-        ReadAccessor targetReadAccessorProvider, Type targetType,
-        Assignment assignment,
-        Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
+    private PropertyMapping(String sourcePropertyName, String name, String sourceBeanName,
+                            String targetWriteAccessorName, ReadAccessor targetReadAccessorProvider, Type targetType,
+                            Assignment assignment,
+                            Set<String> dependsOn, Assignment defaultValueAssignment, boolean constructorMapping) {
+        this.sourcePropertyName = sourcePropertyName;
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -1111,7 +1327,7 @@ public class PropertyMapping extends ModelElement {
         this.targetType = targetType;
 
         this.assignment = assignment;
-        this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptySet();
+        this.dependsOn = dependsOn != null ? dependsOn : Collections.emptySet();
         this.defaultValueAssignment = defaultValueAssignment;
         this.constructorMapping = constructorMapping;
     }
@@ -1121,6 +1337,10 @@ public class PropertyMapping extends ModelElement {
      */
     public String getName() {
         return name;
+    }
+
+    public String getSourcePropertyName() {
+        return sourcePropertyName;
     }
 
     public String getSourceBeanName() {

@@ -98,7 +98,7 @@ public @interface EnumMapping {
      * <ul>
      *     <li>{@link MappingConstants#SUFFIX_TRANSFORMATION} - applies the given {@link #configuration()} as a
      *     suffix to the source enum</li>
-     *     <li>{@link MappingConstants#STRIP_SUFFIX_TRANSFORMATION} - strips the the given {@link #configuration()}
+     *     <li>{@link MappingConstants#STRIP_SUFFIX_TRANSFORMATION} - strips the given {@link #configuration()}
      *     from the end of the source enum</li>
      *     <li>{@link MappingConstants#PREFIX_TRANSFORMATION} - applies the given {@link #configuration()} as a
      *     prefix to the source enum</li>

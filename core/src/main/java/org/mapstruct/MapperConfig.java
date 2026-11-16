@@ -14,6 +14,7 @@ import java.lang.annotation.Target;
 import org.mapstruct.control.MappingControl;
 import org.mapstruct.factory.Mappers;
 
+import static org.mapstruct.ClassAccessibility.DEFAULT;
 import static org.mapstruct.NullValueCheckStrategy.ON_IMPLICIT_CONVERSION;
 import static org.mapstruct.SubclassExhaustiveStrategy.COMPILE_ERROR;
 
@@ -250,6 +251,18 @@ public @interface MapperConfig {
     SubclassExhaustiveStrategy subclassExhaustiveStrategy() default COMPILE_ERROR;
 
     /**
+     * Specifies the exception type to be thrown when a missing subclass implementation is detected
+     * in combination with {@link SubclassMappings}, based on the {@link #subclassExhaustiveStrategy()}.
+     * <p>
+     * This exception will only be thrown when the {@code subclassExhaustiveStrategy} is set to
+     * {@link SubclassExhaustiveStrategy#RUNTIME_EXCEPTION}.
+     *
+     * @return the exception class to throw when missing implementations are found.
+     *         Defaults to {@link IllegalArgumentException}.
+     */
+    Class<? extends Exception> subclassExhaustiveException() default IllegalArgumentException.class;
+
+    /**
      * Determines whether to use field or constructor injection. This is only used on annotated based component models
      * such as CDI, Spring and JSR 330.
      *
@@ -269,7 +282,7 @@ public @interface MapperConfig {
      * Can be overridden by {@link Mapper#disableSubMappingMethodsGeneration()}
      * <p>
      * Note: If you need to use {@code disableSubMappingMethodsGeneration} please contact the MapStruct team at
-     * <a href="http://mapstruct.org">mapstruct.org</a> or
+     * <a href="https://mapstruct.org">mapstruct.org</a> or
      * <a href="https://github.com/mapstruct/mapstruct">github.com/mapstruct/mapstruct</a> to share what problem you
      * are facing with the automatic sub-mapping generation.
      *
@@ -345,5 +358,14 @@ public @interface MapperConfig {
      * @since 1.5
      */
     boolean suppressTimestampInGenerated() default false;
+
+    /**
+     * Determines the {@link ClassAccessibility} ({@code public} or package-private) for the generated Mapper
+     * implementation. Default is to mirror the interface or abstract class annotated by {@code Mapper}.
+     *
+     * @return The {@link ClassAccessibility} ({@code public} or package-private) for the generated Mapper
+     *         implementation
+     */
+    ClassAccessibility accessibility() default DEFAULT;
 }
 

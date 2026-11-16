@@ -5,6 +5,8 @@
  */
 package org.mapstruct.ap.internal.model.common;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,10 +17,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -28,6 +35,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.IntersectionType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
@@ -36,23 +44,34 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleTypeVisitor8;
 
+import kotlin.Metadata;
+import kotlin.metadata.Attributes;
+import kotlin.metadata.KmClass;
+import kotlin.metadata.KmConstructor;
+import kotlin.metadata.Modality;
+import kotlin.metadata.jvm.JvmExtensionsKt;
+import kotlin.metadata.jvm.JvmMethodSignature;
+import kotlin.metadata.jvm.KotlinClassMetadata;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.util.AccessorNamingUtils;
 import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.Filters;
+import org.mapstruct.ap.internal.util.JSpecifyConstants;
 import org.mapstruct.ap.internal.util.JavaStreamConstants;
 import org.mapstruct.ap.internal.util.NativeTypes;
 import org.mapstruct.ap.internal.util.Nouns;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
-import org.mapstruct.ap.internal.util.accessor.AccessorType;
 import org.mapstruct.ap.internal.util.accessor.AccessorCandidates;
-import org.mapstruct.ap.internal.util.accessor.FieldElementAccessor;
+import org.mapstruct.ap.internal.util.accessor.AccessorType;
+import org.mapstruct.ap.internal.util.accessor.ElementAccessor;
 import org.mapstruct.ap.internal.util.accessor.MapValueAccessor;
 import org.mapstruct.ap.internal.util.accessor.PresenceCheckAccessor;
 import org.mapstruct.ap.internal.util.accessor.ReadAccessor;
+import org.mapstruct.ap.internal.util.kotlin.KotlinMetadata;
 
+import static java.util.Collections.emptyList;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
@@ -67,6 +86,29 @@ import static org.mapstruct.ap.internal.util.Collections.first;
  * @author Filip Hrisafov
  */
 public class Type extends ModelElement implements Comparable<Type> {
+    private static final Method SEALED_PERMITTED_SUBCLASSES_METHOD;
+    private static final boolean KOTLIN_METADATA_JVM_PRESENT;
+
+    static {
+        Method permittedSubclassesMethod;
+        try {
+            permittedSubclassesMethod = TypeElement.class.getMethod( "getPermittedSubclasses" );
+        }
+        catch ( NoSuchMethodException e ) {
+            permittedSubclassesMethod = null;
+        }
+        SEALED_PERMITTED_SUBCLASSES_METHOD = permittedSubclassesMethod;
+
+        boolean kotlinMetadataJvmPresent;
+        try {
+            Class.forName( "kotlin.metadata.jvm.KotlinClassMetadata", false, ModelElement.class.getClassLoader() );
+            kotlinMetadataJvmPresent = true;
+        }
+        catch ( ClassNotFoundException e ) {
+            kotlinMetadataJvmPresent = false;
+        }
+        KOTLIN_METADATA_JVM_PRESENT = kotlinMetadataJvmPresent;
+    }
 
     private final TypeUtils typeUtils;
     private final ElementUtils elementUtils;
@@ -115,10 +157,14 @@ public class Type extends ModelElement implements Comparable<Type> {
     private List<Accessor> alternativeTargetAccessors = null;
 
     private Type boundingBase = null;
+    private List<Type> boundTypes = null;
 
     private Type boxedEquivalent = null;
 
     private Boolean hasAccessibleConstructor;
+    private Boolean isNullMarked;
+    private KotlinMetadata kotlinMetadata;
+    private boolean kotlinMetadataInitialized;
 
     private final Filters filters;
 
@@ -243,7 +289,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             return name;
         }
 
-        if ( isTopLevelTypeToBeImported() && nameWithTopLevelTypeName != null) {
+        if ( isTopLevelTypeToBeImported() && nameWithTopLevelTypeName != null ) {
             return nameWithTopLevelTypeName;
         }
 
@@ -280,6 +326,53 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isString() {
         return String.class.getName().equals( getFullyQualifiedName() );
+    }
+
+    /**
+     * Whether this type is within a JSpecify {@code @NullMarked} scope. Walks the enclosing-element
+     * chain (this type, outer classes, package) and returns at the first {@code @NullMarked} or
+     * {@code @NullUnmarked} encountered &mdash; the closest annotation wins. Module-level annotations
+     * are only reached when the compiler populates {@code PackageElement.getEnclosingElement()}
+     * with a {@link javax.lang.model.element.ModuleElement} (JPMS only).
+     * <p>
+     * The result is memoized on this {@code Type} instance. {@link TypeFactory#getType} does not
+     * intern {@code Type} instances, so callers that invoke this repeatedly should cache the
+     * {@code Type} reference or the result.
+     *
+     * @return {@code true} if the closest enclosing annotation is {@code @NullMarked};
+     * {@code false} if it is {@code @NullUnmarked} or if no such annotation was found
+     */
+    public boolean isNullMarked() {
+        if ( isNullMarked == null ) {
+            isNullMarked = resolveNullMarked();
+        }
+        return isNullMarked;
+    }
+
+    private boolean resolveNullMarked() {
+        if ( typeElement == null ) {
+            return false;
+        }
+        Element current = typeElement;
+        while ( current != null ) {
+            for ( AnnotationMirror mirror : current.getAnnotationMirrors() ) {
+                Element annotationElement = mirror.getAnnotationType().asElement();
+                if ( !( annotationElement instanceof TypeElement ) ) {
+                    // Defensive: unresolved annotations (e.g. ErrorType during incremental
+                    // builds) can produce a non-TypeElement. Skip instead of crashing.
+                    continue;
+                }
+                String fqn = ( (TypeElement) annotationElement ).getQualifiedName().toString();
+                if ( JSpecifyConstants.NULL_MARKED_FQN.equals( fqn ) ) {
+                    return true;
+                }
+                if ( JSpecifyConstants.NULL_UNMARKED_FQN.equals( fqn ) ) {
+                    return false;
+                }
+            }
+            current = current.getEnclosingElement();
+        }
+        return false;
     }
 
     /**
@@ -351,8 +444,42 @@ public class Type extends ModelElement implements Comparable<Type> {
         return componentType != null;
     }
 
+    private boolean isType(Class<?> type) {
+        return type.getName().equals( getFullyQualifiedName() );
+    }
+
+    public boolean isOptionalType() {
+        return isType( Optional.class ) || isType( OptionalInt.class ) || isType( OptionalDouble.class ) ||
+            isType( OptionalLong.class );
+    }
+
+    public Type getOptionalBaseType() {
+        if ( isType( Optional.class ) ) {
+            return getTypeParameters().get( 0 );
+        }
+
+        if ( isType( OptionalInt.class ) ) {
+            return typeFactory.getType( int.class );
+        }
+
+        if ( isType( OptionalDouble.class ) ) {
+            return typeFactory.getType( double.class );
+        }
+
+        if ( isType( OptionalLong.class ) ) {
+            return typeFactory.getType( long.class );
+        }
+
+        throw new IllegalStateException( "getOptionalBaseType should only be called for Optional types." );
+
+    }
+
     public boolean isTypeVar() {
         return (typeMirror.getKind() == TypeKind.TYPEVAR);
+    }
+
+    public boolean isIntersection() {
+        return typeMirror.getKind() == TypeKind.INTERSECTION;
     }
 
     public boolean isJavaLangType() {
@@ -375,7 +502,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     /**
      * A wild card type can have two types of bounds (mutual exclusive): extends and super.
      *
-     * @return true if the bound has a wild card super bound (e.g. ? super Number)
+     * @return true if the bound has a wild card super bound (e.g. {@code ? super Number})
      */
     public boolean hasSuperBound() {
         boolean result = false;
@@ -389,7 +516,7 @@ public class Type extends ModelElement implements Comparable<Type> {
     /**
      * A wild card type can have two types of bounds (mutual exclusive): extends and super.
      *
-     * @return true if the bound has a wild card super bound (e.g. ? extends Number)
+     * @return true if the bound has a wild card extends bound (e.g. {@code ? extends Number})
      */
     public boolean hasExtendsBound() {
         boolean result = false;
@@ -542,6 +669,80 @@ public class Type extends ModelElement implements Comparable<Type> {
         );
     }
 
+    public Type replaceSuperBoundWith( Type compare, Type replacement ) {
+        if ( typeParameters.isEmpty() ) {
+            return this;
+        }
+        List<Type> targetTypeParameters = compare.getTypeParameters();
+        if ( targetTypeParameters.size() != typeParameters.size() ) {
+            return this;
+        }
+        TypeMirror replacementMirror = replacement.getTypeMirror();
+        boolean noChange = true;
+        List<Type> bounds = new ArrayList<>( typeParameters.size() );
+        TypeMirror[] mirrors = new TypeMirror[ typeParameters.size() ];
+        for ( int x = 0; x < typeParameters.size(); x++ ) {
+            Type type = typeParameters.get( x );
+            if ( !type.hasSuperBound() || type.isRawAssignableTo( targetTypeParameters.get( x ) ) ) {
+                bounds.add( type );
+                mirrors[ x ] = type.getTypeMirror();
+            }
+            else {
+                bounds.add( replacement );
+                mirrors[x] = replacementMirror;
+                noChange = false;
+            }
+        }
+
+        if ( noChange ) {
+            return this;
+        }
+
+        TypeElement typeElementWithoutBounds;
+        Type componentTypeWithoutBounds;
+        TypeMirror typeMirrorWithoutBounds;
+        if ( this.componentType != null ) {
+            typeElementWithoutBounds = null;
+            componentTypeWithoutBounds = this.componentType.replaceSuperBoundWith( compare, replacement );
+            typeMirrorWithoutBounds = typeUtils.getArrayType( componentTypeWithoutBounds.getTypeMirror() );
+        }
+        else {
+            DeclaredType declaredType = typeUtils.getDeclaredType(
+                typeElement,
+                mirrors
+            );
+            typeMirrorWithoutBounds = declaredType;
+            typeElementWithoutBounds = (TypeElement) declaredType.asElement();
+            componentTypeWithoutBounds = null;
+        }
+
+        return new Type(
+                typeUtils,
+                elementUtils,
+                typeFactory,
+                accessorNaming,
+                typeMirrorWithoutBounds,
+                typeElementWithoutBounds,
+                bounds,
+                implementationType,
+                componentTypeWithoutBounds,
+                packageName,
+                name,
+                qualifiedName,
+                isInterface,
+                isEnumType,
+                isIterableType,
+                isCollectionType,
+                isMapType,
+                isStream,
+                toBeImportedTypes,
+                notToBeImportedTypes,
+                isToBeImported,
+                isLiteral,
+                loggingVerbose
+        );
+    }
+
     public Type withoutBounds() {
         if ( typeParameters.isEmpty() ) {
             return this;
@@ -554,20 +755,34 @@ public class Type extends ModelElement implements Comparable<Type> {
             mirrors.add( typeParameter.getTypeBound().getTypeMirror() );
         }
 
-        DeclaredType declaredType = typeUtils.getDeclaredType(
-            typeElement,
-            mirrors.toArray( new TypeMirror[] {} )
-        );
+        TypeElement typeElementWithoutBounds;
+        Type componentTypeWithoutBounds;
+        TypeMirror typeMirrorWithoutBounds;
+        if ( this.componentType != null ) {
+            typeElementWithoutBounds = null;
+            componentTypeWithoutBounds = this.componentType.withoutBounds();
+            typeMirrorWithoutBounds = typeUtils.getArrayType( componentTypeWithoutBounds.getTypeMirror() );
+        }
+        else {
+            DeclaredType declaredType = typeUtils.getDeclaredType(
+                typeElement,
+                mirrors.toArray( new TypeMirror[] {} )
+            );
+            typeMirrorWithoutBounds = declaredType;
+            typeElementWithoutBounds = (TypeElement) declaredType.asElement();
+            componentTypeWithoutBounds = null;
+        }
+
         return new Type(
             typeUtils,
             elementUtils,
             typeFactory,
             accessorNaming,
-            declaredType,
-            (TypeElement) declaredType.asElement(),
+            typeMirrorWithoutBounds,
+            typeElementWithoutBounds,
             bounds,
             implementationType,
-            componentType,
+            componentTypeWithoutBounds,
             packageName,
             name,
             qualifiedName,
@@ -585,6 +800,21 @@ public class Type extends ModelElement implements Comparable<Type> {
         );
     }
 
+    private Type replaceGeneric(Type oldGenericType, Type newType) {
+        if ( !typeParameters.contains( oldGenericType ) || newType == null || oldGenericType.equals( newType ) ) {
+            return this;
+        }
+        newType = newType.getBoxedEquivalent();
+        TypeMirror[] replacedTypeMirrors = new TypeMirror[typeParameters.size()];
+        for ( int i = 0; i < typeParameters.size(); i++ ) {
+            Type typeParameter = typeParameters.get( i );
+            replacedTypeMirrors[i] =
+                typeParameter.equals( oldGenericType ) ? newType.typeMirror : typeParameter.typeMirror;
+        }
+
+        return typeFactory.getType( typeUtils.getDeclaredType( typeElement, replacedTypeMirrors ) );
+    }
+
     /**
      * Whether this type is assignable to the given other type, considering the "extends / upper bounds"
      * as well.
@@ -594,11 +824,14 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return {@code true} if and only if this type is assignable to the given other type.
      */
     public boolean isAssignableTo(Type other) {
-        if ( TypeKind.WILDCARD == typeMirror.getKind() ) {
-            return typeUtils.contains( typeMirror, other.typeMirror );
+        TypeMirror otherMirror = other.typeMirror;
+        if ( otherMirror.getKind() == TypeKind.WILDCARD ) {
+            otherMirror = typeUtils.erasure( other.typeMirror );
         }
-
-        return typeUtils.isAssignable( typeMirror, other.typeMirror );
+        if ( TypeKind.WILDCARD == typeMirror.getKind() ) {
+            return typeUtils.contains( typeMirror, otherMirror );
+        }
+        return typeUtils.isAssignable( typeMirror, otherMirror );
     }
 
     /**
@@ -632,8 +865,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
     }
 
-    public ReadAccessor getReadAccessor(String propertyName) {
-        if ( hasStringMapSignature() ) {
+    public ReadAccessor getReadAccessor(String propertyName, boolean allowedMapToBean) {
+        if ( allowedMapToBean && hasStringMapSignature() ) {
             ExecutableElement getMethod = getAllMethods()
                 .stream()
                 .filter( m -> m.getSimpleName().contentEquals( "get" ) )
@@ -664,10 +897,9 @@ public class Type extends ModelElement implements Comparable<Type> {
      */
     public Map<String, ReadAccessor> getPropertyReadAccessors() {
         if ( readAccessors == null ) {
-            Map<String, ReadAccessor> modifiableGetters = new LinkedHashMap<>();
 
             Map<String, ReadAccessor> recordAccessors = filters.recordAccessorsIn( getRecordComponents() );
-            modifiableGetters.putAll( recordAccessors );
+            Map<String, ReadAccessor> modifiableGetters = new LinkedHashMap<>(recordAccessors);
 
             List<ReadAccessor> getterList = filters.getterMethodsIn( getAllMethods() );
             for ( ReadAccessor getter : getterList ) {
@@ -746,11 +978,15 @@ public class Type extends ModelElement implements Comparable<Type> {
      * @return an unmodifiable map of all write accessors indexed by property name
      */
     public AccessorCandidates getPropertyWriteAccessors( CollectionMappingStrategyGem cmStrategy ) {
+        if ( isRecord() ) {
+            // Records do not have setters, so we return an empty map
+            return new AccessorCandidates( typeUtils );
+        }
         // collect all candidate target accessors
         List<Accessor> candidates = new ArrayList<>( getSetters() );
         candidates.addAll( getAlternativeTargetAccessors() );
 
-        AccessorCandidates result = new AccessorCandidates(typeUtils);
+        AccessorCandidates result = new AccessorCandidates( typeUtils );
 
         for ( Accessor candidate : candidates ) {
             String targetPropertyName = getPropertyName( candidate );
@@ -783,6 +1019,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                     // an adder has been found (according strategy) so overrule current choice.
                     candidate = adderMethod;
                 }
+
             }
             else if ( candidate.getAccessorType() == AccessorType.FIELD  && ( Executables.isFinal( candidate ) ||
                 result.containsKey( targetPropertyName ) ) ) {
@@ -790,10 +1027,19 @@ public class Type extends ModelElement implements Comparable<Type> {
                 continue;
             }
 
-            result.put( targetPropertyName, candidate );
-            if ( preferredType != null ) {
-                result.setPreferedType( targetPropertyName, preferredType.typeMirror );
+            if ( candidate.getAccessorType() == AccessorType.GETTER ) {
+                // When the candidate is a getter then it can't be used in the following cases:
+                // 1. The collection mapping strategy is target immutable
+                // 2. The target type is a stream (streams are immutable)
+                if ( cmStrategy == CollectionMappingStrategyGem.TARGET_IMMUTABLE ||
+                    targetType != null && targetType.isStreamType() ) {
+                    continue;
+                }
             }
+
+            boolean isDefault = preferredType == null || ( targetType != null
+                && typeUtils.isAssignable( preferredType.getTypeMirror(), targetType.getTypeMirror() ) );
+            result.put( targetPropertyName, candidate, isDefault );
         }
 
         return result;
@@ -930,9 +1176,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         List<Accessor> adderList = getAdders();
         List<Accessor> candidateList = new ArrayList<>();
         for ( Accessor adder : adderList ) {
-            ExecutableElement executable = (ExecutableElement) adder.getElement();
-            VariableElement arg = executable.getParameters().get( 0 );
-            if ( typeUtils.isSameType( boxed( arg.asType() ), boxed( typeArg ) ) ) {
+            TypeMirror adderParameterType = determineTargetType( adder ).getTypeMirror();
+            if ( typeUtils.isSameType( boxed( adderParameterType ), boxed( typeArg ) ) ) {
                 candidateList.add( adder );
             }
         }
@@ -953,7 +1198,7 @@ public class Type extends ModelElement implements Comparable<Type> {
      *
      * @return an unmodifiable list of all setters
      */
-    private List<Accessor> getSetters() {
+    public List<Accessor> getSetters() {
         if ( setters == null ) {
             setters = Collections.unmodifiableList( filters.setterMethodsIn( getAllMethods() ) );
         }
@@ -999,7 +1244,7 @@ public class Type extends ModelElement implements Comparable<Type> {
             List<Accessor> setterMethods = getSetters();
             List<Accessor> readAccessors = new ArrayList<>( getPropertyReadAccessors().values() );
             // All the fields are also alternative accessors
-            readAccessors.addAll( filters.fieldsIn( getAllFields(), FieldElementAccessor::new ) );
+            readAccessors.addAll( filters.fieldsIn( getAllFields(), ElementAccessor::new ) );
 
             // there could be a read accessor (field or  method) for a list/map that is not present as setter.
             // an accessor could substitute the setter in that case and act as setter.
@@ -1118,6 +1363,10 @@ public class Type extends ModelElement implements Comparable<Type> {
      *         FTL.
      */
     public String getNull() {
+        if ( isOptionalType() ) {
+            return createReferenceName() + ".empty()";
+        }
+
         if ( !isPrimitive() || isArrayType() ) {
             return "null";
         }
@@ -1191,8 +1440,8 @@ public class Type extends ModelElement implements Comparable<Type> {
         Type other = (Type) obj;
 
         if ( this.isWildCardBoundByTypeVar() && other.isWildCardBoundByTypeVar() ) {
-            return  ( this.hasExtendsBound() == this.hasExtendsBound()
-                || this.hasSuperBound() == this.hasSuperBound() )
+            return  ( this.hasExtendsBound() == other.hasExtendsBound()
+                || this.hasSuperBound() == other.hasSuperBound() )
                 && typeUtils.isSameType( getTypeBound().getTypeMirror(), other.getTypeBound().getTypeMirror() );
         }
         else {
@@ -1219,7 +1468,7 @@ public class Type extends ModelElement implements Comparable<Type> {
         }
         else {
             // name allows for inner classes
-            String name = getFullyQualifiedName().replaceFirst( "^" + getPackageName() + ".", "" );
+            String name = getNameKeepingInnerClasses();
             List<Type> typeParams = getTypeParameters();
             if ( typeParams.isEmpty() ) {
                 return name;
@@ -1229,6 +1478,15 @@ public class Type extends ModelElement implements Comparable<Type> {
                 return String.format( "%s<%s>", name, params );
             }
         }
+    }
+
+    private String getNameKeepingInnerClasses() {
+        String packageNamePrefix = getPackageName() + ".";
+        String fullyQualifiedName = getFullyQualifiedName();
+        if ( fullyQualifiedName.startsWith( packageNamePrefix ) ) {
+            return fullyQualifiedName.substring( packageNamePrefix.length() );
+        }
+        return fullyQualifiedName;
     }
 
     /**
@@ -1264,6 +1522,29 @@ public class Type extends ModelElement implements Comparable<Type> {
         return boundingBase;
     }
 
+    public List<Type> getTypeBounds() {
+        if ( this.boundTypes != null ) {
+            return boundTypes;
+        }
+        Type bound = getTypeBound();
+        if ( bound == null ) {
+            this.boundTypes = Collections.emptyList();
+        }
+        else if ( !bound.isIntersection() ) {
+            this.boundTypes = Collections.singletonList( bound );
+        }
+        else {
+            List<? extends TypeMirror> bounds = ( (IntersectionType) bound.typeMirror ).getBounds();
+            this.boundTypes = new ArrayList<>( bounds.size() );
+            for ( TypeMirror mirror : bounds ) {
+                boundTypes.add( typeFactory.getType( mirror ) );
+            }
+        }
+
+        return this.boundTypes;
+
+    }
+
     public boolean hasAccessibleConstructor() {
         if ( hasAccessibleConstructor == null ) {
             hasAccessibleConstructor = false;
@@ -1276,6 +1557,47 @@ public class Type extends ModelElement implements Comparable<Type> {
             }
         }
         return hasAccessibleConstructor;
+    }
+
+    /**
+     * Whether this type can be instantiated through an accessible parameterless constructor, i.e. via
+     * {@code new Type()}. Unlike {@link #hasAccessibleConstructor()} this returns {@code false} for types that
+     * only expose constructors with parameters (e.g. {@code BigDecimal}).
+     *
+     * @return {@code true} if a {@code new Type()} call would compile, {@code false} otherwise
+     */
+    public boolean hasAccessibleParameterlessConstructor() {
+        if ( typeElement == null || isInterface() || isAbstract() || isEnumType() ) {
+            return false;
+        }
+        List<ExecutableElement> constructors = ElementFilter.constructorsIn( typeElement.getEnclosedElements() );
+        if ( constructors.isEmpty() ) {
+            // no declared constructors means the implicit, accessible default constructor is available
+            return true;
+        }
+        for ( ExecutableElement constructor : constructors ) {
+            if ( !constructor.getModifiers().contains( Modifier.PRIVATE ) && constructor.getParameters().isEmpty() ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public KotlinMetadata getKotlinMetadata() {
+        if ( !kotlinMetadataInitialized ) {
+            kotlinMetadataInitialized = true;
+            if ( typeElement != null && KOTLIN_METADATA_JVM_PRESENT ) {
+                Metadata metadataAnnotation = typeElement.getAnnotation( Metadata.class );
+                if ( metadataAnnotation != null ) {
+                    KotlinClassMetadata classMetadata = KotlinClassMetadata.readLenient( metadataAnnotation );
+                    if ( classMetadata instanceof KotlinClassMetadata.Class ) {
+                        kotlinMetadata = new KotlinMetadataImpl( (KotlinClassMetadata.Class) classMetadata );
+                    }
+                }
+            }
+        }
+
+        return kotlinMetadata;
     }
 
     /**
@@ -1328,9 +1650,9 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     /**
      * Steps through the declaredType in order to find a match for this typeVar Type. It aligns with
-     * the provided parameterized type where this typeVar type is used.
-     *
-     * For example:
+     * the provided parameterized type where this typeVar type is used.<br>
+     * <br>
+     * For example:<pre>
      * {@code
      * this: T
      * declaredType: JAXBElement<String>
@@ -1343,12 +1665,13 @@ public class Type extends ModelElement implements Comparable<Type> {
      * parameterizedType: Callable<BigDecimal>
      * return: BigDecimal
      * }
+     * </pre>
      *
      * @param declared the type
      * @param parameterized the parameterized type
      *
-     * @return - the same type when this is not a type var in the broadest sense (T, T[], or ? extends T)
-     *         - the matching parameter in the parameterized type when this is a type var when found
+     * @return - the same type when this is not a type var in the broadest sense (T, T[], or ? extends T)<br>
+     *         - the matching parameter in the parameterized type when this is a type var when found<br>
      *         - null in all other cases
      */
     public ResolvedPair resolveParameterToType(Type declared, Type parameterized) {
@@ -1357,6 +1680,96 @@ public class Type extends ModelElement implements Comparable<Type> {
             return typeVarMatcher.visit( parameterized.getTypeMirror(), declared );
         }
         return new ResolvedPair( this, this );
+    }
+
+    /**
+     * Resolves generic types using the declared and parameterized types as input.<br>
+     * <br>
+     * For example:
+     * <pre>
+     * {@code
+     * this: T
+     * declaredType: JAXBElement<T>
+     * parameterizedType: JAXBElement<Integer>
+     * result: Integer
+     *
+     * this: List<T>
+     * declaredType: JAXBElement<T>
+     * parameterizedType: JAXBElement<Integer>
+     * result: List<Integer>
+     *
+     * this: List<? extends T>
+     * declaredType: JAXBElement<? extends T>
+     * parameterizedType: JAXBElement<BigDecimal>
+     * result: List<BigDecimal>
+     *
+     * this: List<Optional<T>>
+     * declaredType: JAXBElement<T>
+     * parameterizedType: JAXBElement<BigDecimal>
+     * result: List<Optional<BigDecimal>>
+     * }
+     * </pre>
+     * It also works for partial matching.<br>
+     * <br>
+     * For example:
+     * <pre>
+     * {@code
+     * this: Map<K, V>
+     * declaredType: JAXBElement<K>
+     * parameterizedType: JAXBElement<BigDecimal>
+     * result: Map<BigDecimal, V>
+     * }
+     * </pre>
+     * It also works with multiple parameters at both sides.<br>
+     * <br>
+     * For example when reversing Key/Value for a Map:
+     * <pre>
+     * {@code
+     * this: Map<KEY, VALUE>
+     * declaredType: HashMap<VALUE, KEY>
+     * parameterizedType: HashMap<BigDecimal, String>
+     * result: Map<String, BigDecimal>
+     * }
+     * </pre>
+     *
+     * Mismatch result examples:
+     * <pre>
+     * {@code
+     * this: T
+     * declaredType: JAXBElement<Y>
+     * parameterizedType: JAXBElement<Integer>
+     * result: null
+     *
+     * this: List<T>
+     * declaredType: JAXBElement<Y>
+     * parameterizedType: JAXBElement<Integer>
+     * result: List<T>
+     * }
+     * </pre>
+     *
+     * @param declared the type
+     * @param parameterized the parameterized type
+     *
+     * @return - the result of {@link #resolveParameterToType(Type, Type)} when this type itself is a type var.<br>
+     *         - the type but then with the matching type parameters replaced.<br>
+     *         - the same type when this type does not contain matching type parameters.
+     */
+    public Type resolveGenericTypeParameters(Type declared, Type parameterized) {
+        if ( isTypeVar() || isArrayTypeVar() || isWildCardBoundByTypeVar() ) {
+            return resolveParameterToType( declared, parameterized ).getMatch();
+        }
+        Type resultType = this;
+        for ( Type generic : getTypeParameters() ) {
+            if ( generic.isTypeVar() || generic.isArrayTypeVar() || generic.isWildCardBoundByTypeVar() ) {
+                ResolvedPair resolveParameterToType = generic.resolveParameterToType( declared, parameterized );
+                resultType = resultType.replaceGeneric( generic, resolveParameterToType.getMatch() );
+            }
+            else {
+                Type replacementType = generic.resolveParameterToType( declared, parameterized ).getMatch();
+                resultType = resultType.replaceGeneric( generic, replacementType );
+            }
+        }
+        return resultType;
     }
 
     public boolean isWildCardBoundByTypeVar() {
@@ -1413,7 +1826,7 @@ public class Type extends ModelElement implements Comparable<Type> {
                     return new ResolvedPair( typeFactory.getType( parameterized ), declared );
                 }
             }
-            else if (parameterized.getSuperBound() != null ) {
+            else if ( parameterized.getSuperBound() != null ) {
                 ResolvedPair match = visit( parameterized.getSuperBound(), declared );
                 if ( match.match != null ) {
                     return new ResolvedPair( typeFactory.getType( parameterized ), declared );
@@ -1452,6 +1865,13 @@ public class Type extends ModelElement implements Comparable<Type> {
                 for ( int i = 0; i < parameterized.getTypeArguments().size(); i++ ) {
                     TypeMirror parameterizedTypeArg = parameterized.getTypeArguments().get( i );
                     Type declaredTypeArg = declared.getTypeParameters().get( i );
+                    if ( parameterizedTypeArg.getKind() == TypeKind.DECLARED &&
+                            !types.isSameType( types.erasure( parameterizedTypeArg ),
+                                    types.erasure( declaredTypeArg.getTypeMirror() ) ) ) {
+                        // Comparable<Long> can never be assigned Comparable<Number>
+                        // Generics enforce exact matches for declared types
+                       return DEFAULT_VALUE;
+                    }
                     ResolvedPair result = visit( parameterizedTypeArg, declaredTypeArg );
                     if ( result != super.DEFAULT_VALUE ) {
                         results.add( result );
@@ -1623,6 +2043,172 @@ public class Type extends ModelElement implements Comparable<Type> {
 
     public boolean isEnumSet() {
         return "java.util.EnumSet".equals( getFullyQualifiedName() );
+    }
+
+    /**
+     * return true if this type is a java 17+ sealed class
+     */
+    public boolean isSealed() {
+        KotlinMetadata kotlinMetadata = getKotlinMetadata();
+        if ( kotlinMetadata != null ) {
+            return kotlinMetadata.isSealedClass();
+        }
+        return typeElement.getModifiers().stream().map( Modifier::name ).anyMatch( "SEALED"::equals );
+    }
+
+    /**
+     * return the list of permitted TypeMirrors for the java 17+ sealed class
+     */
+    @SuppressWarnings( "unchecked" )
+    public List<? extends TypeMirror> getPermittedSubclasses() {
+        KotlinMetadata kotlinMetadata = getKotlinMetadata();
+        if ( kotlinMetadata != null ) {
+            return kotlinMetadata.getPermittedSubclasses();
+        }
+        if ( SEALED_PERMITTED_SUBCLASSES_METHOD == null ) {
+            return emptyList();
+        }
+        try {
+            return (List<? extends TypeMirror>) SEALED_PERMITTED_SUBCLASSES_METHOD.invoke( typeElement );
+        }
+        catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e ) {
+            return emptyList();
+        }
+    }
+
+    private class KotlinMetadataImpl implements KotlinMetadata {
+
+        private final KotlinClassMetadata.Class kotlinClassMetadata;
+
+        private KotlinMetadataImpl(KotlinClassMetadata.Class kotlinClassMetadata) {
+            this.kotlinClassMetadata = kotlinClassMetadata;
+        }
+
+        @Override
+        public boolean isDataClass() {
+            return Attributes.isData( kotlinClassMetadata.getKmClass() );
+        }
+
+        @Override
+        public boolean isSealedClass() {
+            return Attributes.getModality( kotlinClassMetadata.getKmClass() ) == Modality.SEALED;
+        }
+
+        @Override
+        public ExecutableElement determinePrimaryConstructor(List<ExecutableElement> constructors) {
+            if ( constructors.size() == 1 ) {
+                // If we have one constructor, that this constructor is the primary one
+                return constructors.get( 0 );
+            }
+            KmClass kmClass = kotlinClassMetadata.getKmClass();
+            KmConstructor primaryKmConstructor = null;
+            for ( KmConstructor constructor : kmClass.getConstructors() ) {
+                if ( !Attributes.isSecondary( constructor ) ) {
+                    primaryKmConstructor = constructor;
+                }
+
+            }
+
+            if ( primaryKmConstructor == null ) {
+                return null;
+            }
+
+            List<ExecutableElement> sameParametersSizeConstructors = new ArrayList<>();
+            for ( ExecutableElement constructor : constructors ) {
+                if ( constructor.getParameters().size() == primaryKmConstructor.getValueParameters().size() ) {
+                    sameParametersSizeConstructors.add( constructor );
+                }
+            }
+
+            if ( sameParametersSizeConstructors.size() == 1 ) {
+                return sameParametersSizeConstructors.get( 0 );
+            }
+
+            JvmMethodSignature signature = JvmExtensionsKt.getSignature( primaryKmConstructor );
+            if ( signature == null ) {
+                return null;
+            }
+
+            String signatureDescriptor = signature.getDescriptor();
+            for ( ExecutableElement constructor : constructors ) {
+                String constructorDescriptor = buildJvmConstructorDescriptor( constructor );
+                if ( signatureDescriptor.equals( constructorDescriptor ) ) {
+                    return constructor;
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        public List<? extends TypeMirror> getPermittedSubclasses() {
+            List<String> sealedSubclassNames = kotlinClassMetadata.getKmClass().getSealedSubclasses();
+            List<TypeMirror> permittedSubclasses = new ArrayList<>( sealedSubclassNames.size() );
+            for ( String sealedSubclassName : sealedSubclassNames ) {
+                Type subclassType = typeFactory.getType( sealedSubclassName.replace( '/', '.' ) );
+                permittedSubclasses.add( subclassType.getTypeMirror() );
+            }
+
+            return permittedSubclasses;
+        }
+
+        private String buildJvmConstructorDescriptor(ExecutableElement constructor) {
+            StringBuilder signature = new StringBuilder( "(" );
+
+            for ( VariableElement param : constructor.getParameters() ) {
+                signature.append( getJvmTypeDescriptor( param.asType() ) );
+            }
+
+            signature.append( ")V" );
+            return signature.toString();
+        }
+
+        private String getJvmTypeDescriptor(TypeMirror type) {
+            return type.accept(
+                new SimpleTypeVisitor8<String, Void>() {
+                    @Override
+                    public String visitPrimitive(PrimitiveType t, Void p) {
+                        switch ( t.getKind() ) {
+                            case BOOLEAN:
+                                return "Z";
+                            case BYTE:
+                                return "B";
+                            case SHORT:
+                                return "S";
+                            case INT:
+                                return "I";
+                            case LONG:
+                                return "J";
+                            case CHAR:
+                                return "C";
+                            case FLOAT:
+                                return "F";
+                            case DOUBLE:
+                                return "D";
+                            default:
+                                return "";
+                        }
+                    }
+
+                    @Override
+                    public String visitDeclared(DeclaredType t, Void p) {
+                        TypeElement element = (TypeElement) t.asElement();
+                        String binaryName = elementUtils.getBinaryName( element ).toString();
+                        return "L" + binaryName.replace( '.', '/' ) + ";";
+                    }
+
+                    @Override
+                    public String visitArray(ArrayType t, Void p) {
+                        return "[" + getJvmTypeDescriptor( t.getComponentType() );
+                    }
+
+                    @Override
+                    protected String defaultAction(TypeMirror e, Void p) {
+                        return "";
+                    }
+                }, null
+            );
+        }
     }
 
 }

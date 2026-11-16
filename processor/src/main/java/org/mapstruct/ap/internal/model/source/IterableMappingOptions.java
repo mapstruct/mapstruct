@@ -8,14 +8,14 @@ package org.mapstruct.ap.internal.model.source;
 import java.util.Optional;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
-import org.mapstruct.ap.internal.util.ElementUtils;
-import org.mapstruct.ap.internal.util.TypeUtils;
 
-import org.mapstruct.ap.internal.model.common.FormattingParameters;
 import org.mapstruct.ap.internal.gem.IterableMappingGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
+import org.mapstruct.ap.internal.model.common.FormattingParameters;
+import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.tools.gem.GemValue;
 
 /**
@@ -34,7 +34,12 @@ public class IterableMappingOptions extends DelegatingOptions {
                                                  FormattingMessager messager, TypeUtils typeUtils) {
 
         if ( iterableMapping == null || !isConsistent( iterableMapping, method, messager ) ) {
-            IterableMappingOptions options = new IterableMappingOptions( null, null, null, mapperOptions );
+            IterableMappingOptions options = new IterableMappingOptions(
+                null,
+                SelectionParameters.empty(),
+                null,
+                mapperOptions
+            );
             return options;
         }
 
@@ -50,7 +55,8 @@ public class IterableMappingOptions extends DelegatingOptions {
             iterableMapping.numberFormat().get(),
             iterableMapping.mirror(),
             iterableMapping.dateFormat().getAnnotationValue(),
-            method
+            method,
+            iterableMapping.locale().getValue()
         );
 
         IterableMappingOptions options =

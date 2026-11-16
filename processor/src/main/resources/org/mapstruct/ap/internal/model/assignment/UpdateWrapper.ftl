@@ -6,17 +6,19 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.assignment.UpdateWrapper" -->
+<#-- @ftlvariable name="ext" type="java.util.Map" -->
+<#-- @ftlvariable name="ext.targetType" type="org.mapstruct.ap.internal.model.common.Type" -->
 <#import '../macro/CommonMacros.ftl' as lib >
 <@lib.handleExceptions>
   <#if includeSourceNullCheck>
     <@lib.sourceLocalVarAssignment/>
-    if ( <#if sourcePresenceCheckerReference?? ><@includeModel object=sourcePresenceCheckerReference /><#else><#if sourceLocalVarName??>${sourceLocalVarName}<#else>${sourceReference}</#if> != null</#if> ) {
+    if ( <@handleSourceReferenceNullCheck/> ) {
       <@assignToExistingTarget/>
       <@lib.handleAssignment/>;
     }
     <#if setExplicitlyToDefault || setExplicitlyToNull>
     else {
-      ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if setExplicitlyToDefault><@lib.initTargetObject/><#else>null</#if></@lib.handleWrite>;
+      ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><#if setExplicitlyToDefault><@lib.initTargetObject/><#else><#if mustCastForNull>(<@includeModel object=ext.targetType/>) </#if>${ext.targetType.null}</#if></@lib.handleWrite>;
     }
     </#if>
   <#else>
@@ -31,4 +33,17 @@
     if ( ${ext.targetBeanName}.${ext.targetReadAccessorName} == null ) {
         ${ext.targetBeanName}.${ext.targetWriteAccessorName}<@lib.handleWrite><@lib.initTargetObject/></@lib.handleWrite>;
     }
+</#macro>
+
+<#macro handleSourceReferenceNullCheck>
+  <@compress single_line=true>
+    <#if sourcePresenceCheckerReference?? >
+      <@includeModel object=sourcePresenceCheckerReference
+        targetPropertyName=ext.targetPropertyName
+        sourcePropertyName=ext.sourcePropertyName
+        targetType=ext.targetType/>
+    <#else>
+      <#if sourceLocalVarName??> ${sourceLocalVarName} <#else> ${sourceReference} </#if> != null
+    </#if>
+  </@compress>
 </#macro>

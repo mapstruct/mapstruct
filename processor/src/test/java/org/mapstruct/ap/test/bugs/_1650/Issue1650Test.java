@@ -27,7 +27,7 @@ public class Issue1650Test {
 
        A a = new A();
        a.setB( new B() );
-       a.getB().setC( new C() );
+       a.getB().setC( new C( 10 ) );
 
        APrime aPrime = new APrime();
 

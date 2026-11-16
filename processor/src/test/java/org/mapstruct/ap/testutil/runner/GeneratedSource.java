@@ -6,11 +6,7 @@
 package org.mapstruct.ap.testutil.runner;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
@@ -20,6 +16,7 @@ import org.mapstruct.ap.testutil.assertions.JavaFileAssert;
 
 import static org.assertj.core.api.Assertions.fail;
 import static org.mapstruct.ap.testutil.runner.CompilingExtension.NAMESPACE;
+import static org.mapstruct.ap.testutil.runner.CompilingExtension.getBasePath;
 
 /**
  * A {@link org.junit.jupiter.api.extension.RegisterExtension RegisterExtension} to perform assertions on generated
@@ -37,6 +34,7 @@ import static org.mapstruct.ap.testutil.runner.CompilingExtension.NAMESPACE;
 public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
     private static final String FIXTURES_ROOT = "fixtures/";
+    private static final String FIXTURES_DIR = getBasePath() + "/src/test/resources/fixtures/";
 
     /**
      * ThreadLocal, as the source dir must be injected for this extension to gain access
@@ -44,12 +42,15 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
      */
     private ThreadLocal<String> sourceOutputDir = new ThreadLocal<>();
 
-    private List<Class<?>> fixturesFor = new ArrayList<>();
+    private Compiler compiler;
+
+    private List<FixtureComparison> fixturesFor = new ArrayList<>();
 
     @Override
     public void beforeTestExecution(ExtensionContext context) throws Exception {
         CompilationRequest compilationRequest = context.getStore( NAMESPACE )
             .get( context.getUniqueId() + "-compilationRequest", CompilationRequest.class );
+        this.compiler = compilationRequest.getCompiler();
         setSourceOutputDir( context.getStore( NAMESPACE )
             .get( compilationRequest, CompilationCache.class )
             .getLastSourceOutputDir() );
@@ -79,7 +80,25 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
      * @return the same rule for chaining
      */
     public GeneratedSource addComparisonToFixtureFor(Class<?>... fixturesFor) {
-        this.fixturesFor.addAll( Arrays.asList( fixturesFor ) );
+        for ( Class<?> fixture : fixturesFor ) {
+            this.fixturesFor.add( new FixtureComparison( fixture, null ) );
+        }
+        return this;
+    }
+
+    /**
+     * Adds a mapper that needs to be compared against a fixture with a variant suffix.
+     * <p>
+     * The fixture is looked up at {@code fixtures/<FQN>Impl_{variant}.java} instead of the default
+     * {@code fixtures/<FQN>Impl.java}. Use this to have multiple fixtures for the same mapper class
+     * (e.g. for testing different compilation inputs that produce different generated code).
+     *
+     * @param fixtureFor the class to compare
+     * @param variant the fixture variant (suffix appended to the file name before {@code .java})
+     * @return the same rule for chaining
+     */
+    public GeneratedSource addComparisonToFixtureFor(Class<?> fixtureFor, String variant) {
+        this.fixturesFor.add( new FixtureComparison( fixtureFor, variant ) );
         return this;
     }
 
@@ -116,23 +135,46 @@ public class GeneratedSource implements BeforeTestExecutionCallback, AfterTestEx
         return new JavaFileAssert( new File( sourceOutputDir.get() + "/" + path ) );
     }
 
-    private void handleFixtureComparison() throws UnsupportedEncodingException {
-        for ( Class<?> fixture : fixturesFor ) {
-            String expectedFixture = FIXTURES_ROOT + getMapperName( fixture );
-            URL expectedFile = getClass().getClassLoader().getResource( expectedFixture );
-            if ( expectedFile == null ) {
+    private void handleFixtureComparison() {
+        for ( FixtureComparison fixture : fixturesFor ) {
+            String fixtureName = getFixtureName( fixture.mapperClass, fixture.variant );
+            File expectedFile = getExpectedResource( fixtureName );
+            if ( !expectedFile.exists() ) {
                 fail( String.format(
                     "No reference file could be found for Mapper %s. You should create a file %s",
-                    fixture.getName(),
-                    expectedFixture
+                    fixture.mapperClass.getName(),
+                    FIXTURES_ROOT + fixtureName
                 ) );
             }
             else {
-                File expectedResource = new File( URLDecoder.decode( expectedFile.getFile(), "UTF-8" ) );
-                forMapper( fixture ).hasSameMapperContent( expectedResource );
+                forMapper( fixture.mapperClass ).hasSameMapperContent( expectedFile );
             }
-            fixture.getPackage().getName();
+        }
+    }
+
+    private String getFixtureName(Class<?> mapperClass, String variant) {
+        String suffix = variant != null ? "Impl_" + variant + ".java" : "Impl.java";
+        return mapperClass.getName().replace( '.', '/' ).concat( suffix );
+    }
+
+    private File getExpectedResource(String fixtureName) {
+        for ( int version = Runtime.version().feature(); version >= 11 && compiler != Compiler.ECLIPSE; version-- ) {
+            File fixtureFile = new File( FIXTURES_DIR + version + File.separator + fixtureName );
+            if ( fixtureFile.exists() ) {
+                return fixtureFile;
+            }
         }
 
+        return new File( FIXTURES_DIR + fixtureName );
+    }
+
+    private static final class FixtureComparison {
+        private final Class<?> mapperClass;
+        private final String variant;
+
+        FixtureComparison(Class<?> mapperClass, String variant) {
+            this.mapperClass = mapperClass;
+            this.variant = variant;
+        }
     }
 }

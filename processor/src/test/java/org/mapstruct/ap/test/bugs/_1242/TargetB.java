@@ -9,6 +9,7 @@ package org.mapstruct.ap.test.bugs._1242;
  * @author Andreas Gudian
  */
 class TargetB {
+    protected String value;
     private final String passedViaConstructor;
 
     TargetB(String passedViaConstructor) {
@@ -17,5 +18,13 @@ class TargetB {
 
     String getPassedViaConstructor() {
         return passedViaConstructor;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

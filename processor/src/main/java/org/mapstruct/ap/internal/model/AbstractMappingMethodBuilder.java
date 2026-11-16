@@ -5,7 +5,10 @@
  */
 package org.mapstruct.ap.internal.model;
 
-import org.mapstruct.ap.internal.gem.BuilderGem;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.mapstruct.ap.internal.model.beanmapping.MappingReferences;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
@@ -13,12 +16,11 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.util.Strings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * An abstract builder that can be reused for building {@link MappingMethod}(s).
  *
+ * @param <B> the builder itself that needs to be used for chaining
+ * @param <M> the method that the builder builds
  * @author Filip Hrisafov
  */
 public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMethodBuilder<B, M>,
@@ -93,12 +95,8 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
 
         ForgedMethod forgedMethod =
             forgeMethodCreator.createMethod( name, sourceType, targetType, method, description, true );
-        BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
 
-        return createForgedAssignment(
-            sourceRHS,
-            ctx.getTypeFactory().builderTypeFor( targetType, builder ),
-            forgedMethod );
+        return createForgedAssignment( sourceRHS, forgedMethod );
     }
 
     private String getName(Type sourceType, Type targetType) {
@@ -121,13 +119,21 @@ public abstract class AbstractMappingMethodBuilder<B extends AbstractMappingMeth
     }
 
     public List<Annotation> getMethodAnnotations() {
+        if ( method instanceof ForgedMethod ) {
+            return Collections.emptyList();
+        }
         AdditionalAnnotationsBuilder additionalAnnotationsBuilder =
                 new AdditionalAnnotationsBuilder(
                         ctx.getElementUtils(),
                         ctx.getTypeFactory(),
                         ctx.getMessager() );
-        List<Annotation> annotations = new ArrayList<>();
-        annotations.addAll( additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() ) );
+        List<Annotation> annotations = new ArrayList<>(
+            additionalAnnotationsBuilder.getProcessedAnnotations( method.getExecutable() )
+        );
+
+        if ( method.overridesMethod() ) {
+            annotations.add( new Annotation( ctx.getTypeFactory().getType( Override.class ) ) );
+        }
         return annotations;
     }
 

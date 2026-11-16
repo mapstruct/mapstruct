@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christophe Labouisse on 27/05/2015.
  */
 @IssueKey( "556" )
+@WithClasses( Target.class )
 public class DestinationPackageNameTest {
     @ProcessorTest
     @WithClasses({ DestinationPackageNameMapper.class })

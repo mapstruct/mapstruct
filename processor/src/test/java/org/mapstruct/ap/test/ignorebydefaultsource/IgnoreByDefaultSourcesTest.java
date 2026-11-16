@@ -18,8 +18,17 @@ import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutco
 public class IgnoreByDefaultSourcesTest {
 
     @ProcessorTest
-    @WithClasses({ SourceTargetMapper.class, Source.class, Target.class })
-    public void shouldSucceed() {
+    @WithClasses({ ErroneousSourceTargetMapperWithIgnoreByDefault.class, Source.class, Target.class })
+    @ExpectedCompilationOutcome(
+        value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousSourceTargetMapperWithIgnoreByDefault.class,
+                kind = Kind.ERROR,
+                line = 23,
+                message = "Unmapped source property: \"other\".")
+        }
+    )
+    public void shouldRaiseErrorDueToNonIgnoredSourcePropertyWithBeanMappingIgnoreByDefault() {
     }
 
     @ProcessorTest

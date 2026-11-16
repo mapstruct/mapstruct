@@ -21,19 +21,24 @@ import javax.lang.model.type.TypeKind;
 
 import org.mapstruct.ap.internal.gem.BeanMappingGem;
 import org.mapstruct.ap.internal.gem.ConditionGem;
+import org.mapstruct.ap.internal.gem.IgnoredGem;
+import org.mapstruct.ap.internal.gem.IgnoredListGem;
 import org.mapstruct.ap.internal.gem.IterableMappingGem;
 import org.mapstruct.ap.internal.gem.MapMappingGem;
 import org.mapstruct.ap.internal.gem.MappingGem;
 import org.mapstruct.ap.internal.gem.MappingsGem;
 import org.mapstruct.ap.internal.gem.ObjectFactoryGem;
+import org.mapstruct.ap.internal.gem.SourcePropertyNameGem;
 import org.mapstruct.ap.internal.gem.SubclassMappingGem;
 import org.mapstruct.ap.internal.gem.SubclassMappingsGem;
+import org.mapstruct.ap.internal.gem.TargetPropertyNameGem;
 import org.mapstruct.ap.internal.gem.ValueMappingGem;
 import org.mapstruct.ap.internal.gem.ValueMappingsGem;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.model.source.BeanMappingOptions;
+import org.mapstruct.ap.internal.model.source.ConditionOptions;
 import org.mapstruct.ap.internal.model.source.EnumMappingOptions;
 import org.mapstruct.ap.internal.model.source.IterableMappingOptions;
 import org.mapstruct.ap.internal.model.source.MapMappingOptions;
@@ -51,6 +56,7 @@ import org.mapstruct.ap.internal.util.ElementUtils;
 import org.mapstruct.ap.internal.util.Executables;
 import org.mapstruct.ap.internal.util.FormattingMessager;
 import org.mapstruct.ap.internal.util.Message;
+import org.mapstruct.ap.internal.util.MetaAnnotations;
 import org.mapstruct.ap.internal.util.RepeatableAnnotations;
 import org.mapstruct.ap.internal.util.TypeUtils;
 import org.mapstruct.ap.spi.EnumTransformationStrategy;
@@ -69,7 +75,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     private static final String MAPPINGS_FQN = "org.mapstruct.Mappings";
     private static final String SUB_CLASS_MAPPING_FQN = "org.mapstruct.SubclassMapping";
     private static final String SUB_CLASS_MAPPINGS_FQN = "org.mapstruct.SubclassMappings";
-
+    private static final String VALUE_MAPPING_FQN = "org.mapstruct.ValueMapping";
+    private static final String VALUE_MAPPINGS_FQN = "org.mapstruct.ValueMappings";
+    private static final String CONDITION_FQN = "org.mapstruct.Condition";
+    private static final String IGNORED_FQN = "org.mapstruct.Ignored";
+    private static final String IGNORED_LIST_FQN = "org.mapstruct.IgnoredList";
     private FormattingMessager messager;
     private TypeFactory typeFactory;
     private AccessorNamingUtils accessorNaming;
@@ -104,7 +114,12 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         }
 
         List<SourceMethod> prototypeMethods = retrievePrototypeMethods( mapperTypeElement, mapperOptions );
-        return retrieveMethods( mapperTypeElement, mapperTypeElement, mapperOptions, prototypeMethods );
+        return retrieveMethods(
+            typeFactory.getType( mapperTypeElement.asType() ),
+            mapperTypeElement,
+            mapperOptions,
+            prototypeMethods
+        );
     }
 
     @Override
@@ -121,6 +136,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         TypeElement typeElement = asTypeElement( mapperAnnotation.mapperConfigType() );
         List<SourceMethod> methods = new ArrayList<>();
         for ( ExecutableElement executable : elementUtils.getAllEnclosedExecutableElements( typeElement ) ) {
+
+            if ( executable.isDefault() || executable.getModifiers().contains( Modifier.STATIC ) ) {
+                // skip the default and static methods because these are not prototypes.
+                continue;
+            }
 
             ExecutableType methodType = typeFactory.getMethodType( mapperAnnotation.mapperConfigType(), executable );
             List<Parameter> parameters = typeFactory.getParameters( methodType, executable );
@@ -151,19 +171,21 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
     /**
      * Retrieves the mapping methods declared by the given mapper type.
      *
-     * @param usedMapper The type of interest (either the mapper to implement or a used mapper via @uses annotation)
+     * @param usedMapperType The type of interest (either the mapper to implement, a used mapper via @uses annotation,
+     *                   or a parameter type annotated with @Context)
      * @param mapperToImplement the top level type (mapper) that requires implementation
      * @param mapperOptions the mapper config
      * @param prototypeMethods prototype methods defined in mapper config type
      * @return All mapping methods declared by the given type
      */
-    private List<SourceMethod> retrieveMethods(TypeElement usedMapper, TypeElement mapperToImplement,
+    private List<SourceMethod> retrieveMethods(Type usedMapperType, TypeElement mapperToImplement,
                                                MapperOptions mapperOptions, List<SourceMethod> prototypeMethods) {
         List<SourceMethod> methods = new ArrayList<>();
 
+        TypeElement usedMapper = usedMapperType.getTypeElement();
         for ( ExecutableElement executable : elementUtils.getAllEnclosedExecutableElements( usedMapper ) ) {
             SourceMethod method = getMethod(
-                usedMapper,
+                usedMapperType,
                 executable,
                 mapperToImplement,
                 mapperOptions,
@@ -180,7 +202,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 TypeElement usesMapperElement = asTypeElement( mapper );
                 if ( !mapperToImplement.equals( usesMapperElement ) ) {
                     methods.addAll( retrieveMethods(
-                        usesMapperElement,
+                        typeFactory.getType( mapper ),
                         mapperToImplement,
                         mapperOptions,
                         prototypeMethods ) );
@@ -203,13 +225,13 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return (TypeElement) type.asElement();
     }
 
-    private SourceMethod getMethod(TypeElement usedMapper,
+    private SourceMethod getMethod(Type usedMapperType,
                                    ExecutableElement method,
                                    TypeElement mapperToImplement,
                                    MapperOptions mapperOptions,
                                    List<SourceMethod> prototypeMethods) {
-
-        ExecutableType methodType = typeFactory.getMethodType( (DeclaredType) usedMapper.asType(), method );
+        TypeElement usedMapper = usedMapperType.getTypeElement();
+        ExecutableType methodType = typeFactory.getMethodType( (DeclaredType) usedMapperType.getTypeMirror(), method );
         List<Parameter> parameters = typeFactory.getParameters( methodType, method );
         Type returnType = typeFactory.getReturnType( methodType );
 
@@ -229,7 +251,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         // otherwise add reference to existing mapper method
         else if ( isValidReferencedMethod( parameters ) || isValidFactoryMethod( method, parameters, returnType )
             || isValidLifecycleCallbackMethod( method )
-            || isValidPresenceCheckMethod( method, returnType ) ) {
+            || isValidPresenceCheckMethod( method, parameters, returnType ) ) {
             return getReferencedMethod( usedMapper, methodType, method, mapperToImplement, parameters );
         }
         else {
@@ -342,7 +364,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 continue;
             }
             List<SourceMethod> contextParamMethods = retrieveMethods(
-                contextParam.getType().getTypeElement(),
+                contextParam.getType(),
                 mapperToImplement,
                 mapperConfig,
                 Collections.emptyList() );
@@ -350,7 +372,7 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
             List<SourceMethod> contextProvidedMethods = new ArrayList<>( contextParamMethods.size() );
             for ( SourceMethod sourceMethod : contextParamMethods ) {
                 if ( sourceMethod.isLifecycleCallbackMethod() || sourceMethod.isObjectFactory()
-                    || sourceMethod.isPresenceCheck() ) {
+                    || sourceMethod.getConditionOptions().isAnyStrategyApplicable() ) {
                     contextProvidedMethods.add( sourceMethod );
                 }
             }
@@ -378,13 +400,14 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
 
         return new SourceMethod.Builder()
             .setDeclaringMapper( usedMapper.equals( mapperToImplement ) ? null : usedMapperAsType )
-            .setDefininingType( definingType )
+            .setDefiningType( definingType )
             .setExecutable( method )
             .setParameters( parameters )
             .setReturnType( returnType )
             .setExceptionTypes( exceptionTypes )
             .setTypeUtils( typeUtils )
             .setTypeFactory( typeFactory )
+            .setConditionOptions( getConditionOptions( method, parameters ) )
             .setVerboseLogging( options.isVerbose() )
             .build();
     }
@@ -406,7 +429,27 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
         return ObjectFactoryGem.instanceOn( method ) != null;
     }
 
-    private boolean isValidPresenceCheckMethod(ExecutableElement method, Type returnType) {
+    private boolean isValidPresenceCheckMethod(ExecutableElement method, List<Parameter> parameters, Type returnType) {
+        for ( Parameter param : parameters ) {
+
+            if ( param.isSourcePropertyName() && !param.getType().isString() ) {
+                messager.printMessage(
+                    param.getElement(),
+                    SourcePropertyNameGem.instanceOn( param.getElement() ).mirror(),
+                    Message.RETRIEVAL_SOURCE_PROPERTY_NAME_WRONG_TYPE
+                );
+                return false;
+            }
+
+            if ( param.isTargetPropertyName() && !param.getType().isString() ) {
+                messager.printMessage(
+                    param.getElement(),
+                    TargetPropertyNameGem.instanceOn( param.getElement() ).mirror(),
+                    Message.RETRIEVAL_TARGET_PROPERTY_NAME_WRONG_TYPE
+                );
+                return false;
+            }
+        }
         return isBoolean( returnType ) && hasConditionAnnotation( method );
     }
 
@@ -523,6 +566,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                 return false;
             }
 
+            if ( !parameterType.isIterableOrStreamType() && resultType.isArrayType() ) {
+                messager.printMessage( method, Message.RETRIEVAL_NON_ITERABLE_TO_ARRAY );
+                return false;
+            }
+
             if ( parameterType.isPrimitive() ) {
                 messager.printMessage( method, Message.RETRIEVAL_PRIMITIVE_PARAMETER );
                 return false;
@@ -587,7 +635,11 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return The mappings for the given method, keyed by target property name
      */
     private Set<MappingOptions> getMappings(ExecutableElement method, BeanMappingOptions beanMapping) {
-        return new RepeatableMappings( beanMapping ).getProcessedAnnotations( method );
+        Set<MappingOptions> processedAnnotations = new RepeatableMappings( beanMapping )
+                .getProcessedAnnotations( method );
+        processedAnnotations.addAll( new IgnoredConditions( processedAnnotations )
+                .getProcessedAnnotations( method ) );
+        return processedAnnotations;
     }
 
     /**
@@ -603,6 +655,18 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
                                                             SubclassValidator validator) {
         return new RepeatableSubclassMappings( beanMapping, sourceParameters, resultType, validator )
                         .getProcessedAnnotations( method );
+    }
+
+    /**
+     * Retrieves the conditions configured via {@code @Condition} from the given method.
+     *
+     * @param method     The method of interest
+     * @param parameters
+     * @return The condition options for the given method
+     */
+
+    private Set<ConditionOptions> getConditionOptions(ExecutableElement method, List<Parameter> parameters) {
+        return new MetaConditions( parameters ).getProcessedAnnotations( method );
     }
 
     private class RepeatableMappings extends RepeatableAnnotations<MappingGem, MappingsGem, MappingOptions> {
@@ -714,22 +778,115 @@ public class MethodRetrievalProcessor implements ModelElementProcessor<Void, Lis
      * @return The mappings for the given method, keyed by target property name
      */
     private List<ValueMappingOptions> getValueMappings(ExecutableElement method) {
-        List<ValueMappingOptions> valueMappings = new ArrayList<>();
+        Set<ValueMappingOptions> processedAnnotations = new RepeatValueMappings().getProcessedAnnotations( method );
+        return new ArrayList<>(processedAnnotations);
+    }
 
-        ValueMappingGem mappingAnnotation = ValueMappingGem.instanceOn( method );
-        ValueMappingsGem mappingsAnnotation = ValueMappingsGem.instanceOn( method );
+    private class RepeatValueMappings
+        extends RepeatableAnnotations<ValueMappingGem, ValueMappingsGem, ValueMappingOptions> {
 
-        if ( mappingAnnotation != null ) {
-            ValueMappingOptions valueMapping = ValueMappingOptions.fromMappingGem( mappingAnnotation );
-            if ( valueMapping != null ) {
-                valueMappings.add( valueMapping );
+        protected RepeatValueMappings() {
+            super( elementUtils, VALUE_MAPPING_FQN, VALUE_MAPPINGS_FQN );
+        }
+
+        @Override
+        protected ValueMappingGem singularInstanceOn(Element element) {
+            return ValueMappingGem.instanceOn( element );
+        }
+
+        @Override
+        protected ValueMappingsGem multipleInstanceOn(Element element) {
+            return ValueMappingsGem.instanceOn( element );
+        }
+
+        @Override
+        protected void addInstance(ValueMappingGem gem, Element source, Set<ValueMappingOptions> mappings) {
+            ValueMappingOptions valueMappingOptions = ValueMappingOptions.fromMappingGem( gem );
+            mappings.add( valueMappingOptions );
+        }
+
+        @Override
+        protected void addInstances(ValueMappingsGem gems, Element source, Set<ValueMappingOptions> mappings) {
+            ValueMappingOptions.fromMappingsGem( gems, (ExecutableElement) source, messager, mappings );
+        }
+    }
+
+    private class MetaConditions extends MetaAnnotations<ConditionGem, ConditionOptions> {
+
+        protected final List<Parameter> parameters;
+
+        protected MetaConditions(List<Parameter> parameters) {
+            super( elementUtils, CONDITION_FQN );
+            this.parameters = parameters;
+        }
+
+        @Override
+        protected ConditionGem instanceOn(Element element) {
+            return ConditionGem.instanceOn( element );
+        }
+
+        @Override
+        protected void addInstance(ConditionGem gem, Element source, Set<ConditionOptions> values) {
+            ConditionOptions options = ConditionOptions.getInstanceOn(
+                gem,
+                (ExecutableElement) source,
+                parameters,
+                messager
+            );
+            if ( options != null ) {
+                values.add( options );
+            }
+        }
+    }
+
+    private class IgnoredConditions extends RepeatableAnnotations<IgnoredGem, IgnoredListGem, MappingOptions> {
+
+        protected final Set<MappingOptions> processedAnnotations;
+
+        protected IgnoredConditions( Set<MappingOptions> processedAnnotations ) {
+            super( elementUtils, IGNORED_FQN, IGNORED_LIST_FQN );
+            this.processedAnnotations = processedAnnotations;
+        }
+
+        @Override
+        protected IgnoredGem singularInstanceOn(Element element) {
+            return IgnoredGem.instanceOn( element );
+        }
+
+        @Override
+        protected IgnoredListGem multipleInstanceOn(Element element) {
+            return IgnoredListGem.instanceOn( element );
+        }
+
+        @Override
+        protected void addInstance(IgnoredGem gem, Element method, Set<MappingOptions> mappings) {
+            IgnoredGem ignoredGem = IgnoredGem.instanceOn( method );
+            if ( ignoredGem == null ) {
+                ignoredGem = gem;
+            }
+            String prefix = ignoredGem.prefix().get();
+            for ( String target : ignoredGem.targets().get() ) {
+                String realTarget = target;
+                if ( !prefix.isEmpty() ) {
+                    realTarget = prefix + "." + target;
+                }
+                MappingOptions mappingOptions = MappingOptions.forIgnore( realTarget );
+                if ( processedAnnotations.contains( mappingOptions ) || mappings.contains( mappingOptions ) ) {
+                    messager.printMessage( method, Message.PROPERTYMAPPING_DUPLICATE_TARGETS, realTarget );
+                }
+                else {
+                    mappings.add( mappingOptions );
+                }
             }
         }
 
-        if ( mappingsAnnotation != null ) {
-            ValueMappingOptions.fromMappingsGem( mappingsAnnotation, method, messager, valueMappings );
+        @Override
+        protected void addInstances(IgnoredListGem gem, Element method, Set<MappingOptions> mappings) {
+            IgnoredListGem ignoredListGem = IgnoredListGem.instanceOn( method );
+            for ( IgnoredGem ignoredGem : ignoredListGem.value().get() ) {
+                addInstance( ignoredGem, method, mappings );
+            }
         }
-
-        return valueMappings;
     }
+
 }

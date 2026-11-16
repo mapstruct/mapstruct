@@ -14,7 +14,7 @@ import java.util.Collection;
  */
 public class TargetWithoutSetter {
 
-    private final Collection<TargetElement> collection = new ArrayList<TargetElement>();
+    private final Collection<TargetElement> collection = new ArrayList<>();
 
     public Collection<TargetElement> getCollection() {
         return collection;

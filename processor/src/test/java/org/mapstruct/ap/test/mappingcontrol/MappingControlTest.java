@@ -69,6 +69,21 @@ public class MappingControlTest {
         assertThat( out.getShelve().getCoolBeer().getBeerCount() ).isEqualTo( "5" );
     }
 
+    @ProcessorTest
+    @IssueKey("3135")
+    @WithClasses(CloningBeanMappingMapper.class)
+    public void testDeepCloningViaBeanMapping() {
+
+        FridgeDTO in = createFridgeDTO();
+        FridgeDTO out = CloningBeanMappingMapper.INSTANCE.clone( in );
+
+        assertThat( out ).isNotNull();
+        assertThat( out.getShelve() ).isNotNull();
+        assertThat( out.getShelve() ).isNotSameAs( in.getShelve() );
+        assertThat( out.getShelve().getCoolBeer() ).isNotSameAs( in.getShelve().getCoolBeer() );
+        assertThat( out.getShelve().getCoolBeer().getBeerCount() ).isEqualTo( "5" );
+    }
+
     /**
      * Test the deep cloning annotation with lists
      */
@@ -223,6 +238,96 @@ public class MappingControlTest {
             )
         })
     public void complexSelectionNotAllowedWithConfig() {
+    }
+
+    @ProcessorTest
+    @IssueKey("3186")
+    @WithClasses({
+        ErroneousMethodAndBuiltInMapper.class,
+        NoConversion.class
+    })
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMethodAndBuiltInMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 20,
+                message = "Can't map property \"ZonedDateTime time\" to \"Date time\". " +
+                    "Consider to declare/implement a mapping method: \"Date map(ZonedDateTime value)\"."
+            )
+        })
+    public void conversionSelectionNotAllowedInTwoStepMethodBuiltIdConversion() {
+    }
+
+    @ProcessorTest
+    @IssueKey("3186")
+    @WithClasses({
+        ErroneousBuiltInAndBuiltInMapper.class,
+        NoConversion.class
+    })
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousBuiltInAndBuiltInMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 19,
+                message = "Can't map property \"ZonedDateTime time\" to \"Date time\". " +
+                    "Consider to declare/implement a mapping method: \"Date map(ZonedDateTime value)\"."
+            )
+        })
+    public void conversionSelectionNotAllowedInTwoStepBuiltInBuiltInConversion() {
+    }
+
+    @ProcessorTest
+    @IssueKey("3186")
+    @WithClasses({
+        ErroneousBuiltInAndMethodMapper.class,
+        NoConversion.class
+    })
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousBuiltInAndMethodMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 21,
+                message = "Can't map property \"int time\" to \"Calendar time\". " +
+                    "Consider to declare/implement a mapping method: \"Calendar map(int value)\"."
+            )
+        })
+    public void conversionSelectionNotAllowedInTwoStepBuiltInMethodConversion() {
+    }
+
+    @ProcessorTest
+    @IssueKey("3186")
+    @WithClasses({
+        ErroneousMethodAndConversionMapper.class,
+        NoConversion.class
+    })
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousMethodAndConversionMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 19,
+                message = "Can't map property \"Date time\" to \"long time\". " +
+                    "Consider to declare/implement a mapping method: \"long map(Date value)\"."
+            )
+        })
+    public void conversionSelectionNotAllowedInTwoStepMethodConversionConversion() {
+    }
+
+    @ProcessorTest
+    @IssueKey("3186")
+    @WithClasses({
+        ErroneousConversionAndMethodMapper.class,
+        NoConversion.class
+    })
+    @ExpectedCompilationOutcome(value = CompilationResult.FAILED,
+        diagnostics = {
+            @Diagnostic(type = ErroneousConversionAndMethodMapper.class,
+                kind = javax.tools.Diagnostic.Kind.ERROR,
+                line = 19,
+                message = "Can't map property \"int time\" to \"Date time\". " +
+                    "Consider to declare/implement a mapping method: \"Date map(int value)\"."
+            )
+        })
+    public void conversionSelectionNotAllowedInTwoStepConversionMethodConversion() {
     }
 
     private FridgeDTO createFridgeDTO() {

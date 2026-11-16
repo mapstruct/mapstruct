@@ -13,6 +13,6 @@
  * This package contains several annotations which allow to configure how mapper interfaces are generated.
  * </p>
  *
- * @see <a href="http://mapstruct.org/">MapStruct reference documentation</a>
+ * @see <a href="https://mapstruct.org/">MapStruct reference documentation</a>
  */
 package org.mapstruct;

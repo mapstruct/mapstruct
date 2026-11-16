@@ -10,6 +10,8 @@ import org.mapstruct.ap.internal.model.common.Type;
 import static org.mapstruct.ap.internal.util.Collections.first;
 
 /**
+ * Utility class for mapping methods.
+ *
  * @author Filip Hrisafov
  */
 public final class MappingMethodUtils {

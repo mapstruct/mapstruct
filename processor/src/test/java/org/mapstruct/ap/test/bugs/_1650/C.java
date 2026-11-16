@@ -6,4 +6,14 @@
 package org.mapstruct.ap.test.bugs._1650;
 
 public class C {
+
+    private final int value;
+
+    public C(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
 }

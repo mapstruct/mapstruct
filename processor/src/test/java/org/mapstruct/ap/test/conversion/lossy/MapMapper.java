@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.conversion.lossy;
 
 import java.util.Map;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

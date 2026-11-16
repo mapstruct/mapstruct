@@ -11,6 +11,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.mapstruct.ap.internal.gem.BuilderGem;
+import org.mapstruct.ap.internal.gem.ClassAccessibilityGem;
 import org.mapstruct.ap.internal.gem.CollectionMappingStrategyGem;
 import org.mapstruct.ap.internal.gem.InjectionStrategyGem;
 import org.mapstruct.ap.internal.gem.MapperGem;
@@ -56,16 +57,18 @@ public class DefaultOptions extends DelegatingOptions {
 
     @Override
     public ReportingPolicyGem unmappedTargetPolicy() {
-        if ( options.getUnmappedTargetPolicy() != null ) {
-            return options.getUnmappedTargetPolicy();
+        ReportingPolicyGem unmappedTargetPolicy = options.getUnmappedTargetPolicy();
+        if ( unmappedTargetPolicy != null ) {
+            return unmappedTargetPolicy;
         }
         return ReportingPolicyGem.valueOf( mapper.unmappedTargetPolicy().getDefaultValue() );
     }
 
     @Override
     public ReportingPolicyGem unmappedSourcePolicy() {
-        if ( options.getUnmappedSourcePolicy() != null ) {
-            return options.getUnmappedSourcePolicy();
+        ReportingPolicyGem unmappedSourcePolicy = options.getUnmappedSourcePolicy();
+        if ( unmappedSourcePolicy != null ) {
+            return unmappedSourcePolicy;
         }
         return ReportingPolicyGem.valueOf( mapper.unmappedSourcePolicy().getDefaultValue() );
     }
@@ -77,8 +80,9 @@ public class DefaultOptions extends DelegatingOptions {
 
     @Override
     public String componentModel() {
-        if ( options.getDefaultComponentModel() != null ) {
-            return options.getDefaultComponentModel();
+        String defaultComponentModel = options.getDefaultComponentModel();
+        if ( defaultComponentModel != null ) {
+            return defaultComponentModel;
         }
         return mapper.componentModel().getDefaultValue();
     }
@@ -97,8 +101,9 @@ public class DefaultOptions extends DelegatingOptions {
 
     @Override
     public InjectionStrategyGem getInjectionStrategy() {
-        if ( options.getDefaultInjectionStrategy() != null ) {
-            return InjectionStrategyGem.valueOf( options.getDefaultInjectionStrategy().toUpperCase() );
+        String defaultInjectionStrategy = options.getDefaultInjectionStrategy();
+        if ( defaultInjectionStrategy != null ) {
+            return InjectionStrategyGem.valueOf( defaultInjectionStrategy.toUpperCase() );
         }
         return InjectionStrategyGem.valueOf( mapper.injectionStrategy().getDefaultValue() );
     }
@@ -131,12 +136,29 @@ public class DefaultOptions extends DelegatingOptions {
         return SubclassExhaustiveStrategyGem.valueOf( mapper.subclassExhaustiveStrategy().getDefaultValue() );
     }
 
+    public TypeMirror getSubclassExhaustiveException() {
+        return mapper.subclassExhaustiveException().getDefaultValue();
+    }
+
     public NullValueMappingStrategyGem getNullValueIterableMappingStrategy() {
+        NullValueMappingStrategyGem nullValueIterableMappingStrategy = options.getNullValueIterableMappingStrategy();
+        if ( nullValueIterableMappingStrategy != null ) {
+            return nullValueIterableMappingStrategy;
+        }
         return NullValueMappingStrategyGem.valueOf( mapper.nullValueIterableMappingStrategy().getDefaultValue() );
     }
 
     public NullValueMappingStrategyGem getNullValueMapMappingStrategy() {
+        NullValueMappingStrategyGem nullValueMapMappingStrategy = options.getNullValueMapMappingStrategy();
+        if ( nullValueMapMappingStrategy != null ) {
+            return nullValueMapMappingStrategy;
+        }
         return NullValueMappingStrategyGem.valueOf( mapper.nullValueMapMappingStrategy().getDefaultValue() );
+    }
+
+    @Override
+    public ClassAccessibilityGem accessibility() {
+        return ClassAccessibilityGem.valueOf( mapper.accessibility().getDefaultValue() );
     }
 
     public BuilderGem getBuilder() {

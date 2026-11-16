@@ -5,19 +5,22 @@
  */
 package org.mapstruct.ap.internal.util.accessor;
 
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
 /**
+ * An {@link Accessor} that can be used for reading a property from a bean.
+ *
  * @author Filip Hrisafov
  */
 public interface ReadAccessor extends Accessor {
 
     String getReadValueSource();
 
-    static ReadAccessor fromField(VariableElement variableElement) {
-        return new ReadDelegateAccessor( new FieldElementAccessor( variableElement ) ) {
+    static ReadAccessor fromField(VariableElement variableElement, TypeMirror accessedType) {
+        return new ReadDelegateAccessor( new ElementAccessor( variableElement, accessedType ) ) {
             @Override
             public String getReadValueSource() {
                 return getSimpleName();
@@ -25,8 +28,17 @@ public interface ReadAccessor extends Accessor {
         };
     }
 
+    static ReadAccessor fromRecordComponent(Element element, TypeMirror accessedType) {
+        return new ReadDelegateAccessor( new ElementAccessor( element, accessedType, AccessorType.GETTER ) ) {
+            @Override
+            public String getReadValueSource() {
+                return getSimpleName() + "()";
+            }
+        };
+    }
+
     static ReadAccessor fromGetter(ExecutableElement element, TypeMirror accessedType) {
-        return new ReadDelegateAccessor( new ExecutableElementAccessor( element, accessedType, AccessorType.GETTER ) ) {
+        return new ReadDelegateAccessor( new ElementAccessor( element, accessedType, AccessorType.GETTER ) ) {
             @Override
             public String getReadValueSource() {
                 return getSimpleName() + "()";

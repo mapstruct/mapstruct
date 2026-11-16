@@ -18,7 +18,7 @@ import org.mapstruct.TargetType;
  */
 public class MappingContext {
 
-    private final List<String> invokedMethods = new ArrayList<String>();
+    private final List<String> invokedMethods = new ArrayList<>();
 
     @BeforeMapping
     public void beforeWithoutParameters() {
@@ -74,7 +74,15 @@ public class MappingContext {
     public Order afterWithBuilderTargetReturningTarget(@MappingTarget Order.Builder orderBuilder) {
         invokedMethods.add( "afterWithBuilderTargetReturningTarget" );
 
-        return orderBuilder.create();
+        // return null, so that @AfterMapping methods on the finalized object will be called in the tests
+        return null;
+    }
+
+    @AfterMapping
+    public Order afterWithTargetReturningTarget(@MappingTarget Order order) {
+        invokedMethods.add( "afterWithTargetReturningTarget" );
+
+        return order;
     }
 
     public List<String> getInvokedMethods() {

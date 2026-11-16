@@ -15,6 +15,8 @@ import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ * Represents an annotation element.
+ *
  * @author Ben Zegveld
  */
 public class AnnotationElement extends ModelElement {

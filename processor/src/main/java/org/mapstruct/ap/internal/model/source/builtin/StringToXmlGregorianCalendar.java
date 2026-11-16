@@ -19,6 +19,8 @@ import org.mapstruct.ap.internal.model.common.TypeFactory;
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
 /**
+ * A built-in method for converting from {@link String} to {@code XMLGregorianCalendar}.
+ *
  * @author Sjaak Derksen
  */
 public class StringToXmlGregorianCalendar extends AbstractToXmlGregorianCalendar {

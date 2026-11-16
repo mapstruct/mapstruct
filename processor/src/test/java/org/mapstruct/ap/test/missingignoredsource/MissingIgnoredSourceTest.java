@@ -22,7 +22,7 @@ public class MissingIgnoredSourceTest {
         diagnostics = {
             @Diagnostic(type = ErroneousSourceTargetMapper.class,
                 kind = Kind.ERROR,
-                line = 20,
+                line = 18,
                 message = "Ignored unknown source property: \"bar\".")
         }
     )

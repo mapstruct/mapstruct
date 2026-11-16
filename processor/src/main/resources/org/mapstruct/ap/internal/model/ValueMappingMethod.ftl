@@ -10,7 +10,7 @@
     <#nt><@includeModel object=annotation/>
 </#list>
 <#if overridden>@Override</#if>
-<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) {
+<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
         <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
         <#if !callback_has_next>
@@ -21,15 +21,35 @@
         <#if nullTarget.targetAsException>throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>return <@writeTarget target=nullTarget.target/>;</#if>
     }
 
-    <@includeModel object=resultType/> ${resultName};
+    <#if versionInformation.isSourceVersionAtLeast14()>
+        <#if valueMappings.empty>
+            <#if defaultTarget.targetAsException>
+                <@includeModel object=resultType/> ${resultName};
+                throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );
+            <#else>
+                <@includeModel object=resultType/> ${resultName} = <@writeTarget target=defaultTarget.target/>;
+            </#if>
+        <#else>
+            <@includeModel object=resultType/> ${resultName} = switch ( ${sourceParameter.name} ) {
+                <#list valueMappings as valueMapping>
+                    case <@writeSource source=valueMapping.source/> -> <#if valueMapping.targetAsException > throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else><@writeTarget target=valueMapping.target/>;</#if>
+                </#list>
+                <#if isDefaultTargetRequired()>
+                    default -> <#if defaultTarget.targetAsException>throw new <@includeModel object=unexpectedValueMappingException/>( "Unexpected enum constant: " + ${sourceParameter.name} )<#else><@writeTarget target=defaultTarget.target/></#if>;
+                </#if>
+            };
+        </#if>
+    <#else>
+        <@includeModel object=resultType/> ${resultName};
 
-    switch ( ${sourceParameter.name} ) {
-    <#list valueMappings as valueMapping>
-        case <@writeSource source=valueMapping.source/>: <#if valueMapping.targetAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>${resultName} = <@writeTarget target=valueMapping.target/>;
-        break;</#if>
-    </#list>
-    default: <#if defaultTarget.targetAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget.target/></#if>;
-    }
+        switch ( ${sourceParameter.name} ) {
+        <#list valueMappings as valueMapping>
+            case <@writeSource source=valueMapping.source/>: <#if valueMapping.targetAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>${resultName} = <@writeTarget target=valueMapping.target/>;
+            break;</#if>
+        </#list>
+        default: <#if defaultTarget.targetAsException >throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} )<#else>${resultName} = <@writeTarget target=defaultTarget.target/></#if>;
+        }
+    </#if>
     <#list beforeMappingReferencesWithMappingTarget as callback>
         <#if callback_index = 0>
 
@@ -48,24 +68,28 @@
     </#if>
 }
 <#macro writeSource source="">
-    <@compress single_line=true>
-        <#if sourceParameter.type.enumType>
-             ${source}
-        <#elseif sourceParameter.type.string>
-            "${source}"
-        </#if>
-    </@compress>
+    <#if sourceParameter.type.enumType>
+        ${source}<#t>
+    <#elseif sourceParameter.type.string>
+        "${source}"<#t>
+    </#if>
 </#macro>
 <#macro writeTarget target="">
-    <@compress single_line=true>
-        <#if target?has_content>
-            <#if returnType.enumType>
-                <@includeModel object=returnType/>.${target}
-            <#elseif returnType.string>
-                "${target}"
-            </#if>
-        <#else>
-            null
+    <#if target?has_content>
+        <#if returnType.enumType>
+            <@includeModel object=returnType/>.${target}<#t>
+        <#elseif returnType.string>
+            "${target}"<#t>
         </#if>
+    <#else>
+        null<#t>
+    </#if>
+</#macro>
+<#macro throws>
+    <#if (thrownTypes?size > 0)><#lt> throws </#if><@compress single_line=true>
+        <#list thrownTypes as exceptionType>
+            <@includeModel object=exceptionType/>
+            <#if exceptionType_has_next>, </#if><#t>
+        </#list>
     </@compress>
 </#macro>

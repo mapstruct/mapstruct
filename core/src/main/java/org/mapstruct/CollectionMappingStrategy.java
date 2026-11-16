@@ -7,6 +7,54 @@ package org.mapstruct;
 
 /**
  * Strategy for propagating the value of collection-typed properties from source to target.
+ * <p>
+ * In the table below, the dash {@code -} indicates a property name.
+ * Next, the trailing {@code s} indicates the plural form.
+ * The table explains the options and how they are applied to the presence / absence of a
+ * {@code set-s}, {@code add-} and / or {@code get-s} method on the target object.
+ * <table>
+ *     <caption>Collection mapping strategy options</caption>
+ *     <tr>
+ *         <th>Option</th>
+ *         <th>Only target set-s Available</th>
+ *         <th>Only target add- Available</th>
+ *         <th>Both set-s/add- Available</th>
+ *         <th>No set-s/add- Available</th>
+ *         <th>Existing Target ({@code @TargetType})</th>
+ *     </tr>
+ *     <tr>
+ *         <td>{@link #ACCESSOR_ONLY}</td>
+ *         <td>set-s</td>
+ *         <td>get-s</td>
+ *         <td>set-s</td>
+ *         <td>get-s</td>
+ *         <td>get-s</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@link #SETTER_PREFERRED}</td>
+ *         <td>set-s</td>
+ *         <td>add-</td>
+ *         <td>set-s</td>
+ *         <td>get-s</td>
+ *         <td>get-s</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@link #ADDER_PREFERRED}</td>
+ *         <td>set-s</td>
+ *         <td>add-</td>
+ *         <td>add-</td>
+ *         <td>get-s</td>
+ *         <td>get-s</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@link #TARGET_IMMUTABLE}</td>
+ *         <td>set-s</td>
+ *         <td>exception</td>
+ *         <td>set-s</td>
+ *         <td>exception</td>
+ *         <td>set-s</td>
+ *     </tr>
+ * </table>
  *
  * @author Sjaak Derksen
  */

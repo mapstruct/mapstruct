@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.Parameter;
+import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
@@ -30,31 +31,50 @@ public abstract class ContainerMappingMethod extends NormalTypeMappingMethod {
     private final SelectionParameters selectionParameters;
     private final String index1Name;
     private final String index2Name;
+    private final Parameter sourceParameter;
+    private final PresenceCheck sourceParameterPresenceCheck;
     private IterableCreation iterableCreation;
 
+    //CHECKSTYLE:OFF
     ContainerMappingMethod(Method method, List<Annotation> annotations,
                            Collection<String> existingVariables, Assignment parameterAssignment,
         MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
         List<LifecycleCallbackMethodReference> beforeMappingReferences,
         List<LifecycleCallbackMethodReference> afterMappingReferences,
-        SelectionParameters selectionParameters) {
+        SelectionParameters selectionParameters, PresenceCheck sourceParameterPresenceCheck) {
+        //CHECKSTYLE:ON
         super( method, annotations, existingVariables, factoryMethod, mapNullToDefault, beforeMappingReferences,
             afterMappingReferences );
         this.elementAssignment = parameterAssignment;
         this.loopVariableName = loopVariableName;
-        this.selectionParameters = selectionParameters;
+        this.selectionParameters = selectionParameters != null ? selectionParameters : SelectionParameters.empty();
+
         this.index1Name = Strings.getSafeVariableName( "i", existingVariables );
         this.index2Name = Strings.getSafeVariableName( "j", existingVariables );
-    }
 
-    public Parameter getSourceParameter() {
+        Parameter sourceParameter = null;
         for ( Parameter parameter : getParameters() ) {
             if ( !parameter.isMappingTarget() && !parameter.isMappingContext() ) {
-                return parameter;
+                sourceParameter = parameter;
+                break;
             }
         }
 
-        throw new IllegalStateException( "Method " + this + " has no source parameter." );
+        if ( sourceParameter == null ) {
+            throw new IllegalStateException( "Method " + this + " has no source parameter." );
+        }
+
+        this.sourceParameter = sourceParameter;
+        this.sourceParameterPresenceCheck = sourceParameterPresenceCheck;
+
+    }
+
+    public Parameter getSourceParameter() {
+        return sourceParameter;
+    }
+
+    public PresenceCheck getSourceParameterPresenceCheck() {
+        return sourceParameterPresenceCheck;
     }
 
     public IterableCreation getIterableCreation() {

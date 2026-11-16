@@ -24,14 +24,15 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 
-import org.mapstruct.ap.internal.gem.BuilderGem;
 import org.mapstruct.ap.internal.gem.DecoratedWithGem;
 import org.mapstruct.ap.internal.gem.InheritConfigurationGem;
 import org.mapstruct.ap.internal.gem.InheritInverseConfigurationGem;
+import org.mapstruct.ap.internal.gem.JavadocGem;
 import org.mapstruct.ap.internal.gem.MapperGem;
 import org.mapstruct.ap.internal.gem.MappingInheritanceStrategyGem;
 import org.mapstruct.ap.internal.gem.NullValueMappingStrategyGem;
 import org.mapstruct.ap.internal.model.AdditionalAnnotationsBuilder;
+import org.mapstruct.ap.internal.model.Annotation;
 import org.mapstruct.ap.internal.model.BeanMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethod;
 import org.mapstruct.ap.internal.model.ContainerMappingMethodBuilder;
@@ -40,6 +41,7 @@ import org.mapstruct.ap.internal.model.DefaultMapperReference;
 import org.mapstruct.ap.internal.model.DelegatingMethod;
 import org.mapstruct.ap.internal.model.Field;
 import org.mapstruct.ap.internal.model.IterableMappingMethod;
+import org.mapstruct.ap.internal.model.Javadoc;
 import org.mapstruct.ap.internal.model.MapMappingMethod;
 import org.mapstruct.ap.internal.model.Mapper;
 import org.mapstruct.ap.internal.model.MapperReference;
@@ -117,7 +119,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             elementUtils,
             typeUtils,
             messager,
+            versionInformation,
             accessorNaming,
+            context.getNullabilityResolver(),
             context.getEnumMappingStrategy(),
             context.getEnumTransformationStrategies(),
             options,
@@ -193,7 +197,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         addAllFieldsIn( mappingContext.getUsedSupportedMappings(), supportingFieldSet );
         fields.addAll( supportingFieldSet );
 
-        // handle constructorfragments
+        // handle constructor fragments
         Set<SupportingConstructorFragment> constructorFragments = new LinkedHashSet<>();
         addAllFragmentsIn( mappingContext.getUsedSupportedMappings(), constructorFragments );
 
@@ -212,6 +216,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .implPackage( mapperOptions.implementationPackage() )
             .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
             .additionalAnnotations( additionalAnnotationsBuilder.getProcessedAnnotations( element ) )
+            .javadoc( getJavadoc( element ) )
+            .classAccessibility( mapperOptions.accessibility() )
             .build();
 
         if ( !mappingContext.getForgedMethodsUnderCreation().isEmpty() ) {
@@ -284,6 +290,9 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             messager.printMessage( element, decoratedWith.mirror(), Message.DECORATOR_CONSTRUCTOR );
         }
 
+        // Get annotations from the decorator class
+        Set<Annotation> decoratorAnnotations = additionalAnnotationsBuilder.getProcessedAnnotations( decoratorElement );
+
         Decorator decorator = new Decorator.Builder()
             .elementUtils( elementUtils )
             .typeFactory( typeFactory )
@@ -297,6 +306,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             .implPackage( mapperOptions.implementationPackage() )
             .extraImports( getExtraImports( element, mapperOptions ) )
             .suppressGeneratorTimestamp( mapperOptions.suppressTimestampInGenerated() )
+            .additionalAnnotations( decoratorAnnotations )
             .build();
 
         return decorator;
@@ -412,15 +422,10 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             }
             else {
                 this.messager.note( 1, Message.BEANMAPPING_CREATE_NOTE, method );
-                BuilderGem builder = method.getOptions().getBeanMapping().getBuilder();
-                Type userDefinedReturnType = getUserDesiredReturnType( method );
-                Type builderBaseType = userDefinedReturnType != null ? userDefinedReturnType : method.getReturnType();
                 BeanMappingMethod.Builder beanMappingBuilder = new BeanMappingMethod.Builder();
                 BeanMappingMethod beanMappingMethod = beanMappingBuilder
                     .mappingContext( mappingContext )
                     .sourceMethod( method )
-                    .userDefinedReturnType( userDefinedReturnType )
-                    .returnTypeBuilder( typeFactory.builderTypeFor( builderBaseType, builder ) )
                     .build();
 
                 // We can consider that the bean mapping method can always be constructed. If there is a problem
@@ -441,12 +446,21 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return mappingMethods;
     }
 
-    private Type getUserDesiredReturnType(SourceMethod method) {
-        SelectionParameters selectionParameters = method.getOptions().getBeanMapping().getSelectionParameters();
-        if ( selectionParameters != null && selectionParameters.getResultType() != null ) {
-            return typeFactory.getType( selectionParameters.getResultType() );
+    private Javadoc getJavadoc(TypeElement element) {
+        JavadocGem javadocGem = JavadocGem.instanceOn( element );
+
+        if ( javadocGem == null || !isConsistent( javadocGem, element, messager ) ) {
+            return null;
         }
-        return null;
+
+        Javadoc javadoc = new Javadoc.Builder()
+                .value( javadocGem.value().getValue() )
+                .authors( javadocGem.authors().getValue() )
+                .deprecated( javadocGem.deprecated().getValue() )
+                .since( javadocGem.since().getValue() )
+                .build();
+
+        return javadoc;
     }
 
     private <M extends ContainerMappingMethod> M createWithElementMappingMethod(SourceMethod method,
@@ -545,7 +559,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         }
 
         // @BeanMapping( ignoreByDefault = true )
-        if ( mappingOptions.getBeanMapping() != null && mappingOptions.getBeanMapping().isignoreByDefault() ) {
+        if ( mappingOptions.getBeanMapping() != null && mappingOptions.getBeanMapping().isIgnoredByDefault() ) {
             mappingOptions.applyIgnoreAll( method, typeFactory, mappingContext.getMessager() );
         }
 
@@ -612,7 +626,7 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
                     reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, inverseConfiguration );
                 }
                 else {
-                    reportErrorWhenAmbigousReverseMapping( candidates, method, inverseConfiguration );
+                    reportErrorWhenAmbiguousReverseMapping( candidates, method, inverseConfiguration );
                 }
             }
         }
@@ -682,21 +696,21 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             else if ( candidates.size() > 1 ) {
                 // ambiguity: find a matching method that matches configuredBy
 
-                List<SourceMethod> nameFilteredcandidates = new ArrayList<>();
+                List<SourceMethod> nameFilteredCandidates = new ArrayList<>();
                 for ( SourceMethod candidate : candidates ) {
                     if ( candidate.getName().equals( name ) ) {
-                        nameFilteredcandidates.add( candidate );
+                        nameFilteredCandidates.add( candidate );
                     }
                 }
 
-                if ( nameFilteredcandidates.size() == 1 ) {
-                    resultMethod = first( nameFilteredcandidates );
+                if ( nameFilteredCandidates.size() == 1 ) {
+                    resultMethod = first( nameFilteredCandidates );
                 }
-                else if ( nameFilteredcandidates.size() > 1 ) {
-                    reportErrorWhenSeveralNamesMatch( nameFilteredcandidates, method, inheritConfiguration );
+                else if ( nameFilteredCandidates.size() > 1 ) {
+                    reportErrorWhenSeveralNamesMatch( nameFilteredCandidates, method, inheritConfiguration );
                 }
                 else {
-                    reportErrorWhenAmbigousMapping( candidates, method, inheritConfiguration );
+                    reportErrorWhenAmbiguousMapping( candidates, method, inheritConfiguration );
                 }
             }
         }
@@ -709,8 +723,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         return inheritConfiguration == null ? null : inheritConfiguration.mirror();
     }
 
-    private void reportErrorWhenAmbigousReverseMapping(List<SourceMethod> candidates, SourceMethod method,
-                   InheritInverseConfigurationGem inverseGem) {
+    private void reportErrorWhenAmbiguousReverseMapping(List<SourceMethod> candidates, SourceMethod method,
+                                                        InheritInverseConfigurationGem inverseGem) {
 
         List<String> candidateNames = new ArrayList<>();
         for ( SourceMethod candidate : candidates ) {
@@ -760,8 +774,8 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
         );
     }
 
-    private void reportErrorWhenAmbigousMapping(List<SourceMethod> candidates, SourceMethod method,
-                                                InheritConfigurationGem gem) {
+    private void reportErrorWhenAmbiguousMapping(List<SourceMethod> candidates, SourceMethod method,
+                                                 InheritConfigurationGem gem) {
 
         List<String> candidateNames = new ArrayList<>();
         for ( SourceMethod candidate : candidates ) {
@@ -809,5 +823,16 @@ public class MapperCreationProcessor implements ModelElementProcessor<List<Sourc
             gem.name().get(),
             onlyCandidate.getName()
         );
+    }
+
+    private boolean isConsistent( JavadocGem gem, TypeElement element, FormattingMessager messager ) {
+        if ( !gem.value().hasValue()
+            && !gem.authors().hasValue()
+            && !gem.deprecated().hasValue()
+            && !gem.since().hasValue() ) {
+            messager.printMessage( element, gem.mirror(), Message.JAVADOC_NO_ELEMENTS );
+            return false;
+        }
+        return true;
     }
 }

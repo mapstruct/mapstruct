@@ -64,12 +64,17 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 @Retention( CLASS )
 @Target( { TYPE, METHOD, ANNOTATION_TYPE } )
 public @interface AnnotateWith {
+
     /**
+     * The annotation class that needs to be added.
+     *
      * @return the annotation class that needs to be added.
      */
     Class<? extends Annotation> value();
 
     /**
+     * The annotation elements that are to be applied to the annotation that should be added.
+     *
      * @return the annotation elements that are to be applied to this annotation.
      */
     Element[] elements() default {};
@@ -83,6 +88,8 @@ public @interface AnnotateWith {
      */
     @interface Element {
         /**
+         * The name of the annotation element.
+         *
          * @return name of the annotation element.
          */
         String name() default "value";

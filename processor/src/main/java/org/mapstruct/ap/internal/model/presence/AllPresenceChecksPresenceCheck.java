@@ -11,10 +11,13 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.ModelElement;
+import org.mapstruct.ap.internal.model.common.NegatePresenceCheck;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
 
 /**
+ * A {@link PresenceCheck} that checks if all the given presence checks are present.
+ *
  * @author Filip Hrisafov
  */
 public class AllPresenceChecksPresenceCheck extends ModelElement implements PresenceCheck {
@@ -27,6 +30,11 @@ public class AllPresenceChecksPresenceCheck extends ModelElement implements Pres
 
     public Collection<PresenceCheck> getPresenceChecks() {
         return presenceChecks;
+    }
+
+    @Override
+    public PresenceCheck negate() {
+        return new NegatePresenceCheck( this );
     }
 
     @Override

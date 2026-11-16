@@ -9,21 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mapstruct.ap.internal.model.common.ParameterBinding;
-import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.source.Method;
 
 /**
- * Selector that tries to resolve an ambiquity between methods that contain source parameters and
+ * Selector that tries to resolve an ambiguity between methods that contain source parameters and
  * {@link org.mapstruct.ap.internal.model.common.SourceRHS SourceRHS} type parameters.
  * @author Filip Hrisafov
  */
 public class SourceRhsSelector implements MethodSelector {
 
     @Override
-    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(Method mappingMethod,
-                                                                         List<SelectedMethod<T>> candidates,
-                                                                         List<Type> sourceTypes, Type mappingTargetType,
-                                                                         Type returnType, SelectionCriteria criteria) {
+    public <T extends Method> List<SelectedMethod<T>> getMatchingMethods(List<SelectedMethod<T>> candidates,
+                                                                         SelectionContext context) {
+        SelectionCriteria criteria = context.getSelectionCriteria();
         if ( candidates.size() < 2 || criteria.getSourceRHS() == null ) {
             return candidates;
         }

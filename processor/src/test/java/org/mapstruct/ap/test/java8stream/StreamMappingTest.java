@@ -225,4 +225,74 @@ public class StreamMappingTest {
         assertThat( mappedSource ).isNotNull();
         assertThat( mappedSource.getStringStream3() ).containsExactly( "Bill", "Bob" );
     }
+
+    @ProcessorTest
+    public void shouldMapIntegerToIntegerArray() {
+        Source source = new Source();
+        source.setIntegerStream2( Stream.of( 1, 2 ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getIntegerArray() ).containsExactly( 1, 2 );
+    }
+
+    @ProcessorTest
+    public void shouldReverseIntegerToIntegerArray() {
+        Target target = new Target();
+        target.setIntegerArray( new Integer[]{ 1, 2 } );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getIntegerStream2() ).containsExactly( 1, 2 );
+    }
+
+    @ProcessorTest
+    public void shouldMapIntegerArrayToIntegerMultiArray() {
+        Source source = new Source();
+        source.setIntegerArrayStream( Stream.of( new Integer[]{ 1, 2 }, new Integer[]{ 2, 3 }  ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getIntegerMultiArray() )
+                .isDeepEqualTo( new Integer[][]{ new Integer[]{ 1, 2 }, new Integer[]{ 2, 3 } } );
+    }
+
+    @ProcessorTest
+    public void shouldReverseIntegerArrayToIntegerMultiArray() {
+        Target target = new Target();
+        target.setIntegerMultiArray( new Integer[][]{ new Integer[]{ 1, 2 }, new Integer[]{ 2, 3 } } );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getIntegerArrayStream() ).containsExactly( new Integer[]{ 1, 2 }, new Integer[]{ 2, 3 } );
+    }
+
+    @ProcessorTest
+    public void shouldMapTypeWithGenericsToArrayWithGenerics() {
+        Source source = new Source();
+        Comparable<String> comparable = o -> 0;
+        source.setStreamWithGenerics( Stream.of( comparable ) );
+
+        Target target = SourceTargetMapper.INSTANCE.sourceToTarget( source );
+
+        assertThat( target ).isNotNull();
+        assertThat( target.getArrayWithGenerics() ).containsExactly( comparable );
+    }
+
+    @ProcessorTest
+    @SuppressWarnings("unchecked")
+    public void shouldReverseMapTypeWithGenericsToArrayWithGenerics() {
+        Target target = new Target();
+        Comparable<String> comparable = o -> 0;
+        target.setArrayWithGenerics( new Comparable[]{ comparable } );
+
+        Source source = SourceTargetMapper.INSTANCE.targetToSource( target );
+
+        assertThat( source ).isNotNull();
+        assertThat( source.getStreamWithGenerics() ).containsExactly( comparable );
+    }
 }
