@@ -941,15 +941,9 @@ public class PropertyMapping extends ModelElement {
         }
 
         /**
-         * An {@code Optional} source property is checked with {@code isPresent()}, which throws a
-         * {@code NullPointerException} when the {@code Optional} reference itself is {@code null}. With
-         * {@link org.mapstruct.NullValueCheckStrategy#ALWAYS} the user asked for the source to be null checked
-         * before it is used, so the presence check is combined with a null check.
-         *
-         * @param sourceReference the source reference the presence check is created for
-         * @param sourceRHS the source right hand side
-         *
-         * @return the null safe presence check, or {@code null} if it does not apply
+         * With {@link org.mapstruct.NullValueCheckStrategy#ALWAYS} a {@code null} {@code Optional} source must not
+         * be dereferenced. Outside update methods an {@code Optional} target receives the source as is, so
+         * {@code Optional.empty()} is kept; update methods leave empty to {@code NullValuePropertyMappingStrategy}.
          */
         private PresenceCheck getNullSafeOptionalPresenceCheck(SourceReference sourceReference, SourceRHS sourceRHS) {
             if ( nvcs != ALWAYS || sourceReference.isNested() || sourceReference.getPropertyEntries().isEmpty() ) {
@@ -968,6 +962,9 @@ public class PropertyMapping extends ModelElement {
             }
 
             String reference = sourceRHS.getSourceReference();
+            if ( !method.isUpdateMethod() && targetType != null && targetType.isOptionalType() ) {
+                return new NullPresenceCheck( reference );
+            }
             return new AllPresenceChecksPresenceCheck( Arrays.asList(
                 new NullPresenceCheck( reference ),
                 new OptionalPresenceCheck( reference, ctx.getVersionInformation() )

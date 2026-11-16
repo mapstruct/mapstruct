@@ -48,7 +48,7 @@ class OptionalNullCheckAlwaysTest {
         source.setOptionalToOptional( Optional.empty() );
 
         Target target = OptionalNullCheckAlwaysMapper.INSTANCE.toTarget( source );
-        assertThat( target.isOptionalToOptionalCalled() ).isFalse();
+        assertThat( target.isOptionalToOptionalCalled() ).isTrue();
     }
 
     @ProcessorTest
@@ -57,6 +57,36 @@ class OptionalNullCheckAlwaysTest {
         source.setOptionalToOptional( Optional.of( "some value" ) );
 
         Target target = OptionalNullCheckAlwaysMapper.INSTANCE.toTarget( source );
+        assertThat( target.isOptionalToOptionalCalled() ).isTrue();
+    }
+
+    @ProcessorTest
+    void updateOptionalToOptionalWhenNull() {
+        Source source = new Source();
+        source.setOptionalToOptional( null );
+
+        Target target = new Target();
+        OptionalNullCheckAlwaysMapper.INSTANCE.update( target, source );
+        assertThat( target.isOptionalToOptionalCalled() ).isFalse();
+    }
+
+    @ProcessorTest
+    void updateOptionalToOptionalWhenEmpty() {
+        Source source = new Source();
+        source.setOptionalToOptional( Optional.empty() );
+
+        Target target = new Target();
+        OptionalNullCheckAlwaysMapper.INSTANCE.update( target, source );
+        assertThat( target.isOptionalToOptionalCalled() ).isFalse();
+    }
+
+    @ProcessorTest
+    void updateOptionalToOptionalWhenPresent() {
+        Source source = new Source();
+        source.setOptionalToOptional( Optional.of( "some value" ) );
+
+        Target target = new Target();
+        OptionalNullCheckAlwaysMapper.INSTANCE.update( target, source );
         assertThat( target.isOptionalToOptionalCalled() ).isTrue();
     }
 
