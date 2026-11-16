@@ -146,6 +146,11 @@ public class MappingResolverImpl implements MappingResolver {
     }
 
     @Override
+    public boolean hasBuiltInConversion(Type sourceType, Type targetType) {
+        return conversions.getConversion( sourceType, targetType ) != null;
+    }
+
+    @Override
     public Set<SupportingMappingMethod> getUsedSupportedMappings() {
         return usedSupportedMappings;
     }

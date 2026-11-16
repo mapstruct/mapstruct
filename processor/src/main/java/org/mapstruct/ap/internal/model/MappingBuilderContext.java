@@ -102,6 +102,8 @@ public class MappingBuilderContext {
                                        AnnotationMirror positionHint,
                                        Supplier<Assignment> forger);
 
+        boolean hasBuiltInConversion(Type sourceType, Type targetType);
+
         Set<SupportingMappingMethod> getUsedSupportedMappings();
 
         Set<Field> getUsedSupportedFields();
