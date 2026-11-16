@@ -41,13 +41,13 @@ public class OverloadingTest {
     }
 
     @ProcessorTest
-    @WithClasses( { SourceIncompatibleTargetMapper.class, IncompatibleTarget.class } )
+    @WithClasses( { ErroneousSourceIncompatibleTargetMapper.class, IncompatibleTarget.class } )
     @ExpectedCompilationOutcome(
         value = CompilationResult.FAILED,
         diagnostics = {
-            @Diagnostic(type = SourceIncompatibleTargetMapper.class,
+            @Diagnostic(type = ErroneousSourceIncompatibleTargetMapper.class,
                 kind = Kind.ERROR,
-                line = 17,
+                line = 14,
                 message =  "Can't map property \"Date updatedOn\" to \"Map<Integer,Void> updatedOn\". "
                     + "Consider to declare/implement a mapping method: \"Map<Integer,Void> map(Date value)\".")
         }

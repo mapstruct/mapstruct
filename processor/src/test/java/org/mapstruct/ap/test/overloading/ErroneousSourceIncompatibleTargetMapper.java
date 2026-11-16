@@ -7,12 +7,9 @@ package org.mapstruct.ap.test.overloading;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
 
 @Mapper( unmappedTargetPolicy = ReportingPolicy.ERROR )
-public interface SourceIncompatibleTargetMapper {
-
-    SourceIncompatibleTargetMapper INSTANCE = Mappers.getMapper( SourceIncompatibleTargetMapper.class );
+public interface ErroneousSourceIncompatibleTargetMapper {
 
     IncompatibleTarget sourceToTarget(Source source);
 
