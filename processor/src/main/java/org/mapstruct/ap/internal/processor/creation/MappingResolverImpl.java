@@ -914,7 +914,7 @@ public class MappingResolverImpl implements MappingResolver {
                     // parameter, otherwise the helper's call to the method cannot resolve them
                     List<Parameter> parameters = get2StepParameters( methodX, parameter,
                             parameterBindings );
-                    NullSafe2StepMappingMethod nullSafe2StepMappingMethod = new NullSafe2StepMappingMethod(
+                    NullSafe2StepMappingMethod nullSafe2StepMappingMethod = NullSafe2StepMappingMethod.create(
                             existingVariableNames, methodRefX, parameters,
                             methodRefY, parameter1.getType(),
                             TypeInstance.of( targetType, returnTypNullability ),
@@ -1195,7 +1195,7 @@ public class MappingResolverImpl implements MappingResolver {
                     // parameter, otherwise the helper's call to the method cannot resolve them
                     List<Parameter> parameters = MethodMethod.get2StepParameters( methodX, parameter,
                             parameterBindings );
-                    NullSafe2StepMappingMethod nullSafe2StepMappingMethod = new NullSafe2StepMappingMethod(
+                    NullSafe2StepMappingMethod nullSafe2StepMappingMethod = NullSafe2StepMappingMethod.create(
                              existingVariableNames, methodRefX, parameters,
                              conversionRefY.assignment, conversionRefY.sourceType,
                              TypeInstance.of( conversionRefY.targetType, returnTypNullability ),

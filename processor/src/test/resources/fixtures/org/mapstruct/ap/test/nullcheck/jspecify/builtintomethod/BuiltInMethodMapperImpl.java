@@ -23,7 +23,10 @@ public class BuiltInMethodMapperImpl implements BuiltInMethodMapper {
 
         BuiltInMethodTargetBean builtInMethodTargetBean = new BuiltInMethodTargetBean();
 
-        builtInMethodTargetBean.setLength( jaxbElemToValueToint( source.getElem() ) );
+        Integer length = jaxbElemToValueToint( source.getElem() );
+        if ( length != null ) {
+            builtInMethodTargetBean.setLength( length );
+        }
 
         return builtInMethodTargetBean;
     }
@@ -36,10 +39,10 @@ public class BuiltInMethodMapperImpl implements BuiltInMethodMapper {
         return element.isNil() ? null : element.getValue();
     }
 
-    private int jaxbElemToValueToint(JAXBElement<String> element) {
+    private Integer jaxbElemToValueToint(JAXBElement<String> element) {
         String jAXBElement = jaxbElemToValue( element );
         if (jAXBElement == null) {
-            return 0;
+            return null;
         }
         return toLength( jAXBElement );
     }
