@@ -47,7 +47,6 @@
     <#-- Once #148 has been addressed, the simple name of Map.Entry can be used -->
     for ( java.util.Map.Entry<<#list sourceElementTypes as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {
     <#-- key -->
-        <#-- TODO what do we do with null values? -->
         <@lib.handleVariableNullCheck keyAssignment.needsParameterNullCheck() keyAssignment.sourceReference>
         <@includeModel object=keyAssignment
                    targetWriteAccessorName=keyVariableName
@@ -59,6 +58,12 @@
                    targetType=resultElementTypes[1].typeBound/>
         ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
         </@lib.handleVariableNullCheck>
+        <#-- A null source value is put as null into the target map instead of the entry being skipped. -->
+        <#if defaultValueAssignment??>
+        else {
+            ${resultName}.put( ${keyVariableName}, <@includeModel object=defaultValueAssignment/> );
+        }
+        </#if>
         </@lib.handleVariableNullCheck>
     }
     <#list afterMappingReferences as callback>

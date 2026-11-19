@@ -38,6 +38,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
     private final Assignment keyAssignment;
     private final Assignment valueAssignment;
+    private final Assignment defaultValueAssignment;
     private final Parameter sourceParameter;
     private final PresenceCheck sourceParameterPresenceCheck;
     private IterableCreation iterableCreation;
@@ -208,6 +209,16 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                     .getFactoryMethod( method, null, ctx );
             }
 
+            // If the value assignment needs a null check, null source values are explicitly put as null into the target
+            // map instead of the entry being skipped. The target value type of a Map is always nullable, so there is no
+            // "skip" variant (unlike container elements).
+            Assignment defaultValueAssignment = null;
+            if ( valueAssignment != null && valueAssignment.needsParameterNullCheck() ) {
+                defaultValueAssignment = new SourceRHS( valueTargetType.getNull(), valueTargetType, new HashSet<>(),
+                        "map value set to null",
+                        Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
+            }
+
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType, false );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes(), valueTargetType, false );
 
@@ -227,6 +238,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 existingVariables,
                 keyAssignment,
                 valueAssignment,
+                defaultValueAssignment,
                 factoryMethod,
                 mapNullToDefault,
                 beforeMappingMethods,
@@ -245,7 +257,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
     //CHECKSTYLE:OFF
     private MapMappingMethod(Method method, List<Annotation> annotations,
                              Collection<String> existingVariableNames, Assignment keyAssignment,
-                             Assignment valueAssignment, MethodReference factoryMethod, boolean mapNullToDefault,
+                             Assignment valueAssignment, Assignment defaultValueAssignment,
+                             MethodReference factoryMethod, boolean mapNullToDefault,
                              List<LifecycleCallbackMethodReference> beforeMappingReferences,
                              List<LifecycleCallbackMethodReference> afterMappingReferences,
                              PresenceCheck sourceParameterPresenceCheck) {
@@ -255,6 +268,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
         this.keyAssignment = keyAssignment;
         this.valueAssignment = valueAssignment;
+        this.defaultValueAssignment = defaultValueAssignment;
         Parameter sourceParameter = null;
         for ( Parameter parameter : getParameters() ) {
             if ( !parameter.isMappingTarget() && !parameter.isMappingContext() ) {
@@ -296,6 +310,10 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
         return valueAssignment;
     }
 
+    public Assignment getDefaultValueAssignment() {
+        return defaultValueAssignment;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = super.getImportTypes();
@@ -305,6 +323,9 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
         }
         if ( valueAssignment != null ) {
             types.addAll( valueAssignment.getImportTypes() );
+        }
+        if ( defaultValueAssignment != null ) {
+            types.addAll( defaultValueAssignment.getImportTypes() );
         }
 
         if ( iterableCreation != null ) {

@@ -29,6 +29,9 @@ public class JSpecifyMapMethodMapperImpl implements JSpecifyMapMethodMapper {
                 NullMarkedTargetBean value = map( entry.getValue() );
                 map.put( key, value );
             }
+            else {
+                map.put( key, null );
+            }
         }
 
         return map;

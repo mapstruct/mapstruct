@@ -33,6 +33,9 @@ public class JSpecifyNonNullReturnMapMapperImpl implements JSpecifyNonNullReturn
                 NullMarkedTargetBean value = map( entry.getValue() );
                 map.put( key, value );
             }
+            else {
+                map.put( key, null );
+            }
         }
 
         return map;

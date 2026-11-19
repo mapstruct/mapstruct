@@ -452,6 +452,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
                     String value = new DecimalFormat( "##" ).format( entry.getValue() );
                     map.put( key, value );
                 }
+                else {
+                    map.put( key, null );
+                }
             }
         }
 
@@ -472,6 +475,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
                 if ( entry.getValue() != null ) {
                     String value = createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "fr" ) ).format( entry.getValue() );
                     map.put( key, value );
+                }
+                else {
+                    map.put( key, null );
                 }
             }
         }
@@ -506,6 +512,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
                     }
                     map.put( key, value );
                 }
+                else {
+                    map.put( key, null );
+                }
             }
         }
 
@@ -538,6 +547,9 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
                         throw new RuntimeException( e );
                     }
                     map.put( key, value );
+                }
+                else {
+                    map.put( key, null );
                 }
             }
         }
