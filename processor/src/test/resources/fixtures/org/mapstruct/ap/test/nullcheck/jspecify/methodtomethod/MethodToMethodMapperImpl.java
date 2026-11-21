@@ -29,7 +29,7 @@ public class MethodToMethodMapperImpl implements MethodToMethodMapper {
 
     private MyTargetValue wrapToMyTargetValue(String s) {
         MyWrapper string = wrap( s );
-        if (string == null) {
+        if ( string == null ) {
             return null;
         }
         return unwrap( string );

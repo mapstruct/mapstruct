@@ -338,6 +338,90 @@ When the return type of a mapping method is `@NonNull` (directly or via a `@Null
 
 If a property mapping would assign a potentially `null` source value to a `@NonNull` constructor parameter, MapStruct raises a *compilation error*. Neither inserting a null check (which would leave the variable at `null` and violate the contract) nor passing the value through is safe. Provide a `defaultValue` or `defaultExpression` on the `@Mapping` to satisfy the parameter when the source is absent.
 
+==== Method calls
+
+When MapStruct calls a method, such as a mapping method of the mapper, a method of a used mapper or a built-in conversion method, it only passes `null` to it when the parameter accepts `null`.
+If the parameter is `@NonNull` and the value can be `null`, a null check is added before the call.
+
+When the result of a method is passed on to a second method or to a conversion, the result of the first method can be `null` while the second step does not accept `null`.
+In that case MapStruct generates a private helper method that only applies the second step to a non-null result:
+
+.Mapper combining a method with a conversion
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+@Mapper
+public interface CarMapper {
+
+    @Named("seats")
+    default @Nullable Integer parseSeats(@Nullable String seats) {
+        return seats == null || seats.isEmpty() ? null : Integer.valueOf( seats );
+    }
+
+    @Mapping(target = "seatCount", source = "seats", qualifiedByName = "seats") // long seatCount
+    void updateCarDto(Car car, @MappingTarget CarDto carDto);
+}
+----
+====
+
+.Generated helper method
+====
+[source, java, linenums]
+[subs="verbatim,attributes"]
+----
+// GENERATED CODE
+public class CarMapperImpl implements CarMapper {
+
+    @Override
+    public void updateCarDto(Car car, CarDto carDto) {
+        if ( car == null ) {
+            return;
+        }
+
+        Long seatCount = parseSeatsTolong( car.getSeats() );
+        if ( seatCount != null ) {
+            carDto.setSeatCount( seatCount );
+        }
+    }
+
+    private Long parseSeatsTolong(String seats) {
+        Integer integer = parseSeats( seats );
+        if ( integer == null ) {
+            return null;
+        }
+        return integer.longValue();
+    }
+}
+----
+====
+
+For a primitive target the helper returns the wrapper type, so the regular null handling of the target property applies to a `null` result: in the example above an existing `seatCount` is kept.
+The helper for a method combined with a conversion is also generated for mappers that do not use JSpecify, as the result of a method without nullability information can be `null`.
+
+==== Arrays
+
+For arrays the position of the annotation matters (see the https://jspecify.dev/docs/user-guide/[JSpecify user guide]):
+
+* `@Nullable String[]`: the elements can be `null`, the array itself is `@NonNull` (in a `@NullMarked` scope)
+* `String @Nullable []`: the array itself can be `null`, the elements are `@NonNull` (in a `@NullMarked` scope)
+* `@Nullable String @Nullable []`: both the array and the elements can be `null`
+
+MapStruct uses the nullability of the array for the null check of the array itself and the nullability of the elements for the null checks of the elements.
+
+[NOTE]
+====
+The nullability of type arguments, e.g. `List<@Nullable String>`, is not taken into account yet.
+The elements of iterables, streams and maps are treated as nullable, see <<mapping-collections>>.
+====
+
+==== Value mappings
+
+For value mapping methods (see <<mapping-enum-types>>):
+
+* If the source parameter is `@NonNull`, no null check is generated for the source. A `@ValueMapping(source = MappingConstants.NULL, ...)` can never be applied in that case, so it is ignored and a warning is reported.
+* If the return type is `@NonNull`, a compilation error is reported when the method could return `null`: either when a `null` source would be mapped to `null` (define a `@ValueMapping(source = MappingConstants.NULL, target = ...)` or a custom `EnumMappingStrategy`), or when a source is explicitly mapped to `MappingConstants.NULL`.
+
 ==== Generated code
 
 When JSpecify is available on the compile classpath, MapStruct adds JSpecify nullness annotations to the generated code:
@@ -350,7 +434,7 @@ This applies to every generated method, including generated helper methods, buil
 
 ==== Disabling JSpecify support
 
-All JSpecify-driven behavior can be turned off by setting the processor option `-Amapstruct.disableJSpecify=true`. With the option enabled, MapStruct ignores every JSpecify annotation (`@NonNull`, `@Nullable`, `@NullMarked`, `@NullUnmarked`), the compilation error for nullable sources mapped to `@NonNull` constructor parameters is not raised and no JSpecify annotations are added to the generated code. Null-check generation falls back to the pre-JSpecify behavior driven by `NullValueCheckStrategy`. Use this flag when you need to freeze MapStruct's null-handling behavior while JSpecify annotations exist elsewhere on the classpath.
+All JSpecify-driven behavior can be turned off by setting the processor option `-Amapstruct.disableJSpecify=true`. With the option enabled, MapStruct ignores every JSpecify annotation (`@NonNull`, `@Nullable`, `@NullMarked`, `@NullUnmarked`), the compilation error for nullable sources mapped to `@NonNull` constructor parameters is not raised and no JSpecify annotations are added to the generated code. Null-check generation then only depends on the `NullValueCheckStrategy` and on the nullability that MapStruct knows itself (e.g. for primitive types and built-in conversion methods). Use this flag when you need to freeze MapStruct's null-handling behavior while JSpecify annotations exist elsewhere on the classpath.
 
 [[source-presence-check]]
 === Source presence checking

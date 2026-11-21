@@ -24,28 +24,37 @@ public class NullSafe2StepMappingMethod extends SupportingMappingMethod {
     private final Assignment second;
     private final Type intermediateType;
     private final String secondVariableName;
+    private final List<?> identity;
 
+    /**
+     * Creates a new null-safe two-step helper.
+     *
+     * @param identity the values that determine the generated helper body (e.g. the selected methods, the
+     * conversion and the formatting parameters). Two helpers with the same identity generate the same code, so the
+     * helper can be reused, see {@link #hasIdentity(List)}.
+     */
     public static NullSafe2StepMappingMethod create(Collection<String> existingVariableNames, Assignment first,
                                                      List<Parameter> parameters, Assignment second,
                                                      Type intermediateType,
                                                      TypeInstance targetType, String secondVariableName,
-                                                     String name) {
+                                                     String name, List<?> identity) {
         TypeInstance nullableTargetType = nullableTargetType( targetType );
         return new NullSafe2StepMappingMethod( existingVariableNames, first, parameters, second, intermediateType,
                 getImports( first, second, intermediateType, parameters, nullableTargetType.getType() ),
-                nullableTargetType, secondVariableName, name );
+                nullableTargetType, secondVariableName, name, identity );
     }
 
     private NullSafe2StepMappingMethod(Collection<String> existingVariableNames, Assignment first,
                                        List<Parameter> parameters, Assignment second,
                                        Type intermediateType,
                                        Set<Type> importTypes, TypeInstance returnType,
-                                       String secondVariableName, String name) {
+                                       String secondVariableName, String name, List<?> identity) {
         super( existingVariableNames, getThrownTypes( first, second ), importTypes, returnType, parameters, name );
         this.first = first;
         this.second = second;
         this.intermediateType = intermediateType;
         this.secondVariableName = secondVariableName;
+        this.identity = identity;
     }
 
     /**
@@ -108,6 +117,14 @@ public class NullSafe2StepMappingMethod extends SupportingMappingMethod {
 
     @Override
     public int hashCode() {
-        return Objects.hash( super.hashCode(), secondVariableName );
+        return Objects.hash( super.hashCode(), getParameters() );
+    }
+
+    /**
+     * @param otherIdentity the identity of another helper
+     * @return {@code true} if this helper generates the same code as a helper with the given identity
+     */
+    public boolean hasIdentity(List<?> otherIdentity) {
+        return identity.equals( otherIdentity );
     }
 }

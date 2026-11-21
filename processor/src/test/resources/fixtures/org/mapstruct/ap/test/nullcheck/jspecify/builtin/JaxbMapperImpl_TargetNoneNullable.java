@@ -91,7 +91,7 @@ public class JaxbMapperImpl implements JaxbMapper {
 
     private BigDecimal jaxbElemToValueToBigDecimal(JAXBElement<String> element) {
         String string = jaxbElemToValue( element );
-        if (string == null) {
+        if ( string == null ) {
             return null;
         }
         return new BigDecimal( string );

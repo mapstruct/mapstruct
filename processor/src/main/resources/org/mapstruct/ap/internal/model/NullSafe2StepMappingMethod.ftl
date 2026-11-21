@@ -16,7 +16,7 @@ private <@includeModel object=returnType.typeBound typeAnnotation=typeAnnotation
     }
     </#if>
     <@includeModel object=intermediateType/> ${secondVariableName} = <@includeModel object=first></@includeModel>;
-    if (${secondVariableName} == null) {
+    if ( ${secondVariableName} == null ) {
         return ${returnType.null};
     }
     return <@includeModel object=second></@includeModel>;

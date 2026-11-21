@@ -6,6 +6,7 @@
 package org.mapstruct.ap.internal.processor.creation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -214,6 +215,42 @@ public class MappingResolverImpl implements MappingResolver {
             this.methods = filterPossibleCandidateMethods( sourceModel, mappingMethod );
         }
         // CHECKSTYLE:ON
+
+        /**
+         * Returns the null-safe two-step helper with the given identity. An already created helper with the same
+         * identity is reused. Otherwise a new helper is created, with a name that does not clash with the methods
+         * of the mapper or with other supporting methods (e.g. when the same method is combined with different
+         * formats).
+         *
+         * @param baseName the preferred name of the helper
+         * @param identity the values that determine the generated helper body
+         * @param creator creates the helper with the given (unique) name
+         * @return the existing or newly created helper
+         */
+        private NullSafe2StepMappingMethod getOrCreateNullSafe2StepMethod(String baseName, List<?> identity,
+            Function<String, NullSafe2StepMappingMethod> creator) {
+            Set<SupportingMappingMethod> supportingMethods = new LinkedHashSet<>( usedSupportedMappings );
+            supportingMethods.addAll( supportingMethodCandidates );
+
+            Set<String> usedNames = new HashSet<>();
+            for ( SupportingMappingMethod supportingMethod : supportingMethods ) {
+                if ( supportingMethod instanceof NullSafe2StepMappingMethod
+                    && ( (NullSafe2StepMappingMethod) supportingMethod ).hasIdentity( identity ) ) {
+                    return (NullSafe2StepMappingMethod) supportingMethod;
+                }
+                usedNames.add( supportingMethod.getName() );
+            }
+            for ( Method method : sourceModel ) {
+                usedNames.add( method.getName() );
+            }
+
+            String name = baseName;
+            int index = 1;
+            while ( usedNames.contains( name ) ) {
+                name = baseName + index++;
+            }
+            return creator.apply( name );
+        }
 
         private <T extends Method> List<T> filterPossibleCandidateMethods(List<T> candidateMethods, T mappingMethod) {
             List<T> result = new ArrayList<>( candidateMethods.size() );
@@ -914,11 +951,14 @@ public class MappingResolverImpl implements MappingResolver {
                     // parameter, otherwise the helper's call to the method cannot resolve them
                     List<Parameter> parameters = get2StepParameters( methodX, parameter,
                             parameterBindings );
-                    NullSafe2StepMappingMethod nullSafe2StepMappingMethod = NullSafe2StepMappingMethod.create(
-                            existingVariableNames, methodRefX, parameters,
-                            methodRefY, parameter1.getType(),
-                            TypeInstance.of( targetType, returnTypNullability ),
-                            secondVariableName, methodName );
+                    List<Object> identity = get2StepIdentity( attempt, selectedMethodX,
+                            selectedMethodY.getMethod(), targetType );
+                    NullSafe2StepMappingMethod nullSafe2StepMappingMethod = attempt.getOrCreateNullSafe2StepMethod(
+                            methodName, identity, name -> NullSafe2StepMappingMethod.create(
+                                    existingVariableNames, methodRefX, parameters,
+                                    methodRefY, parameter1.getType(),
+                                    TypeInstance.of( targetType, returnTypNullability ),
+                                    secondVariableName, name, identity ) );
                     this.attempt.supportingMethodCandidates.add( nullSafe2StepMappingMethod );
                     result = MethodReference.forNullSafe2StepMethod( nullSafe2StepMappingMethod );
                     result.setAssignment( attempt.sourceRHS );
@@ -946,6 +986,32 @@ public class MappingResolverImpl implements MappingResolver {
                     parameter.getNullability() ) );
             twoStepParameters.addAll( contextParameters );
             return twoStepParameters;
+        }
+
+        /**
+         * The identity of a null-safe two-step helper: everything that determines the generated helper body.
+         *
+         * @param attempt the resolving attempt, provides the formatting parameters
+         * @param selectedMethodX the method that is called first
+         * @param second the method that is called second, or the intermediate type for a conversion
+         * @param targetType the target type of the helper
+         * @return the identity
+         */
+        static List<Object> get2StepIdentity(ResolvingAttempt attempt, SelectedMethod<?> selectedMethodX,
+                                             Object second, Type targetType) {
+            List<Type> bindingTypes = selectedMethodX.getParameterBindings()
+                .stream()
+                .map( ParameterBinding::getType )
+                .collect( Collectors.toList() );
+            return Arrays.asList(
+                selectedMethodX.getMethod(),
+                bindingTypes,
+                second,
+                targetType,
+                attempt.formattingParameters.getDate(),
+                attempt.formattingParameters.getNumber(),
+                attempt.formattingParameters.getLocale()
+            );
         }
 
         void reportAmbiguousError(Map<SelectedMethod<T1>, List<SelectedMethod<T2>>> xCandidates, Type target) {
@@ -1195,11 +1261,14 @@ public class MappingResolverImpl implements MappingResolver {
                     // parameter, otherwise the helper's call to the method cannot resolve them
                     List<Parameter> parameters = MethodMethod.get2StepParameters( methodX, parameter,
                             parameterBindings );
-                    NullSafe2StepMappingMethod nullSafe2StepMappingMethod = NullSafe2StepMappingMethod.create(
-                             existingVariableNames, methodRefX, parameters,
-                             conversionRefY.assignment, conversionRefY.sourceType,
-                             TypeInstance.of( conversionRefY.targetType, returnTypNullability ),
-                             secondVariableName, methodName );
+                    List<Object> identity = MethodMethod.get2StepIdentity( attempt, selectedMethodX,
+                            conversionRefY.sourceType, conversionRefY.targetType );
+                    NullSafe2StepMappingMethod nullSafe2StepMappingMethod = attempt.getOrCreateNullSafe2StepMethod(
+                            methodName, identity, name -> NullSafe2StepMappingMethod.create(
+                                    existingVariableNames, methodRefX, parameters,
+                                    conversionRefY.assignment, conversionRefY.sourceType,
+                                    TypeInstance.of( conversionRefY.targetType, returnTypNullability ),
+                                    secondVariableName, name, identity ) );
                     this.attempt.supportingMethodCandidates.add( nullSafe2StepMappingMethod );
                     result = MethodReference.forNullSafe2StepMethod( nullSafe2StepMappingMethod );
                     result.setAssignment( attempt.sourceRHS );

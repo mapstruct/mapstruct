@@ -72,7 +72,7 @@ public class JakartaJaxbMapperImpl implements JakartaJaxbMapper {
 
     private BigDecimal jaxbElemToValueToBigDecimal(JAXBElement<String> element) {
         String string = jaxbElemToValue( element );
-        if (string == null) {
+        if ( string == null ) {
             return null;
         }
         return new BigDecimal( string );

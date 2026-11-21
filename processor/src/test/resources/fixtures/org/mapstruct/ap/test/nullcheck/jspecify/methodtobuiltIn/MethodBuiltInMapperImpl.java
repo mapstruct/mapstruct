@@ -36,7 +36,7 @@ public class MethodBuiltInMapperImpl implements MethodBuiltInMapper {
 
     private ZonedDateTime toCalendarToZonedDateTime(MethodBuiltInInput in) {
         Calendar methodBuiltInInput = toCalendar( in );
-        if (methodBuiltInInput == null) {
+        if ( methodBuiltInInput == null ) {
             return null;
         }
         return calendarToZonedDateTime( methodBuiltInInput );

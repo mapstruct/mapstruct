@@ -181,11 +181,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Map<String, TargetFoo> map = new LinkedHashMap<>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<Long, SourceFoo> entry : foos.entrySet() ) {
+            String key = null;
             if ( entry.getKey() != null ) {
-                String key = String.valueOf( entry.getKey() );
-                TargetFoo value = sourceFooToTargetFoo( entry.getValue() );
-                map.put( key, value );
+                key = String.valueOf( entry.getKey() );
             }
+            TargetFoo value = sourceFooToTargetFoo( entry.getValue() );
+            map.put( key, value );
         }
 
         return map;
@@ -200,11 +201,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         SortedMap<String, TargetFoo> sortedMap = new TreeMap<>();
 
         for ( java.util.Map.Entry<Long, SourceFoo> entry : foos.entrySet() ) {
+            String key = null;
             if ( entry.getKey() != null ) {
-                String key = String.valueOf( entry.getKey() );
-                TargetFoo value = sourceFooToTargetFoo( entry.getValue() );
-                sortedMap.put( key, value );
+                key = String.valueOf( entry.getKey() );
             }
+            TargetFoo value = sourceFooToTargetFoo( entry.getValue() );
+            sortedMap.put( key, value );
         }
 
         return sortedMap;
@@ -219,11 +221,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         NavigableMap<String, TargetFoo> navigableMap = new TreeMap<>();
 
         for ( java.util.Map.Entry<Long, SourceFoo> entry : foos.entrySet() ) {
+            String key = null;
             if ( entry.getKey() != null ) {
-                String key = String.valueOf( entry.getKey() );
-                TargetFoo value = sourceFooToTargetFoo( entry.getValue() );
-                navigableMap.put( key, value );
+                key = String.valueOf( entry.getKey() );
             }
+            TargetFoo value = sourceFooToTargetFoo( entry.getValue() );
+            navigableMap.put( key, value );
         }
 
         return navigableMap;
@@ -238,11 +241,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         ConcurrentMap<String, TargetFoo> concurrentMap = new ConcurrentHashMap<>( Math.max( (int) ( foos.size() / .75f ) + 1, 16 ) );
 
         for ( java.util.Map.Entry<Long, SourceFoo> entry : foos.entrySet() ) {
+            String key = null;
             if ( entry.getKey() != null ) {
-                String key = String.valueOf( entry.getKey() );
-                TargetFoo value = sourceFooToTargetFoo( entry.getValue() );
-                concurrentMap.put( key, value );
+                key = String.valueOf( entry.getKey() );
             }
+            TargetFoo value = sourceFooToTargetFoo( entry.getValue() );
+            concurrentMap.put( key, value );
         }
 
         return concurrentMap;
@@ -257,11 +261,12 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         ConcurrentNavigableMap<String, TargetFoo> concurrentNavigableMap = new ConcurrentSkipListMap<>();
 
         for ( java.util.Map.Entry<Long, SourceFoo> entry : foos.entrySet() ) {
+            String key = null;
             if ( entry.getKey() != null ) {
-                String key = String.valueOf( entry.getKey() );
-                TargetFoo value = sourceFooToTargetFoo( entry.getValue() );
-                concurrentNavigableMap.put( key, value );
+                key = String.valueOf( entry.getKey() );
             }
+            TargetFoo value = sourceFooToTargetFoo( entry.getValue() );
+            concurrentNavigableMap.put( key, value );
         }
 
         return concurrentNavigableMap;

@@ -46,11 +46,20 @@
     </#list>
     <#-- Once #148 has been addressed, the simple name of Map.Entry can be used -->
     for ( java.util.Map.Entry<<#list sourceElementTypes as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {
-    <#-- key -->
-        <@lib.handleVariableNullCheck keyAssignment.needsParameterNullCheck() keyAssignment.sourceReference>
+    <#-- key: a null source key is put as null key into the target map instead of the entry being skipped -->
+        <#if keyAssignment.needsParameterNullCheck()>
+        <@includeModel object=resultElementTypes[0].typeBound/> ${keyVariableName} = null;
+        if ( ${keyAssignment.sourceReference} != null ) {
+            <@includeModel object=keyAssignment
+                       targetWriteAccessorName=keyVariableName
+                       targetType=resultElementTypes[0].typeBound
+                       isTargetDefined=true/>
+        }
+        <#else>
         <@includeModel object=keyAssignment
                    targetWriteAccessorName=keyVariableName
                    targetType=resultElementTypes[0].typeBound/>
+        </#if>
     <#-- value -->
         <@lib.handleVariableNullCheck valueAssignment.needsParameterNullCheck() valueAssignment.sourceReference>
         <@includeModel object=valueAssignment
@@ -64,7 +73,6 @@
             ${resultName}.put( ${keyVariableName}, <@includeModel object=defaultValueAssignment/> );
         }
         </#if>
-        </@lib.handleVariableNullCheck>
     }
     <#list afterMappingReferences as callback>
     	<#if callback_index = 0>

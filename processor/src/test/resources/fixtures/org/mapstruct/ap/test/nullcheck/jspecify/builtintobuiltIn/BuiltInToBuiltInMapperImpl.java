@@ -45,7 +45,7 @@ public class BuiltInToBuiltInMapperImpl implements BuiltInToBuiltInMapper {
 
     private ZonedDateTime jaxbElemToValueToZonedDateTime(JAXBElement<Calendar> element) {
         Calendar jAXBElement = jaxbElemToValue( element );
-        if (jAXBElement == null) {
+        if ( jAXBElement == null ) {
             return null;
         }
         return calendarToZonedDateTime( jAXBElement );

@@ -12,16 +12,13 @@ import org.mapstruct.ap.testutil.WithJSpecify;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Reproduces the update-method regression of the two-step
- * {@link org.mapstruct.ap.internal.model.NullSafe2StepMappingMethod} path for a primitive target.
+ * Update method behaviour of the two-step {@link org.mapstruct.ap.internal.model.NullSafe2StepMappingMethod}
+ * path for a primitive target.
  * <p>
- * When the source property is {@code null} the generated helper already decides on the primitive
- * default ({@code 0L}) on its own. In an update method that default must not clobber a value the
- * target already holds: the existing setter null-handling (null check /
- * {@code NullValuePropertyMappingStrategy}) is expected to decide, consistent with a direct
- * {@code String -> long} mapping. This test asserts that the pre-existing value is preserved, which is
- * the behaviour on {@code main}. It is expected to fail on the PR branch, which overwrites the value
- * with {@code 0}.
+ * The generated helper returns the boxed type ({@code Long}) and does not pick a primitive default on its own.
+ * The existing setter null handling (null check / {@code NullValuePropertyMappingStrategy}) decides what
+ * happens with a {@code null} result, consistent with a direct {@code String -> long} mapping. In an update
+ * method a {@code null} source therefore keeps the value that the target already holds.
  */
 @WithJSpecify
 @WithClasses({

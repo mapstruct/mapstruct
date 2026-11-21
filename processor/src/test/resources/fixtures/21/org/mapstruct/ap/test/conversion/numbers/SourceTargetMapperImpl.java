@@ -446,15 +446,16 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Map<String, String> map = LinkedHashMap.newLinkedHashMap( source.size() );
 
         for ( java.util.Map.Entry<Float, Float> entry : source.entrySet() ) {
+            String key = null;
             if ( entry.getKey() != null ) {
-                String key = new DecimalFormat( "##.00" ).format( entry.getKey() );
-                if ( entry.getValue() != null ) {
-                    String value = new DecimalFormat( "##" ).format( entry.getValue() );
-                    map.put( key, value );
-                }
-                else {
-                    map.put( key, null );
-                }
+                key = new DecimalFormat( "##.00" ).format( entry.getKey() );
+            }
+            if ( entry.getValue() != null ) {
+                String value = new DecimalFormat( "##" ).format( entry.getValue() );
+                map.put( key, value );
+            }
+            else {
+                map.put( key, null );
             }
         }
 
@@ -470,15 +471,16 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Map<String, String> map = LinkedHashMap.newLinkedHashMap( source.size() );
 
         for ( java.util.Map.Entry<BigDecimal, BigDecimal> entry : source.entrySet() ) {
+            String key = null;
             if ( entry.getKey() != null ) {
-                String key = createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).format( entry.getKey() );
-                if ( entry.getValue() != null ) {
-                    String value = createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "fr" ) ).format( entry.getValue() );
-                    map.put( key, value );
-                }
-                else {
-                    map.put( key, null );
-                }
+                key = createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).format( entry.getKey() );
+            }
+            if ( entry.getValue() != null ) {
+                String value = createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "fr" ) ).format( entry.getValue() );
+                map.put( key, value );
+            }
+            else {
+                map.put( key, null );
             }
         }
 
@@ -494,27 +496,28 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Map<Float, Float> map = LinkedHashMap.newLinkedHashMap( source.size() );
 
         for ( java.util.Map.Entry<String, String> entry : source.entrySet() ) {
+            Float key = null;
             if ( entry.getKey() != null ) {
-                Float key;
+
                 try {
                     key = new DecimalFormat( "##.00" ).parse( entry.getKey() ).floatValue();
                 }
                 catch ( ParseException e ) {
                     throw new RuntimeException( e );
                 }
-                if ( entry.getValue() != null ) {
-                    Float value;
-                    try {
-                        value = new DecimalFormat( "##" ).parse( entry.getValue() ).floatValue();
-                    }
-                    catch ( ParseException e ) {
-                        throw new RuntimeException( e );
-                    }
-                    map.put( key, value );
+            }
+            if ( entry.getValue() != null ) {
+                Float value;
+                try {
+                    value = new DecimalFormat( "##" ).parse( entry.getValue() ).floatValue();
                 }
-                else {
-                    map.put( key, null );
+                catch ( ParseException e ) {
+                    throw new RuntimeException( e );
                 }
+                map.put( key, value );
+            }
+            else {
+                map.put( key, null );
             }
         }
 
@@ -530,27 +533,28 @@ public class SourceTargetMapperImpl implements SourceTargetMapper {
         Map<BigDecimal, BigDecimal> map = LinkedHashMap.newLinkedHashMap( source.size() );
 
         for ( java.util.Map.Entry<String, String> entry : source.entrySet() ) {
+            BigDecimal key = null;
             if ( entry.getKey() != null ) {
-                BigDecimal key;
+
                 try {
                     key = (BigDecimal) createDecimalFormatWithLocale( "#0.#E0", Locale.forLanguageTag( "fr" ) ).parse( entry.getKey() );
                 }
                 catch ( ParseException e ) {
                     throw new RuntimeException( e );
                 }
-                if ( entry.getValue() != null ) {
-                    BigDecimal value;
-                    try {
-                        value = (BigDecimal) createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "fr" ) ).parse( entry.getValue() );
-                    }
-                    catch ( ParseException e ) {
-                        throw new RuntimeException( e );
-                    }
-                    map.put( key, value );
+            }
+            if ( entry.getValue() != null ) {
+                BigDecimal value;
+                try {
+                    value = (BigDecimal) createDecimalFormatWithLocale( "0.#############E0", Locale.forLanguageTag( "fr" ) ).parse( entry.getValue() );
                 }
-                else {
-                    map.put( key, null );
+                catch ( ParseException e ) {
+                    throw new RuntimeException( e );
                 }
+                map.put( key, value );
+            }
+            else {
+                map.put( key, null );
             }
         }
 

@@ -41,7 +41,7 @@ public class BuiltInMethodMapperImpl implements BuiltInMethodMapper {
 
     private Integer jaxbElemToValueToint(JAXBElement<String> element) {
         String jAXBElement = jaxbElemToValue( element );
-        if (jAXBElement == null) {
+        if ( jAXBElement == null ) {
             return null;
         }
         return toLength( jAXBElement );
