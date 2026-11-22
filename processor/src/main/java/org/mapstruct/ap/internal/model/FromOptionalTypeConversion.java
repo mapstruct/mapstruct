@@ -45,6 +45,16 @@ public class FromOptionalTypeConversion extends ModelElement implements Assignme
     }
 
     @Override
+    public boolean identity(Assignment other) {
+        if ( other instanceof FromOptionalTypeConversion ) {
+            FromOptionalTypeConversion that = (FromOptionalTypeConversion) other;
+            return optionalType.equals( that.optionalType )
+                && conversionAssignment.identity( that.conversionAssignment );
+        }
+        return false;
+    }
+
+    @Override
     public String getSourceReference() {
         return conversionAssignment.getSourceReference();
     }

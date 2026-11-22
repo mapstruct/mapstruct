@@ -51,6 +51,16 @@ public class ToOptionalTypeConversion extends ModelElement implements Assignment
     }
 
     @Override
+    public boolean identity(Assignment other) {
+        if ( other instanceof ToOptionalTypeConversion ) {
+            ToOptionalTypeConversion that = (ToOptionalTypeConversion) other;
+            return targetType.equals( that.targetType )
+                && conversionAssignment.identity( that.conversionAssignment );
+        }
+        return false;
+    }
+
+    @Override
     public String getSourceReference() {
         return conversionAssignment.getSourceReference();
     }

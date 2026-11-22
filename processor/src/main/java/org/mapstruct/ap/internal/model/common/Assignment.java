@@ -167,4 +167,20 @@ public interface Assignment {
      * to this assignment; {@code false} otherwise
      */
     boolean needsParameterNullCheck();
+
+    /**
+     * Returns whether the given assignment generates the same code as this assignment, so that both can be served
+     * by a single null-safe two-step helper.
+     * <p>
+     * The default implementation returns {@code true} only for the same instance, so that two distinct assignments
+     * are never considered to generate the same code. Assignments that generate code (e.g. conversions or method
+     * references) override this method to compare the parts that determine the generated code, so that e.g. a
+     * configured format is only part of the comparison when it is actually part of the generated code.
+     *
+     * @param other the assignment to compare with
+     * @return {@code true} if both assignments generate the same code
+     */
+    default boolean identity(Assignment other) {
+        return this == other;
+    }
 }

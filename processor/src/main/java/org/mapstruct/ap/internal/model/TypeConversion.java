@@ -7,6 +7,7 @@ package org.mapstruct.ap.internal.model;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.mapstruct.ap.internal.model.common.Assignment;
@@ -66,6 +67,18 @@ public class TypeConversion extends ModelElement implements Assignment {
 
     public String getCloseExpression() {
         return closeExpression;
+    }
+
+    @Override
+    public boolean identity(Assignment other) {
+        if ( other instanceof TypeConversion ) {
+            TypeConversion that = (TypeConversion) other;
+            // the expressions contain the configured format (e.g. the format of a DecimalFormat) only when the
+            // conversion actually uses it
+            return Objects.equals( openExpression, that.openExpression )
+                && Objects.equals( closeExpression, that.closeExpression );
+        }
+        return false;
     }
 
     public Assignment getAssignment() {

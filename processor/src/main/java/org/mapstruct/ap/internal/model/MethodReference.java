@@ -415,6 +415,53 @@ public class MethodReference extends ModelElement implements Assignment {
         return parameterBindings;
     }
 
+    @Override
+    public boolean identity(Assignment other) {
+        if ( other instanceof MethodReference ) {
+            MethodReference that = (MethodReference) other;
+            if ( isMethodChaining != that.isMethodChaining ) {
+                return false;
+            }
+            if ( isMethodChaining ) {
+                return chainedMethodsHaveIdentity( methodsToChain, that.methodsToChain );
+            }
+            return Objects.equals( name, that.name )
+                && Objects.equals( contextParam, that.contextParam )
+                && Objects.equals( definingType, that.definingType )
+                && Objects.equals( providingParameter, that.providingParameter )
+                && Objects.equals( declaringMapper, that.declaringMapper )
+                && isStatic == that.isStatic
+                && isConstructor == that.isConstructor
+                && bindingsHaveIdentity( parameterBindings, that.parameterBindings );
+        }
+        return false;
+    }
+
+    private static boolean chainedMethodsHaveIdentity( List<MethodReference> chain, List<MethodReference> otherChain ) {
+        if ( chain.size() != otherChain.size() ) {
+            return false;
+        }
+        for ( int i = 0; i < chain.size(); i++ ) {
+            if ( !chain.get( i ).identity( otherChain.get( i ) ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean bindingsHaveIdentity( List<ParameterBinding> bindings,
+                                                 List<ParameterBinding> otherBindings ) {
+        if ( bindings.size() != otherBindings.size() ) {
+            return false;
+        }
+        for ( int i = 0; i < bindings.size(); i++ ) {
+            if ( !bindings.get( i ).getType().equals( otherBindings.get( i ).getType() ) ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public Type inferTypeWhenEnum( Type type ) {
         if ( "java.lang.Enum".equals( type.getFullyQualifiedName()  ) ) {
             return type.getTypeParameters().get( 0 );
