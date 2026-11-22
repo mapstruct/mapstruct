@@ -8,12 +8,14 @@ package org.mapstruct.ap.test.helper.formatclash;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junitpioneer.jupiter.DefaultLocale;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DefaultLocale("en")
 @WithClasses({
     FormatClashSource.class,
     FormatClashTarget.class
