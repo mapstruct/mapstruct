@@ -32,7 +32,8 @@ class FqNameCollisionJSpecifyMapperTest {
     void shouldPlaceAnnotationBeforeLastFqnSegment() {
         generatedSource.addComparisonToFixtureFor( FqNameCollisionJSpecifyMapper.class );
 
-        org.mapstruct.ap.test.nullcheck.jspecify.dupb.Dup dupB = new org.mapstruct.ap.test.nullcheck.jspecify.dupb.Dup();
+        org.mapstruct.ap.test.nullcheck.jspecify.dupb.Dup dupB =
+                new org.mapstruct.ap.test.nullcheck.jspecify.dupb.Dup();
         dupB.setName( "dup-b" );
 
         Dup targetFromB = FqNameCollisionJSpecifyMapper.INSTANCE.map( dupB );
