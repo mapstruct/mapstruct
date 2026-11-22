@@ -10,6 +10,8 @@ import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJSpecify;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Reproducer for <a href="https://github.com/mapstruct/mapstruct/issues/4086">4086</a>.
  * <p>
@@ -27,5 +29,17 @@ public class Issue4086Test {
     @ProcessorTest
     @WithClasses( { Issue4086Mapper.class, Source.class, Target.class } )
     public void nullableSourceToNullableParamNonNullReturnShouldCompile() {
+        Issue4086Mapper mapper = Issue4086Mapper.INSTANCE;
+
+        Source nullValueSource = new Source();
+        Target nullValueTarget = mapper.map( nullValueSource );
+        assertThat( nullValueTarget.getPayload() ).isNotNull();
+        assertThat( nullValueTarget.getPayload().getValue() ).isEqualTo( "default" );
+
+        Source filledSource = new Source();
+        filledSource.setValue( "hello" );
+        Target filledTarget = mapper.map( filledSource );
+        assertThat( filledTarget.getPayload() ).isNotNull();
+        assertThat( filledTarget.getPayload().getValue() ).isEqualTo( "hello" );
     }
 }

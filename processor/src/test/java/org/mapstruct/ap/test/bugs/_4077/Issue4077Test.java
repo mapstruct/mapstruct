@@ -11,6 +11,9 @@ import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJSpecify;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+import org.mapstruct.factory.Mappers;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Reproducer for <a href="https://github.com/mapstruct/mapstruct/issues/4077">4077</a>.
@@ -28,5 +31,15 @@ public class Issue4077Test {
     @WithClasses( { Issue4077Mapper.class, Source.class, Target.class } )
     public void shouldAddNullCheckBeforeReusingMethod() {
         generatedSource.addComparisonToFixtureFor( Issue4077Mapper.class );
+
+        // a null nested source must be mapped to a null nested target
+        Target target = Mappers.getMapper( Issue4077Mapper.class ).map( new Source( null ) );
+        assertThat( target.getNested() ).isNull();
+
+        Source source = new Source( new Source.Nested( "foo", 1 ) );
+        target = Mappers.getMapper( Issue4077Mapper.class ).map( source );
+        assertThat( target.getNested() ).isNotNull();
+        assertThat( target.getNested().getFoo() ).isEqualTo( "foo" );
+        assertThat( target.getNested().getBar() ).isEqualTo( 1 );
     }
 }

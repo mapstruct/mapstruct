@@ -22,6 +22,6 @@ public interface Issue4086Mapper {
 
     @Named("mapValue")
     default Target.@NonNull Nested mapValue(@Nullable String value) {
-        return value == null ? new Target.Nested( "default" ) : new Target.Nested( value );
+        return new Target.Nested( value == null ? "default" : value );
     }
 }

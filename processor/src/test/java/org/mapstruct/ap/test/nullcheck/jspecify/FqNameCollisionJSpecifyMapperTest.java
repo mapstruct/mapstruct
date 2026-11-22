@@ -12,6 +12,8 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJSpecify;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Tests JSpecify types-use annotations when the type to be annotated is referenced by its fully qualified
  * name because its simple name collides with another type's simple name. The annotation must be placed
@@ -29,5 +31,19 @@ class FqNameCollisionJSpecifyMapperTest {
             FqNameCollisionJSpecifyMapper.class })
     void shouldPlaceAnnotationBeforeLastFqnSegment() {
         generatedSource.addComparisonToFixtureFor( FqNameCollisionJSpecifyMapper.class );
+
+        org.mapstruct.ap.test.nullcheck.jspecify.dupb.Dup dupB = new org.mapstruct.ap.test.nullcheck.jspecify.dupb.Dup();
+        dupB.setName( "dup-b" );
+
+        Dup targetFromB = FqNameCollisionJSpecifyMapper.INSTANCE.map( dupB );
+        assertThat( targetFromB ).isNotNull();
+        assertThat( targetFromB.getName() ).isEqualTo( "dup-b" );
+
+        Dup dupA = new Dup();
+        dupA.setName( "dup-a" );
+        org.mapstruct.ap.test.nullcheck.jspecify.dupb.Dup targetFromA =
+            FqNameCollisionJSpecifyMapper.INSTANCE.map( dupA );
+        assertThat( targetFromA ).isNotNull();
+        assertThat( targetFromA.getName() ).isEqualTo( "dup-a" );
     }
 }

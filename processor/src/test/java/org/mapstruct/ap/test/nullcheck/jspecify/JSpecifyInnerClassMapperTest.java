@@ -11,6 +11,8 @@ import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJSpecify;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Tests JSpecify method-level scoping when both the source and the target types
  * are static inner classes.
@@ -25,5 +27,16 @@ class JSpecifyInnerClassMapperTest {
     @WithClasses({ InnerClassSourceBean.class, InnerClassTargetBean.class, JSpecifyInnerClassMapper.class })
     void shouldReadAndWriteInnerClassAnnotationCorrectly() {
         generatedSource.addComparisonToFixtureFor( JSpecifyInnerClassMapper.class );
+
+        InnerClassSourceBean.Inner source = new InnerClassSourceBean.Inner();
+        source.setName( "name" );
+
+        InnerClassTargetBean.Inner target = JSpecifyInnerClassMapper.INSTANCE.mapNonNull( source );
+        assertThat( target ).isNotNull();
+        assertThat( target.getName() ).isEqualTo( "name" );
+
+        target = JSpecifyInnerClassMapper.INSTANCE.mapNullable( new InnerClassSourceBean.Inner() );
+        assertThat( target ).isNotNull();
+        assertThat( target.getName() ).isNull();
     }
 }
