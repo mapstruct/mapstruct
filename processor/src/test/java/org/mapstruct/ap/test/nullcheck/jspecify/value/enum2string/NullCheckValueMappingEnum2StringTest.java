@@ -16,6 +16,9 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+import org.mapstruct.factory.Mappers;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithJSpecify
 public class NullCheckValueMappingEnum2StringTest {
@@ -27,12 +30,26 @@ public class NullCheckValueMappingEnum2StringTest {
     @WithClasses( { OrderType.class, NullGuardSkippedNonNullMapper.class } )
     void nullGuardSkippedForNonNullParameter() {
         generatedSource.addComparisonToFixtureFor( NullGuardSkippedNonNullMapper.class );
+
+        NullGuardSkippedNonNullMapper mapper = Mappers.getMapper( NullGuardSkippedNonNullMapper.class );
+        assertThat( mapper.map( OrderType.EXTRA ) ).isEqualTo( "SPECIAL" );
+        assertThat( mapper.map( OrderType.STANDARD ) ).isEqualTo( "DEFAULT" );
+        assertThat( mapper.map( OrderType.NORMAL ) ).isEqualTo( "DEFAULT" );
+        assertThat( mapper.map( OrderType.RETAIL ) ).isEqualTo( "RETAIL" );
+        assertThat( mapper.map( OrderType.B2B ) ).isEqualTo( "B2B" );
     }
 
     @ProcessorTest
     @WithClasses( { OrderType.class, NullGuardSkippedNullMarkedMapper.class } )
     void nullGuardSkippedForNullMarkedMethod() {
         generatedSource.addComparisonToFixtureFor( NullGuardSkippedNullMarkedMapper.class );
+
+        NullGuardSkippedNullMarkedMapper mapper = Mappers.getMapper( NullGuardSkippedNullMarkedMapper.class );
+        assertThat( mapper.map( OrderType.EXTRA ) ).isEqualTo( "SPECIAL" );
+        assertThat( mapper.map( OrderType.STANDARD ) ).isEqualTo( "DEFAULT" );
+        assertThat( mapper.map( OrderType.NORMAL ) ).isEqualTo( "DEFAULT" );
+        assertThat( mapper.map( OrderType.RETAIL ) ).isEqualTo( "RETAIL" );
+        assertThat( mapper.map( OrderType.B2B ) ).isEqualTo( "B2B" );
     }
 
     @ProcessorTest
@@ -51,6 +68,12 @@ public class NullCheckValueMappingEnum2StringTest {
         }
     )
     void warningForDeadNullMappingWhenParameterIsNonNull() {
+        NullMappingDeadMapper mapper = Mappers.getMapper( NullMappingDeadMapper.class );
+        assertThat( mapper.map( OrderType.EXTRA ) ).isEqualTo( "SPECIAL" );
+        assertThat( mapper.map( OrderType.STANDARD ) ).isEqualTo( "DEFAULT" );
+        assertThat( mapper.map( OrderType.NORMAL ) ).isEqualTo( "DEFAULT" );
+        assertThat( mapper.map( OrderType.RETAIL ) ).isEqualTo( "RETAIL" );
+        assertThat( mapper.map( OrderType.B2B ) ).isEqualTo( "B2B" );
     }
 
     @ProcessorTest

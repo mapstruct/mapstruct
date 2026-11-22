@@ -16,6 +16,9 @@ import org.mapstruct.ap.testutil.compilation.annotation.CompilationResult;
 import org.mapstruct.ap.testutil.compilation.annotation.Diagnostic;
 import org.mapstruct.ap.testutil.compilation.annotation.ExpectedCompilationOutcome;
 import org.mapstruct.ap.testutil.runner.GeneratedSource;
+import org.mapstruct.factory.Mappers;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WithJSpecify
 public class NullCheckValueMappingString2EnumTest {
@@ -27,12 +30,22 @@ public class NullCheckValueMappingString2EnumTest {
     @WithClasses( { OrderType.class, NullGuardSkippedNonNullMapper.class } )
     void nullGuardSkippedForNonNullParameter() {
         generatedSource.addComparisonToFixtureFor( NullGuardSkippedNonNullMapper.class );
+
+        NullGuardSkippedNonNullMapper mapper = Mappers.getMapper( NullGuardSkippedNonNullMapper.class );
+        assertThat( mapper.map( "SPECIAL" ) ).isEqualTo( OrderType.EXTRA );
+        assertThat( mapper.map( "DEFAULT" ) ).isEqualTo( OrderType.STANDARD );
+        assertThat( mapper.map( "OTHER" ) ).isEqualTo( OrderType.RETAIL );
     }
 
     @ProcessorTest
     @WithClasses( { OrderType.class, NullGuardSkippedNullMarkedMapper.class } )
     void nullGuardSkippedForNullMarkedMethod() {
         generatedSource.addComparisonToFixtureFor( NullGuardSkippedNullMarkedMapper.class );
+
+        NullGuardSkippedNullMarkedMapper mapper = Mappers.getMapper( NullGuardSkippedNullMarkedMapper.class );
+        assertThat( mapper.map( "SPECIAL" ) ).isEqualTo( OrderType.EXTRA );
+        assertThat( mapper.map( "DEFAULT" ) ).isEqualTo( OrderType.STANDARD );
+        assertThat( mapper.map( "OTHER" ) ).isEqualTo( OrderType.RETAIL );
     }
 
     @ProcessorTest
@@ -51,6 +64,9 @@ public class NullCheckValueMappingString2EnumTest {
         }
     )
     void warningForDeadNullMappingWhenParameterIsNonNull() {
+        NullMappingDeadMapper mapper = Mappers.getMapper( NullMappingDeadMapper.class );
+        assertThat( mapper.map( "DEFAULT" ) ).isEqualTo( OrderType.STANDARD );
+        assertThat( mapper.map( "OTHER" ) ).isEqualTo( OrderType.RETAIL );
     }
 
     @ProcessorTest
