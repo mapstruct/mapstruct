@@ -41,15 +41,16 @@ public final class MappingMethodUtils {
 
         Type source = first( method.getSourceParameters() ).getType();
         Type result = method.getResultType();
+        return isEnumMapping( source, result );
+    }
+
+    public static boolean isEnumMapping(Type source, Type result) {
         if ( source.isEnumType() && result.isEnumType() ) {
             return true;
         }
         if ( source.isString() && result.isEnumType() ) {
             return true;
         }
-        if ( source.isEnumType()  && result.isString() ) {
-            return true;
-        }
-        return false;
+        return source.isEnumType() && result.isString();
     }
 }

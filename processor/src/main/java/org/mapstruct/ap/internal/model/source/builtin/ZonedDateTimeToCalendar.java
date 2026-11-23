@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
@@ -28,7 +29,8 @@ public class ZonedDateTimeToCalendar extends BuiltInMethod {
 
     ZonedDateTimeToCalendar(TypeFactory typeFactory) {
         this.returnType = typeFactory.getType( Calendar.class );
-        this.parameter = new Parameter( "dateTime", typeFactory.getType( ZonedDateTime.class ) );
+        this.parameter = new Parameter( "dateTime", typeFactory.getType( ZonedDateTime.class ),
+                Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL ));
         this.importedTypes = asSet( returnType, parameter.getType(), typeFactory.getType( TimeZone.class ) );
     }
 
@@ -46,4 +48,10 @@ public class ZonedDateTimeToCalendar extends BuiltInMethod {
     public Set<Type> getImportTypes() {
         return importedTypes;
     }
+
+    @Override
+    public Nullability getReturnTypeNullability() {
+        return Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL );
+    }
+
 }

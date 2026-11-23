@@ -6,6 +6,7 @@
 package org.mapstruct.ap.test.nullcheck.jspecify;
 
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NonNull;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
@@ -32,7 +33,7 @@ public class JSpecifyNestedMapperImpl implements JSpecifyNestedMapper {
         return flatTargetBean;
     }
 
-    private String sourceNonNullAddressStreet(NestedSourceBean nestedSourceBean) {
+    private @NonNull String sourceNonNullAddressStreet(NestedSourceBean nestedSourceBean) {
         AddressBean nonNullAddress = nestedSourceBean.getNonNullAddress();
         return nonNullAddress.getStreet();
     }

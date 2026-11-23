@@ -6,7 +6,10 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.SupportingMappingMethod" -->
-private <T> T ${name}( <@includeModel object=findType("JAXBElement") raw=true/><T> element ) {
+<#list annotations as annotation>
+    <#nt><@includeModel object=annotation/>
+</#list>
+private <T> <#if typeAnnotation?has_content && typeAnnotation[0]??>@<@includeModel object=typeAnnotation[0]/> </#if>T ${name}( <@includeModel object=sourceParameters[0]/> ) {
     if ( element == null ) {
         return null;
     }

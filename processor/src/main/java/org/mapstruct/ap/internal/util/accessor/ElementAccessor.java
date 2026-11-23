@@ -23,23 +23,27 @@ public class ElementAccessor implements Accessor {
     private final String name;
     private final AccessorType accessorType;
     private final TypeMirror accessedType;
+    private final Nullability nullability;
 
-    public ElementAccessor(VariableElement variableElement, TypeMirror accessedType) {
-        this( variableElement, accessedType, AccessorType.FIELD );
+    public ElementAccessor(VariableElement variableElement, TypeMirror accessedType, Nullability nullability) {
+        this( variableElement, accessedType, AccessorType.FIELD, nullability );
     }
 
-    public ElementAccessor(Element element, TypeMirror accessedType, String name) {
+    public ElementAccessor(Element element, TypeMirror accessedType, String name, Nullability nullability) {
         this.element = element;
         this.name = name;
         this.accessedType = accessedType;
         this.accessorType = AccessorType.PARAMETER;
+        this.nullability = nullability;
     }
 
-    public ElementAccessor(Element element, TypeMirror accessedType, AccessorType accessorType) {
+    public ElementAccessor(Element element, TypeMirror accessedType, AccessorType accessorType,
+                           Nullability nullability) {
         this.element = element;
         this.accessedType = accessedType;
         this.accessorType = accessorType;
         this.name = null;
+        this.nullability = nullability;
     }
 
     @Override
@@ -72,4 +76,8 @@ public class ElementAccessor implements Accessor {
         return accessorType;
     }
 
+    @Override
+    public Nullability getNullability() {
+        return nullability;
+    }
 }

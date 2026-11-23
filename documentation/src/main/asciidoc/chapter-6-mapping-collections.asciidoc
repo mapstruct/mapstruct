@@ -39,7 +39,12 @@ public Set<String> integerSetToStringSet(Set<Integer> integers) {
     Set<String> set = new LinkedHashSet<String>();
 
     for ( Integer integer : integers ) {
-        set.add( String.valueOf( integer ) );
+        if ( integer != null ) {
+            set.add( String.valueOf( integer ) );
+        }
+        else {
+            set.add( null );
+        }
     }
 
     return set;
@@ -61,6 +66,8 @@ public List<CarDto> carsToCarDtos(List<Car> cars) {
 }
 ----
 ====
+
+Note that a `null` element is not passed to a conversion (or to a method that does not accept `null`, e.g. a method with a JSpecify `@NonNull` parameter), but is added as `null` to the target collection. This way the target collection has the same size as the source collection. The same applies to arrays and streams. Methods that accept `null`, like `carToCarDto()` above, are called with the `null` element.
 
 Note that MapStruct will look for a collection mapping method with matching parameter and return type, when mapping a collection-typed attribute of a bean, e.g. from `Car#passengers` (of type `List<Person>`) to `CarDto#passengers` (of type `List<PersonDto>`).
 
@@ -129,22 +136,32 @@ public Map<Long, Date> stringStringMapToLongDateMap(Map<String, String> source) 
 
     for ( Map.Entry<String, String> entry : source.entrySet() ) {
 
-        Long key = Long.parseLong( entry.getKey() );
-        Date value;
-        try {
-            value = new SimpleDateFormat( "dd.MM.yyyy" ).parse( entry.getValue() );
+        Long key = null;
+        if ( entry.getKey() != null ) {
+            key = Long.parseLong( entry.getKey() );
         }
-        catch( ParseException e ) {
-            throw new RuntimeException( e );
-        }
+        if ( entry.getValue() != null ) {
+            Date value;
+            try {
+                value = new SimpleDateFormat( "dd.MM.yyyy" ).parse( entry.getValue() );
+            }
+            catch( ParseException e ) {
+                throw new RuntimeException( e );
+            }
 
-        map.put( key, value );
+            map.put( key, value );
+        }
+        else {
+            map.put( key, null );
+        }
     }
 
     return map;
 }
 ----
 ====
+
+In the same way as for iterables, a `null` key or value is not passed to a conversion (or to a method that does not accept `null`), but is put as `null` into the target map, so no entries are lost.
 
 [[collection-mapping-strategies]]
 === Collection mapping strategies

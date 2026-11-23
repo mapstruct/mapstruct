@@ -12,6 +12,7 @@ import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
 import org.mapstruct.ap.internal.util.XmlConstants;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
@@ -27,7 +28,8 @@ public class XmlGregorianCalendarToJodaLocalTime extends BuiltInMethod {
     private final Set<Type> importTypes;
 
     public XmlGregorianCalendarToJodaLocalTime(TypeFactory typeFactory) {
-        this.parameter = new Parameter( "xcal", typeFactory.getType( XmlConstants.JAVAX_XML_XML_GREGORIAN_CALENDAR ) );
+        this.parameter = new Parameter( "xcal", typeFactory.getType( XmlConstants.JAVAX_XML_XML_GREGORIAN_CALENDAR ),
+                Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
         this.returnType = typeFactory.getType( JodaTimeConstants.LOCAL_TIME_FQN );
         this.importTypes = asSet(
             typeFactory.getType( XmlConstants.JAVAX_XML_DATATYPE_CONSTANTS ),
@@ -49,4 +51,10 @@ public class XmlGregorianCalendarToJodaLocalTime extends BuiltInMethod {
     public Set<Type> getImportTypes() {
         return importTypes;
     }
+
+    @Override
+    public Nullability getReturnTypeNullability() {
+        return Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE );
+    }
+
 }

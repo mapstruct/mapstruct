@@ -14,8 +14,10 @@ import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -34,9 +36,12 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
-        protected Type getElementType(Type parameterType) {
-            return parameterType.isArrayType() ? parameterType.getComponentType() : first(
-                parameterType.determineTypeArguments( Iterable.class ) ).getTypeBound();
+        protected TypeInstance getElementType(TypeInstance parameterTypeInstance) {
+            Type parameterType = parameterTypeInstance.getType();
+            return parameterType.isArrayType() ? TypeInstance.of( parameterType.getComponentType(),
+                    getArrayComponentNullability( parameterTypeInstance ) )
+                    : TypeInstance.of( first( parameterType.determineTypeArguments( Iterable.class ) ).getTypeBound(),
+                    Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
         }
 
         @Override
@@ -52,16 +57,20 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
+        //CHECKSTYLE:OFF
         protected IterableMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
-            Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+            Assignment assignment, Assignment defaultElementAssignment, MethodReference factoryMethod,
+            boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
             List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
             PresenceCheck sourceParameterPresenceCheck) {
+            //CHECKSTYLE:ON
             return new IterableMappingMethod(
                 method,
                 getMethodAnnotations(),
                 existingVariables,
                 assignment,
+                defaultElementAssignment,
                 factoryMethod,
                 mapNullToDefault,
                 loopVariableName,
@@ -76,7 +85,8 @@ public class IterableMappingMethod extends ContainerMappingMethod {
     //CHECKSTYLE:OFF
     private IterableMappingMethod(Method method, List<Annotation> annotations,
                                   Collection<String> existingVariables, Assignment parameterAssignment,
-                                  MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+                                  Assignment defaultElementAssignment, MethodReference factoryMethod,
+                                  boolean mapNullToDefault, String loopVariableName,
                                   List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                   List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters, PresenceCheck sourceParameterPresenceCheck) {
@@ -86,6 +96,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
             annotations,
             existingVariables,
             parameterAssignment,
+            defaultElementAssignment,
             factoryMethod,
             mapNullToDefault,
             loopVariableName,

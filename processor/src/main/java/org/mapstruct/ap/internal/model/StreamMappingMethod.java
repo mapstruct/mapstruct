@@ -17,8 +17,10 @@ import org.mapstruct.ap.internal.model.assignment.Java8FunctionWrapper;
 import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -39,8 +41,11 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
-        protected Type getElementType(Type parameterType) {
-            return StreamMappingMethod.getElementType( parameterType );
+        protected TypeInstance getElementType(TypeInstance parameterTypeInstance) {
+            Type parameterType = parameterTypeInstance.getType();
+            return TypeInstance.of( StreamMappingMethod.getElementType( parameterType ),
+                    parameterType.isArrayType() ? getArrayComponentNullability( parameterTypeInstance ) :
+                    Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
         }
 
         @Override
@@ -49,14 +54,19 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         }
 
         @Override
+        //CHECKSTYLE:OFF
         protected StreamMappingMethod instantiateMappingMethod(Method method, Collection<String> existingVariables,
-            Assignment assignment, MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+            Assignment assignment, Assignment defaultElementAssignment, MethodReference factoryMethod,
+            boolean mapNullToDefault, String loopVariableName,
             List<LifecycleCallbackMethodReference> beforeMappingMethods,
             List<LifecycleCallbackMethodReference> afterMappingMethods, SelectionParameters selectionParameters,
             PresenceCheck sourceParameterPresenceCheck) {
+            //CHECKSTYLE:ON
 
             Set<Type> helperImports = new HashSet<>();
-            if ( method.getResultType().isIterableType() ) {
+            // Arrays are reported as iterable types, but the array branch of the template uses .toArray() instead
+            // of Collectors, so only genuine (non-array) iterable results need the import.
+            if ( method.getResultType().isIterableType() && !method.getResultType().isArrayType() ) {
                 helperImports.add( ctx.getTypeFactory().getType( Collectors.class ) );
             }
 
@@ -70,6 +80,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
                 getMethodAnnotations(),
                 existingVariables,
                 assignment,
+                defaultElementAssignment,
                 factoryMethod,
                 mapNullToDefault,
                 loopVariableName,
@@ -84,7 +95,8 @@ public class StreamMappingMethod extends ContainerMappingMethod {
     //CHECKSTYLE:OFF
     private StreamMappingMethod(Method method, List<Annotation> annotations,
                                 Collection<String> existingVariables, Assignment parameterAssignment,
-                                MethodReference factoryMethod, boolean mapNullToDefault, String loopVariableName,
+                                Assignment defaultElementAssignment, MethodReference factoryMethod,
+                                boolean mapNullToDefault, String loopVariableName,
                                 List<LifecycleCallbackMethodReference> beforeMappingReferences,
                                 List<LifecycleCallbackMethodReference> afterMappingReferences,
         SelectionParameters selectionParameters, Set<Type> helperImports, PresenceCheck sourceParameterPresenceCheck) {
@@ -93,6 +105,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
             annotations,
             existingVariables,
             parameterAssignment,
+            defaultElementAssignment,
             factoryMethod,
             mapNullToDefault,
             loopVariableName,

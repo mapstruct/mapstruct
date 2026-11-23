@@ -682,20 +682,12 @@ public class OptionalSourceTargetMapperImpl implements OptionalSourceTargetMappe
     }
 
     private Calendar zonedDateTimeToCalendar(ZonedDateTime dateTime) {
-        if ( dateTime == null ) {
-            return null;
-        }
-
         Calendar instance = Calendar.getInstance( TimeZone.getTimeZone( dateTime.getZone() ) );
         instance.setTimeInMillis( dateTime.toInstant().toEpochMilli() );
         return instance;
     }
 
     private ZonedDateTime calendarToZonedDateTime(Calendar cal) {
-        if ( cal == null ) {
-            return null;
-        }
-
         return ZonedDateTime.ofInstant( cal.toInstant(), cal.getTimeZone().toZoneId() );
     }
 }

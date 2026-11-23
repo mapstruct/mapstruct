@@ -17,11 +17,13 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -67,13 +69,32 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         return myself;
     }
 
+    /**
+     * @param arrayTypeInstance the type instance of an array type
+     * @return the nullability of the component type of the array. In case it has not been resolved (e.g. the array
+     * is the value of a map), the component is non-null for primitives and nullable otherwise.
+     */
+    protected static Nullability getArrayComponentNullability(TypeInstance arrayTypeInstance) {
+        Nullability componentNullability = arrayTypeInstance.getNullability().getComponentTypeNullability();
+        if ( componentNullability != null ) {
+            return componentNullability;
+        }
+        return Nullability.getPrimitiveNullability( arrayTypeInstance.getType().getComponentType().getTypeMirror() )
+            .orElseGet( () -> Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
+    }
+
     @Override
     public final M build() {
-        Type sourceParameterType = first( method.getSourceParameters() ).getType();
+        Parameter parameter = first( method.getSourceParameters() );
+        Type sourceParameterType = parameter.getType();
         Type resultType = method.getResultType();
 
-        Type sourceElementType = getElementType( sourceParameterType );
-        Type targetElementType = getElementType( resultType );
+        TypeInstance sourceElementTypeInstance = getElementType( TypeInstance.of( sourceParameterType,
+                parameter.getNullability() ) );
+        Type sourceElementType = sourceElementTypeInstance.getType();
+        TypeInstance targetElementTypeInstance = getElementType( TypeInstance.of( resultType,
+                method.getResultNullability() ) );
+        Type targetElementType = targetElementTypeInstance.getType();
 
         String loopVariableName =
             Strings.getSafeVariableName( sourceElementType.getName(), method.getParameterNames() );
@@ -82,7 +103,8 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             loopVariableName,
             sourceElementType,
             new HashSet<>(),
-            errorMessagePart
+            errorMessagePart,
+            sourceElementTypeInstance.getNullability()
         );
 
         SelectionCriteria criteria = SelectionCriteria.forMappingMethods( selectionParameters,
@@ -98,7 +120,9 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             criteria,
             sourceRHS,
             positionHint,
-            () -> forge( sourceRHS, sourceElementType, targetElementType )
+            () -> forge( sourceRHS, sourceElementType,
+                    targetElementTypeInstance,
+                    Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE )
         );
 
         if ( assignment == null ) {
@@ -124,6 +148,18 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
                 forgedMethod.addThrownTypes( assignment.getThrownTypes() );
             }
         }
+        Set<String> existingVariables = new HashSet<>( method.getParameterNames() );
+        existingVariables.add( loopVariableName );
+
+        // If the element assignment needs a null check and the target element is nullable, null source elements are
+        // explicitly assigned to the target element instead of being filtered out.
+        Assignment defaultElementAssignment = null;
+        if ( assignment != null && assignment.needsParameterNullCheck()
+                && targetElementTypeInstance.getNullability().isNullable() ) {
+            defaultElementAssignment = getWrapper( new SourceRHS( targetElementType.getNull(), targetElementType,
+                    existingVariables, "container set to null",
+                    Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) ), method );
+        }
         assignment = getWrapper( assignment, method );
 
         // mapNullToDefault — a JSpecify @NonNull return forces RETURN_DEFAULT to avoid generating `return null`.
@@ -144,9 +180,6 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         if ( !method.isUpdateMethod() ) {
             factoryMethod = ObjectFactoryMethodResolver.getFactoryMethod( method, null, ctx );
         }
-
-        Set<String> existingVariables = new HashSet<>( method.getParameterNames() );
-        existingVariables.add( loopVariableName );
 
         List<LifecycleCallbackMethodReference> beforeMappingMethods = LifecycleMethodResolver.beforeMappingMethods(
             method,
@@ -170,6 +203,7 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
             method,
             existingVariables,
             assignment,
+            defaultElementAssignment,
             factoryMethod,
             mapNullToDefault,
             loopVariableName,
@@ -180,22 +214,17 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         );
     }
 
-    private Assignment forge(SourceRHS sourceRHS, Type sourceType, Type targetType) {
-        Assignment assignment = super.forgeMapping( sourceRHS, sourceType, targetType );
-        if ( assignment != null ) {
-            ctx.getMessager().note( 2, Message.ITERABLEMAPPING_CREATE_ELEMENT_NOTE, assignment );
-        }
-        return assignment;
-    }
-
+    //CHECKSTYLE:OFF
     protected abstract M instantiateMappingMethod(Method method, Collection<String> existingVariables,
-                                                  Assignment assignment, MethodReference factoryMethod,
+                                                  Assignment assignment, Assignment defaultElementAssignment,
+                                                  MethodReference factoryMethod,
                                                   boolean mapNullToDefault, String loopVariableName,
                                                   List<LifecycleCallbackMethodReference> beforeMappingMethods,
                                                   List<LifecycleCallbackMethodReference> afterMappingMethods,
         SelectionParameters selectionParameters, PresenceCheck sourceParameterPresenceCheck);
+    //CHECKSTYLE:ON
 
-    protected abstract Type getElementType(Type parameterType);
+    protected abstract TypeInstance getElementType(TypeInstance parameterType);
 
     protected abstract Assignment getWrapper(Assignment assignment, Method method);
 

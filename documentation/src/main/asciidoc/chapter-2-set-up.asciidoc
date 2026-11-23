@@ -270,7 +270,7 @@ disableBuilders`
 
 |`mapstruct.
 disableJSpecify`
-|If set to `true`, MapStruct ignores all JSpecify nullness annotations (`@NonNull`, `@Nullable`, `@NullMarked`, `@NullUnmarked`) when deciding whether to generate null checks and does not raise the compilation error for a nullable source mapped to a `@NonNull` constructor parameter. Null-check generation falls back to the `NullValueCheckStrategy`-driven behavior.
+|If set to `true`, MapStruct ignores all JSpecify nullness annotations (`@NonNull`, `@Nullable`, `@NullMarked`, `@NullUnmarked`) when deciding whether to generate null checks, does not raise the compilation error for a nullable source mapped to a `@NonNull` constructor parameter and does not add JSpecify nullness annotations to the generated code. Null-check generation falls back to the `NullValueCheckStrategy`-driven behavior.
 |`false`
 
 |`mapstruct.nullValueIterableMappingStrategy`

@@ -32,6 +32,10 @@
         <additionalExclude9>x</additionalExclude9>
         <additionalExclude10>x</additionalExclude10>
         <additionalExclude11>x</additionalExclude11>
+        <additionalExclude12>x</additionalExclude12>
+        <additionalExclude13>x</additionalExclude13>
+        <additionalExclude14>x</additionalExclude14>
+        <additionalExclude15>x</additionalExclude15>
     </properties>
 
     <build>
@@ -62,6 +66,8 @@
                         <exclude>${additionalExclude11}</exclude>
                         <exclude>${additionalExclude12}</exclude>
                         <exclude>${additionalExclude13}</exclude>
+                        <exclude>${additionalExclude14}</exclude>
+                        <exclude>${additionalExclude15}</exclude>
                     </excludes>
                 </configuration>
             </plugin>

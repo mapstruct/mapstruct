@@ -6,9 +6,10 @@
 package org.mapstruct.ap.test.nullcheck.jspecify;
 
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mapstruct.ap.test.nullcheck.jspecify.nullmarkedpackage.PackageNullMarkedMapper;
-import org.mapstruct.ap.test.nullcheck.jspecify.nullmarkedpackage.PackageNullMarkedSourceBean;
-import org.mapstruct.ap.test.nullcheck.jspecify.nullmarkedpackage.PackageNullMarkedTargetBean;
+import org.mapstruct.ap.test.nullcheck.jspecify.packages.OuterPackageNullmarkedProvider;
+import org.mapstruct.ap.test.nullcheck.jspecify.packages.nullmarkedpackage.PackageNullMarkedMapper;
+import org.mapstruct.ap.test.nullcheck.jspecify.packages.nullmarkedpackage.PackageNullMarkedSourceBean;
+import org.mapstruct.ap.test.nullcheck.jspecify.packages.nullmarkedpackage.PackageNullMarkedTargetBean;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
@@ -204,6 +205,20 @@ class JSpecifyNullMarkedTest {
         PackageNullMarkedMapper.class
     })
     public void packageLevelNullMarkedWithoutPackageInfo() {
+        // Same classes and mapper as packageLevelNullMarked but WITHOUT @WithPackageInfo.
+        // Without the package-info.java being compiled, @NullMarked is not visible —
+        // unannotated types have unknown nullability and the ALWAYS strategy produces null checks.
+        generatedSource.addComparisonToFixtureFor( PackageNullMarkedMapper.class, "withoutPackageInfo" );
+    }
+
+    @ProcessorTest
+    @WithClasses({
+            PackageNullMarkedSourceBean.class,
+            PackageNullMarkedTargetBean.class,
+            PackageNullMarkedMapper.class
+    })
+    @WithPackageInfo( OuterPackageNullmarkedProvider.class )
+    public void packageLevelNullMarkedWithOuterPackageInfo() {
         // Same classes and mapper as packageLevelNullMarked but WITHOUT @WithPackageInfo.
         // Without the package-info.java being compiled, @NullMarked is not visible —
         // unannotated types have unknown nullability and the ALWAYS strategy produces null checks.

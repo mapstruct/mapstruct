@@ -47,4 +47,9 @@ public abstract class DelegateAccessor implements Accessor {
     public AccessorType getAccessorType() {
         return delegate.getAccessorType();
     }
+
+    @Override
+    public Nullability getNullability() {
+        return delegate.getNullability();
+    }
 }

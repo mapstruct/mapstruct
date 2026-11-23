@@ -58,7 +58,10 @@ public class ChartEntryToArtistImpl extends ChartEntryToArtist {
         artistName = chartSongArtistName( chart );
         recordedAt = chartSongArtistLabelStudioName( chart );
         city = chartSongArtistLabelStudioCity( chart );
-        position = mapPosition( chartSongPositions( chart ) );
+        Integer positions = mapPosition( chartSongPositions( chart ) );
+        if ( positions != null ) {
+            position = positions;
+        }
 
         ChartEntry chartEntry = new ChartEntry( chartName, songTitle, artistName, recordedAt, city, position );
 

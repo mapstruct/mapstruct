@@ -6,10 +6,9 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.SupportingMappingMethod" -->
-private <@includeModel object=findType("ZonedDateTime")/> ${name}(<@includeModel object=findType("Calendar")/> cal) {
-    if ( cal == null ) {
-        return null;
-    }
-
+<#list annotations as annotation>
+    <#nt><@includeModel object=annotation/>
+</#list>
+private <@includeModel object=findType("ZonedDateTime") typeAnnotation=typeAnnotation/> ${name}(<@includeModel object=sourceParameters[0]/>) {
     return <@includeModel object=findType("ZonedDateTime")/>.ofInstant( cal.toInstant(), cal.getTimeZone().toZoneId() );
 }

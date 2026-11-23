@@ -13,6 +13,7 @@ import org.mapstruct.ap.internal.model.common.Assignment;
 import org.mapstruct.ap.internal.model.common.ModelElement;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * An inline conversion from a source to an optional of the source.
@@ -47,6 +48,16 @@ public class ToOptionalTypeConversion extends ModelElement implements Assignment
 
     public Assignment getAssignment() {
         return conversionAssignment;
+    }
+
+    @Override
+    public boolean identity(Assignment other) {
+        if ( other instanceof ToOptionalTypeConversion ) {
+            ToOptionalTypeConversion that = (ToOptionalTypeConversion) other;
+            return targetType.equals( that.targetType )
+                && conversionAssignment.identity( that.conversionAssignment );
+        }
+        return false;
     }
 
     @Override
@@ -112,6 +123,16 @@ public class ToOptionalTypeConversion extends ModelElement implements Assignment
     @Override
     public boolean isCallingUpdateMethod() {
         return false;
+    }
+
+    @Override
+    public Nullability getSourceNullability() {
+        return Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL );
+    }
+
+    @Override
+    public boolean needsParameterNullCheck() {
+        return true;
     }
 
     @Override

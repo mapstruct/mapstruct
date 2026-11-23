@@ -13,6 +13,7 @@ import org.mapstruct.ap.internal.model.common.FinalField;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.XmlConstants;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
@@ -55,5 +56,10 @@ public abstract class AbstractToXmlGregorianCalendar extends BuiltInMethod {
     @Override
     public ConstructorFragment getConstructorFragment() {
         return new NewDatatypeFactoryConstructorFragment( );
+    }
+
+    @Override
+    public Nullability getReturnTypeNullability() {
+        return Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL );
     }
 }

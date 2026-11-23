@@ -10,7 +10,7 @@
 <#list annotations as annotation>
     <#nt><@includeModel object=annotation/>
 </#list>
-<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+<#lt>${accessibility.keyword} <@includeModel object=returnType typeAnnotation=typeAnnotation/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
     	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     	<#if !callback_has_next>
@@ -70,12 +70,22 @@
                 break;
             }
             </#if>
-            <@includeModel object=elementAssignment targetWriteAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>
+            <#-- Array elements are already null by default, so null source elements are skipped instead of being assigned -->
+            <@lib.handleVariableNullCheck elementAssignment.needsParameterNullCheck() loopVariableName>
+                <@includeModel object=elementAssignment targetWriteAccessorName=resultName+"[${index1Name}]" targetType=resultElementType isTargetDefined=true/>
+            </@lib.handleVariableNullCheck>
             ${index1Name}++;
         }
     <#else>
         for ( <@includeModel object=sourceElementType/> ${loopVariableName} : ${sourceParameter.name} ) {
-            <@includeModel object=elementAssignment targetBeanName=resultName targetWriteAccessorName="add" targetType=resultElementType/>
+            <@lib.handleVariableNullCheck elementAssignment.needsParameterNullCheck() loopVariableName>
+                <@includeModel object=elementAssignment targetBeanName=resultName targetWriteAccessorName="add" targetType=resultElementType/>
+            </@lib.handleVariableNullCheck>
+            <#if elementAssignment.needsParameterNullCheck() && defaultElementAssignment??>
+                else {
+                    <@includeModel object=defaultElementAssignment targetBeanName=resultName targetWriteAccessorName="add" targetType=resultElementType/>
+                }
+            </#if>
         }
     </#if>
     <#list afterMappingReferences as callback>

@@ -6,10 +6,11 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.MapMappingMethod" -->
+<#import "macro/CommonMacros.ftl" as lib>
 <#list annotations as annotation>
     <#nt><@includeModel object=annotation/>
 </#list>
-<#lt>${accessibility.keyword} <@includeModel object=returnType /> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+<#lt>${accessibility.keyword} <@includeModel object=returnType typeAnnotation=typeAnnotation/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
     	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     	<#if !callback_has_next>
@@ -45,15 +46,33 @@
     </#list>
     <#-- Once #148 has been addressed, the simple name of Map.Entry can be used -->
     for ( java.util.Map.Entry<<#list sourceElementTypes as typeParameter><@includeModel object=typeParameter /><#if typeParameter_has_next>, </#if></#list>> ${entryVariableName} : ${sourceParameter.name}.entrySet() ) {
-    <#-- key -->
+    <#-- key: a null source key is put as null key into the target map instead of the entry being skipped -->
+        <#if keyAssignment.needsParameterNullCheck()>
+        <@includeModel object=resultElementTypes[0].typeBound/> ${keyVariableName} = null;
+        if ( ${keyAssignment.sourceReference} != null ) {
+            <@includeModel object=keyAssignment
+                       targetWriteAccessorName=keyVariableName
+                       targetType=resultElementTypes[0].typeBound
+                       isTargetDefined=true/>
+        }
+        <#else>
         <@includeModel object=keyAssignment
                    targetWriteAccessorName=keyVariableName
                    targetType=resultElementTypes[0].typeBound/>
+        </#if>
     <#-- value -->
+        <@lib.handleVariableNullCheck valueAssignment.needsParameterNullCheck() valueAssignment.sourceReference>
         <@includeModel object=valueAssignment
                    targetWriteAccessorName=valueVariableName
                    targetType=resultElementTypes[1].typeBound/>
         ${resultName}.put( ${keyVariableName}, ${valueVariableName} );
+        </@lib.handleVariableNullCheck>
+        <#-- A null source value is put as null into the target map instead of the entry being skipped. -->
+        <#if defaultValueAssignment??>
+        else {
+            ${resultName}.put( ${keyVariableName}, <@includeModel object=defaultValueAssignment/> );
+        }
+        </#if>
     }
     <#list afterMappingReferences as callback>
     	<#if callback_index = 0>

@@ -12,6 +12,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.XmlConstants;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.asSet;
 
@@ -27,7 +28,8 @@ public class XmlGregorianCalendarToCalendar extends BuiltInMethod {
     private final Set<Type> importTypes;
 
     public XmlGregorianCalendarToCalendar(TypeFactory typeFactory) {
-        this.parameter = new Parameter( "xcal", typeFactory.getType( XmlConstants.JAVAX_XML_XML_GREGORIAN_CALENDAR ) );
+        this.parameter = new Parameter( "xcal", typeFactory.getType( XmlConstants.JAVAX_XML_XML_GREGORIAN_CALENDAR ),
+                Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL ) );
         this.returnType = typeFactory.getType( Calendar.class );
         this.importTypes = asSet( returnType, parameter.getType() );
     }
@@ -45,5 +47,10 @@ public class XmlGregorianCalendarToCalendar extends BuiltInMethod {
     @Override
     public Set<Type> getImportTypes() {
         return importTypes;
+    }
+
+    @Override
+    public Nullability getReturnTypeNullability() {
+        return Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL );
     }
 }

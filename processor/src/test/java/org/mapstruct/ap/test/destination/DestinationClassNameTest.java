@@ -8,6 +8,7 @@ package org.mapstruct.ap.test.destination;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
 import org.mapstruct.ap.testutil.WithJavaxInject;
+import org.mapstruct.ap.testutil.compilation.annotation.ProcessorOption;
 import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,6 +75,9 @@ public class DestinationClassNameTest {
     }
 
     @ProcessorTest
+    // Todo remove disableJSpecify.
+    // eclipse 1.6 has a problem when resolving a none existing package and creating it afterward.
+    @ProcessorOption(name = "mapstruct.disableJSpecify", value = "true")
     @WithClasses({ AbstractDestinationClassNameMapper.class, AbstractDestinationPackageNameMapper.class })
     public void shouldWorkWithAbstractClasses() {
         AbstractDestinationClassNameMapper mapper1 = AbstractDestinationClassNameMapper.INSTANCE;

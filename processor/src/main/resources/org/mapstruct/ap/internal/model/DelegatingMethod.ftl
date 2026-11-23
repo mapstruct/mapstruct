@@ -6,8 +6,11 @@
 
 -->
 <#-- @ftlvariable name="" type="org.mapstruct.ap.internal.model.DelegatingMethod" -->
+<#list annotations as annotation>
+    <#nt><@includeModel object=annotation/>
+</#list>
 @Override
-public <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) <@throws/> {
+public <@includeModel object=returnType typeAnnotation=typeAnnotation/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>) <@throws/> {
     <#if returnType.name != "void">return </#if>delegate.${name}( <#list parameters as param>${param.name}<#if param_has_next>, </#if></#list> );
 }
 <#macro throws>

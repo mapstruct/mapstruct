@@ -48,4 +48,6 @@ public interface Accessor {
      * @return type of the accessor
      */
     AccessorType getAccessorType();
+
+    Nullability getNullability();
 }

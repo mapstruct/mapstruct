@@ -18,11 +18,13 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.PresenceCheck;
 import org.mapstruct.ap.internal.model.common.SourceRHS;
 import org.mapstruct.ap.internal.model.common.Type;
+import org.mapstruct.ap.internal.model.common.TypeInstance;
 import org.mapstruct.ap.internal.model.source.Method;
 import org.mapstruct.ap.internal.model.source.SelectionParameters;
 import org.mapstruct.ap.internal.model.source.selector.SelectionCriteria;
 import org.mapstruct.ap.internal.util.Message;
 import org.mapstruct.ap.internal.util.Strings;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 import static org.mapstruct.ap.internal.util.Collections.first;
 
@@ -36,6 +38,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
     private final Assignment keyAssignment;
     private final Assignment valueAssignment;
+    private final Assignment defaultValueAssignment;
     private final Parameter sourceParameter;
     private final PresenceCheck sourceParameterPresenceCheck;
     private IterableCreation iterableCreation;
@@ -81,7 +84,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             Type keySourceType = sourceTypeParams.get( 0 ).getTypeBound();
             Type keyTargetType = resultTypeParams.get( 0 ).getTypeBound();
 
-            SourceRHS keySourceRHS = new SourceRHS( "entry.getKey()", keySourceType, new HashSet<>(), "map key" );
+            SourceRHS keySourceRHS = new SourceRHS( "entry.getKey()", keySourceType, new HashSet<>(), "map key",
+                    Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
 
             SelectionCriteria keyCriteria = SelectionCriteria.forMappingMethods(
                 keySelectionParameters,
@@ -98,7 +102,10 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 keyCriteria,
                 keySourceRHS,
                 null,
-                 () -> forge( keySourceRHS, keySourceType, keyTargetType, Message.MAPMAPPING_CREATE_KEY_NOTE )
+                 () -> forge( keySourceRHS, keySourceType,
+                         TypeInstance.of( keyTargetType,
+                             Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) ),
+                         Message.MAPMAPPING_CREATE_KEY_NOTE )
             );
 
             if ( keyAssignment == null ) {
@@ -129,7 +136,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
             Type valueTargetType = resultTypeParams.get( 1 ).getTypeBound();
 
             SourceRHS valueSourceRHS = new SourceRHS( "entry.getValue()", valueSourceType, new HashSet<>(),
-                    "map value" );
+                    "map value", Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
 
             SelectionCriteria valueCriteria = SelectionCriteria.forMappingMethods(
                 valueSelectionParameters,
@@ -145,7 +152,10 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 valueCriteria,
                 valueSourceRHS,
                 null,
-                () -> forge( valueSourceRHS, valueSourceType, valueTargetType, Message.MAPMAPPING_CREATE_VALUE_NOTE )
+                () -> forge( valueSourceRHS, valueSourceType,
+                        TypeInstance.of( valueTargetType,
+                            Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) ),
+                        Message.MAPMAPPING_CREATE_VALUE_NOTE )
             );
 
             if ( method instanceof ForgedMethod ) {
@@ -199,6 +209,16 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                     .getFactoryMethod( method, null, ctx );
             }
 
+            // If the value assignment needs a null check, null source values are explicitly put as null into the target
+            // map instead of the entry being skipped. The target value type of a Map is always nullable, so there is no
+            // "skip" variant (unlike container elements).
+            Assignment defaultValueAssignment = null;
+            if ( valueAssignment != null && valueAssignment.needsParameterNullCheck() ) {
+                defaultValueAssignment = new SourceRHS( valueTargetType.getNull(), valueTargetType, new HashSet<>(),
+                        "map value set to null",
+                        Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
+            }
+
             keyAssignment = new LocalVarWrapper( keyAssignment, method.getThrownTypes(), keyTargetType, false );
             valueAssignment = new LocalVarWrapper( valueAssignment, method.getThrownTypes(), valueTargetType, false );
 
@@ -218,20 +238,13 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
                 existingVariables,
                 keyAssignment,
                 valueAssignment,
+                defaultValueAssignment,
                 factoryMethod,
                 mapNullToDefault,
                 beforeMappingMethods,
                 afterMappingMethods,
                 sourceParameterPresenceCheck
             );
-        }
-
-        Assignment forge(SourceRHS sourceRHS, Type sourceType, Type targetType, Message message ) {
-            Assignment  assignment = forgeMapping( sourceRHS, sourceType, targetType );
-            if ( assignment != null ) {
-                ctx.getMessager().note( 2, message, assignment );
-            }
-            return assignment;
         }
 
         @Override
@@ -244,7 +257,8 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
     //CHECKSTYLE:OFF
     private MapMappingMethod(Method method, List<Annotation> annotations,
                              Collection<String> existingVariableNames, Assignment keyAssignment,
-                             Assignment valueAssignment, MethodReference factoryMethod, boolean mapNullToDefault,
+                             Assignment valueAssignment, Assignment defaultValueAssignment,
+                             MethodReference factoryMethod, boolean mapNullToDefault,
                              List<LifecycleCallbackMethodReference> beforeMappingReferences,
                              List<LifecycleCallbackMethodReference> afterMappingReferences,
                              PresenceCheck sourceParameterPresenceCheck) {
@@ -254,6 +268,7 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
 
         this.keyAssignment = keyAssignment;
         this.valueAssignment = valueAssignment;
+        this.defaultValueAssignment = defaultValueAssignment;
         Parameter sourceParameter = null;
         for ( Parameter parameter : getParameters() ) {
             if ( !parameter.isMappingTarget() && !parameter.isMappingContext() ) {
@@ -295,6 +310,10 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
         return valueAssignment;
     }
 
+    public Assignment getDefaultValueAssignment() {
+        return defaultValueAssignment;
+    }
+
     @Override
     public Set<Type> getImportTypes() {
         Set<Type> types = super.getImportTypes();
@@ -304,6 +323,9 @@ public class MapMappingMethod extends NormalTypeMappingMethod {
         }
         if ( valueAssignment != null ) {
             types.addAll( valueAssignment.getImportTypes() );
+        }
+        if ( defaultValueAssignment != null ) {
+            types.addAll( defaultValueAssignment.getImportTypes() );
         }
 
         if ( iterableCreation != null ) {

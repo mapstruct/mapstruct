@@ -34,7 +34,8 @@ public class DateToStringConversion implements ConversionProvider {
     public Assignment to(ConversionContext conversionContext) {
         return new TypeConversion( getImportTypes( conversionContext ),
             Collections.emptyList(),
-            getConversionExpression( conversionContext, "format" )
+            getConversionExpression( conversionContext, "format" ),
+            conversionContext.getTargetType()
         );
     }
 
@@ -42,7 +43,8 @@ public class DateToStringConversion implements ConversionProvider {
     public Assignment from(ConversionContext conversionContext) {
         return new TypeConversion( getImportTypes( conversionContext ),
             Collections.singletonList( conversionContext.getTypeFactory().getType( ParseException.class ) ),
-            getConversionExpression( conversionContext, "parse" )
+            getConversionExpression( conversionContext, "parse" ),
+            conversionContext.getSourceType()
         );
     }
 

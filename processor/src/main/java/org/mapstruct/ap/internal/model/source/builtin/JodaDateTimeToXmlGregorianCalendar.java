@@ -11,6 +11,7 @@ import org.mapstruct.ap.internal.model.common.Parameter;
 import org.mapstruct.ap.internal.model.common.Type;
 import org.mapstruct.ap.internal.model.common.TypeFactory;
 import org.mapstruct.ap.internal.util.JodaTimeConstants;
+import org.mapstruct.ap.internal.util.accessor.Nullability;
 
 /**
  * A built-in method for converting from Joda {@code DateTime} to {@code XMLGregorianCalendar}.
@@ -23,7 +24,8 @@ public class JodaDateTimeToXmlGregorianCalendar extends AbstractToXmlGregorianCa
 
     public JodaDateTimeToXmlGregorianCalendar(TypeFactory typeFactory) {
         super( typeFactory );
-        this.parameter = new Parameter("dt", typeFactory.getType( JodaTimeConstants.DATE_TIME_FQN ) );
+        this.parameter = new Parameter("dt", typeFactory.getType( JodaTimeConstants.DATE_TIME_FQN ),
+                Nullability.hardcodedNullability( Nullability.NullabilityState.NON_NULL ) );
     }
 
     @Override

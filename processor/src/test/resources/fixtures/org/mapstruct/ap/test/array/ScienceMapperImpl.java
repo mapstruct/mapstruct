@@ -328,7 +328,9 @@ public class ScienceMapperImpl implements ScienceMapper {
             if ( ( i >= target.length ) || ( i >= source.length ) ) {
                 break;
             }
-            target[i] = string.charAt( 0 );
+            if ( string != null ) {
+                target[i] = string.charAt( 0 );
+            }
             i++;
         }
 
@@ -483,7 +485,9 @@ public class ScienceMapperImpl implements ScienceMapper {
         int[] intTmp = new int[stringArray.length];
         int i = 0;
         for ( String string : stringArray ) {
-            intTmp[i] = Integer.parseInt( string );
+            if ( string != null ) {
+                intTmp[i] = Integer.parseInt( string );
+            }
             i++;
         }
 

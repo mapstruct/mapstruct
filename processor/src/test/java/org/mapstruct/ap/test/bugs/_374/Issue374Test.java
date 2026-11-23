@@ -13,6 +13,7 @@ import java.util.Map;
 import org.mapstruct.ap.testutil.IssueKey;
 import org.mapstruct.ap.testutil.ProcessorTest;
 import org.mapstruct.ap.testutil.WithClasses;
+import org.mapstruct.ap.testutil.WithJSpecify;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -98,5 +99,11 @@ public class Issue374Test {
         Issue374VoidMapper.INSTANCE.mapMap( null, targetMap );
         assertThat( targetMap ).isEmpty();
 
+    }
+
+    @ProcessorTest
+    @WithJSpecify
+    @WithClasses( { Issue374VoidMapper.class, Source.class, Target.class } )
+    public void shouldNotTryToAddAnnotationsToVoidType() {
     }
 }

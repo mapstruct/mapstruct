@@ -10,7 +10,7 @@
 <#list annotations as annotation>
     <#nt><@includeModel object=annotation/>
 </#list>
-<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+<#lt>${accessibility.keyword} <@includeModel object=returnType typeAnnotation=typeAnnotation/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#--TODO does it even make sense to do a callback if the result is a Stream, as they are immutable-->
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
     	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
@@ -179,7 +179,18 @@
 <#macro streamMapSupplier>
     <@compress>
         <#if !elementAssignment.directAssignment?? || !elementAssignment.directAssignment>
-            .map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> )
+            <#-- When the element assignment needs a null check, either map null source elements to null (set-to-null)
+                if the target element is nullable, or filter out null source elements if it is non-null. -->
+            <#if elementAssignment.needsParameterNullCheck()>
+                <#assign lambdaVar><#if elementAssignment.sourceLocalVarName?? >${elementAssignment.sourceLocalVarName}<#else>${elementAssignment.sourceReference}</#if></#assign>
+                <#if defaultElementAssignment??>
+                    .map( ${lambdaVar} -> ${lambdaVar} == null ? null : <@includeModel object=elementAssignment.assignment targetBeanName=resultName targetType=resultElementType/> )
+                <#else>
+                    .filter( ${lambdaVar} -> ${lambdaVar} != null ).map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> )
+                </#if>
+            <#else>
+                .map( <@includeModel object=elementAssignment targetBeanName=resultName targetType=resultElementType/> )
+            </#if>
         </#if>
     </@compress>
 </#macro>

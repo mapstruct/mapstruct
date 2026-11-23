@@ -53,4 +53,12 @@ public class SubclassFixtureTest {
     void subclassImplementationParentFixture() {
         generatedSource.addComparisonToFixtureFor( SubclassImplementedMapper.class );
     }
+
+    @ProcessorTest
+    @WithClasses( {
+        SubclassImplementedWithReturnDefaultValueMapper.class
+    } )
+    void subclassImplementationWithReturnDefaultValueFixture() {
+        generatedSource.addComparisonToFixtureFor( SubclassImplementedWithReturnDefaultValueMapper.class );
+    }
 }

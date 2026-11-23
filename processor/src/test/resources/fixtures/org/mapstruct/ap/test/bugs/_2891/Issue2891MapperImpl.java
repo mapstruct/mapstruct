@@ -32,9 +32,6 @@ public class Issue2891MapperImpl implements Issue2891Mapper {
     }
 
     protected Target1 source1ToTarget1(Source1 source1) {
-        if ( source1 == null ) {
-            return null;
-        }
 
         String name = null;
 
@@ -46,9 +43,6 @@ public class Issue2891MapperImpl implements Issue2891Mapper {
     }
 
     protected Target2 source2ToTarget2(Source2 source2) {
-        if ( source2 == null ) {
-            return null;
-        }
 
         String name = null;
 

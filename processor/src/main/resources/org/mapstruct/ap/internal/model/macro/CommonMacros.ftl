@@ -34,6 +34,30 @@
     </#if>
 </#macro>
 <#--
+  macro: nullCheckWithElseDefaultAssignment
+
+  purpose: macro surrounds the nested code with `if ( variableName != null )` and adds an else
+           clause with the default assignment when applicable (see elseDefaultAssignment). When
+           needsNullCheck is false, the nested code is emitted unconditionally and no else default
+           assignment is generated.
+
+  parameters: needsNullCheck: whether to emit the null check
+              variableName:   the variable to check for null
+
+  requires: caller to satisfy the contract of elseDefaultAssignment (ext.defaultValueAssignment,
+            setExplicitlyToDefault/setExplicitlyToNull, ext.targetWriteAccessorName, ...)
+-->
+<#macro nullCheckWithElseDefaultAssignment needsNullCheck variableName>
+    <#if needsNullCheck >
+        if ( ${variableName} != null ) {
+            <#nested>
+        }
+        <@elseDefaultAssignment/>
+    <#else>
+        <#nested>
+    </#if>
+</#macro>
+<#--
     local macro related to handleSourceReferenceNullCheck
     note: the <#elseif setExplicitlyToDefault || setExplicitlyToNull> is only relevant for update mappings
           the default value takes precedence
@@ -84,6 +108,26 @@
     <@handeDefaultAssigment/>
   }
   </#if>
+</#macro>
+
+<#--
+  macro: handleVariableNullCheck
+
+  purpose: macro surrounds the nested code with `if ( variableName != null )` when needsCheck is
+           true; otherwise emits the nested code as-is. Used by container mappings (iterable/map)
+           to respect the element assignment's needsParameterNullCheck.
+
+  parameters: needsCheck:   whether to emit the null check
+              variableName: the variable to check for null
+-->
+<#macro handleVariableNullCheck needsCheck variableName>
+<#if needsCheck>
+    if ( ${variableName} != null ) {
+        <#nested>
+    }
+<#else>
+    <#nested>
+</#if>
 </#macro>
 <#--
     Gives the value that needs to be assigned. If there is a sourcePresenceCheckerReference then a direct

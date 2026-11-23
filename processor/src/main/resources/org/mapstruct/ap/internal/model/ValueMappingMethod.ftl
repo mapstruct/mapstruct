@@ -10,16 +10,18 @@
     <#nt><@includeModel object=annotation/>
 </#list>
 <#if overridden>@Override</#if>
-<#lt>${accessibility.keyword} <@includeModel object=returnType/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
+<#lt>${accessibility.keyword} <@includeModel object=returnType typeAnnotation=typeAnnotation/> ${name}(<#list parameters as param><@includeModel object=param/><#if param_has_next>, </#if></#list>)<@throws/> {
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
         <@includeModel object=callback targetBeanName=resultName targetType=resultType/>
         <#if !callback_has_next>
 
         </#if>
     </#list>
+    <#if sourceParameter.nullability.nullable>
     if ( ${sourceParameter.name} == null ) {
         <#if nullTarget.targetAsException>throw new <@includeModel object=unexpectedValueMappingException />( "Unexpected enum constant: " + ${sourceParameter.name} );<#else>return <@writeTarget target=nullTarget.target/>;</#if>
     }
+    </#if>
 
     <#if versionInformation.isSourceVersionAtLeast14()>
         <#if valueMappings.empty>
