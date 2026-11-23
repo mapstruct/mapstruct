@@ -39,7 +39,7 @@ public class IterableMappingMethod extends ContainerMappingMethod {
         protected TypeInstance getElementType(TypeInstance parameterTypeInstance) {
             Type parameterType = parameterTypeInstance.getType();
             return parameterType.isArrayType() ? TypeInstance.of( parameterType.getComponentType(),
-                    parameterTypeInstance.getNullability().getComponentTypeNullability() )
+                    getArrayComponentNullability( parameterTypeInstance ) )
                     : TypeInstance.of( first( parameterType.determineTypeArguments( Iterable.class ) ).getTypeBound(),
                     Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
         }

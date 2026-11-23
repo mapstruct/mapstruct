@@ -132,11 +132,19 @@ public class Nullability {
         return cause;
     }
 
-    public Nullability chain(Nullability parent) {
-        if ( parent.state == NullabilityState.NULLABLE ) {
-            return parent;
+    /**
+     * Chains this nullability with the nullability of the next element in a chain (e.g. a nested property).
+     * The result is nullable as soon as one of the two is nullable. The component type nullability is always taken
+     * from the {@code next} element, since only the last element of a chain describes the resulting type.
+     *
+     * @param next the nullability of the next element in the chain
+     * @return the nullability of the chain
+     */
+    public Nullability chain(Nullability next) {
+        if ( next.state == NullabilityState.NULLABLE ) {
+            return next;
         }
-        return this;
+        return new Nullability( state, cause, next.componentTypeNullability );
     }
 
     public Nullability withIsReturnDefault(boolean isReturnDefault) {
@@ -161,12 +169,13 @@ public class Nullability {
             return false;
         }
         Nullability that = (Nullability) o;
-        return state == that.state && cause == that.cause;
+        return state == that.state && cause == that.cause
+            && Objects.equals( componentTypeNullability, that.componentTypeNullability );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash( state, cause );
+        return Objects.hash( state, cause, componentTypeNullability );
     }
 
     @Override
@@ -174,6 +183,7 @@ public class Nullability {
         return "Nullability{" +
                 "state=" + state +
                 ", cause=" + cause +
+                ( componentTypeNullability != null ? ", componentTypeNullability=" + componentTypeNullability : "" ) +
                 '}';
     }
 }

@@ -17,6 +17,7 @@ import org.mapstruct.ap.internal.gem.NullValuePropertyMappingStrategyGem;
 import org.mapstruct.ap.internal.model.assignment.ExistingInstanceSetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.GetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.NewInstanceSetterWrapperForCollectionsAndMaps;
+import org.mapstruct.ap.internal.model.assignment.SetterWrapper;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMaps;
 import org.mapstruct.ap.internal.model.assignment.SetterWrapperForCollectionsAndMapsWithNullCheck;
 import org.mapstruct.ap.internal.model.assignment.UpdateWrapper;
@@ -190,6 +191,24 @@ public class CollectionAssignmentBuilder {
                     targetAccessorType.isFieldAssignment()
                 );
             }
+            else if ( result.needsParameterNullCheck() ) {
+                // The assignment (e.g. a mapping method with a non-null parameter) does not accept null,
+                // and the source can be null. The collection wrappers only check the result of the assignment,
+                // therefore the source has to be checked before the assignment is invoked.
+                result = new SetterWrapper(
+                    result,
+                    method.getThrownTypes(),
+                    targetAccessorType.isFieldAssignment(),
+                    true,
+                    false,
+                    false,
+                    false,
+                    null,
+                    false,
+                    null,
+                    null
+                );
+            }
             else if ( setterWrapperNeedsSourceNullCheck( result )
                 && canBeMappedOrDirectlyAssigned( result ) ) {
 
@@ -263,9 +282,11 @@ public class CollectionAssignmentBuilder {
      * @return whether to include a null / presence check or not
      */
     private boolean setterWrapperNeedsSourceNullCheck(Assignment rhs) {
-        // JSpecify: source @NonNull means the value is guaranteed non-null, skip the wrapper
-        if ( rhs.getSourceNullability().isNonNullable()
-                && rhs.getSourceNullability().getCause() == Nullability.NullabilityCause.JSPECIFY ) {
+        // JSpecify: source @NonNull means the value is guaranteed non-null, skip the wrapper.
+        // The nullability of the assignment itself only describes its result and not the source.
+        Nullability sourceNullability = sourceRHS.getSourceNullability();
+        if ( sourceNullability.isNonNullable()
+                && sourceNullability.getCause() == Nullability.NullabilityCause.JSPECIFY ) {
             ctx.getMessager().note( 2,
                 Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE,
                 targetPropertyName );

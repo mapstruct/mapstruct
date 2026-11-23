@@ -44,7 +44,7 @@ public class StreamMappingMethod extends ContainerMappingMethod {
         protected TypeInstance getElementType(TypeInstance parameterTypeInstance) {
             Type parameterType = parameterTypeInstance.getType();
             return TypeInstance.of( StreamMappingMethod.getElementType( parameterType ),
-                    parameterType.isArrayType() ? parameterTypeInstance.getNullability().getComponentTypeNullability() :
+                    parameterType.isArrayType() ? getArrayComponentNullability( parameterTypeInstance ) :
                     Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
         }
 

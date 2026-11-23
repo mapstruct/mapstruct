@@ -327,6 +327,25 @@ public abstract class MappingMethod extends GeneratedTypeMethod {
             return false;
         }
 
+        // The nullability of the component types (e.g. the elements of an array) is part of the generated method
+        // body, and the caller of the method cannot compensate for it. Therefore, methods which differ in it
+        // cannot be reused.
+        if ( !Objects.equals( getComponentTypeNullability( returnTypeNullability ),
+            getComponentTypeNullability( other.returnTypeNullability ) ) ) {
+            return false;
+        }
+
+        for ( int i = 0; i < parameters.size(); i++ ) {
+            if ( !Objects.equals( getComponentTypeNullability( parameters.get( i ).getNullability() ),
+                getComponentTypeNullability( other.parameters.get( i ).getNullability() ) ) ) {
+                return false;
+            }
+        }
+
         return true;
+    }
+
+    private static Nullability getComponentTypeNullability(Nullability nullability) {
+        return nullability != null ? nullability.getComponentTypeNullability() : null;
     }
 }

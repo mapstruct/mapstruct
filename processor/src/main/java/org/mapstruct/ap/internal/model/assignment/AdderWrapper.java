@@ -26,13 +26,16 @@ public class AdderWrapper extends AssignmentWrapper {
 
     private final List<Type> thrownTypesToExclude;
     private final Type adderType;
+    private final boolean adderAcceptsNull;
 
     public AdderWrapper( Assignment rhs,
                          List<Type> thrownTypesToExclude,
                          boolean fieldAssignment,
-                         String adderIteratorName ) {
+                         String adderIteratorName,
+                         boolean adderAcceptsNull ) {
         super( rhs, fieldAssignment );
         this.thrownTypesToExclude = thrownTypesToExclude;
+        this.adderAcceptsNull = adderAcceptsNull;
         // a method local var has been added earlier.
 
 
@@ -70,6 +73,22 @@ public class AdderWrapper extends AssignmentWrapper {
 
     public boolean isIncludeSourceNullCheck() {
         return true;
+    }
+
+    /**
+     * @return {@code true} if the element has to be null checked before it is passed to the assignment, because
+     * the assignment (e.g. a built-in method) does not accept {@code null}
+     */
+    public boolean isIncludeElementNullCheck() {
+        return getAssignment().needsParameterNullCheck();
+    }
+
+    /**
+     * @return {@code true} if {@code null} elements should be passed to the adder, {@code false} if they
+     * should be skipped. Only relevant when the element is null checked.
+     */
+    public boolean isAdderAcceptsNull() {
+        return adderAcceptsNull;
     }
 
     public boolean isSetExplicitlyToNull() {

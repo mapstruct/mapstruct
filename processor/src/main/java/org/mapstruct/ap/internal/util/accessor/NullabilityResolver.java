@@ -184,29 +184,35 @@ public class NullabilityResolver {
         return resolveElementScope( element ).toJSpecifyNullability().toNullability( componentTypeNullability );
     }
 
+    /**
+     * Resolves the nullability of the component type of an array type. For multi-dimensional arrays the returned
+     * nullability is the one of the direct component type, and its own component type nullability is the one of
+     * the next inner dimension.
+     *
+     * @param typeMirror the type to inspect
+     * @param outerElement the element which declares the type, used for resolving the nullability scope
+     * @return the nullability of the direct component type, or {@code null} if the type is not an array
+     */
     private Nullability getComponentTypeJSpecifyNullability(TypeMirror typeMirror, Element outerElement) {
-        Nullability componentTypeNullability = null;
-        while ( typeMirror.getKind() == TypeKind.ARRAY ) {
-            typeMirror = ( (ArrayType) typeMirror ).getComponentType();
-            Optional<Nullability> primitiveNullability = Nullability.getPrimitiveNullability( typeMirror );
-            if ( primitiveNullability.isPresent() ) {
-                componentTypeNullability = primitiveNullability.get();
-            }
-            else if ( jSpecifyEnabled ) {
-                JSpecifyNullability nullabilityFromAnnotationMirrors =
-                        getNullabilityFromAnnotationMirrors( typeMirror.getAnnotationMirrors() );
-                if ( nullabilityFromAnnotationMirrors == JSpecifyNullability.UNKNOWN ) {
-                    nullabilityFromAnnotationMirrors = resolveElementScope( outerElement ).toJSpecifyNullability();
-                }
-                componentTypeNullability = nullabilityFromAnnotationMirrors
-                        .toNullability( componentTypeNullability );
-            }
-            else {
-                componentTypeNullability = new Nullability( Nullability.NullabilityState.NULLABLE,
-                        Nullability.NullabilityCause.DEFAULT, componentTypeNullability );
-            }
+        if ( typeMirror.getKind() != TypeKind.ARRAY ) {
+            return null;
         }
-        return componentTypeNullability;
+        TypeMirror componentType = ( (ArrayType) typeMirror ).getComponentType();
+        Optional<Nullability> primitiveNullability = Nullability.getPrimitiveNullability( componentType );
+        if ( primitiveNullability.isPresent() ) {
+            return primitiveNullability.get();
+        }
+        Nullability nestedComponentTypeNullability = getComponentTypeJSpecifyNullability( componentType, outerElement );
+        if ( jSpecifyEnabled ) {
+            JSpecifyNullability nullabilityFromAnnotationMirrors =
+                    getNullabilityFromAnnotationMirrors( componentType.getAnnotationMirrors() );
+            if ( nullabilityFromAnnotationMirrors == JSpecifyNullability.UNKNOWN ) {
+                nullabilityFromAnnotationMirrors = resolveElementScope( outerElement ).toJSpecifyNullability();
+            }
+            return nullabilityFromAnnotationMirrors.toNullability( nestedComponentTypeNullability );
+        }
+        return new Nullability( Nullability.NullabilityState.NULLABLE,
+                Nullability.NullabilityCause.DEFAULT, nestedComponentTypeNullability );
     }
 
     /**

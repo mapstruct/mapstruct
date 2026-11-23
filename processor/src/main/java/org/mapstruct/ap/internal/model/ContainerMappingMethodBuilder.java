@@ -69,6 +69,20 @@ public abstract class ContainerMappingMethodBuilder<B extends ContainerMappingMe
         return myself;
     }
 
+    /**
+     * @param arrayTypeInstance the type instance of an array type
+     * @return the nullability of the component type of the array. In case it has not been resolved (e.g. the array
+     * is the value of a map), the component is non-null for primitives and nullable otherwise.
+     */
+    protected static Nullability getArrayComponentNullability(TypeInstance arrayTypeInstance) {
+        Nullability componentNullability = arrayTypeInstance.getNullability().getComponentTypeNullability();
+        if ( componentNullability != null ) {
+            return componentNullability;
+        }
+        return Nullability.getPrimitiveNullability( arrayTypeInstance.getType().getComponentType().getTypeMirror() )
+            .orElseGet( () -> Nullability.hardcodedNullability( Nullability.NullabilityState.NULLABLE ) );
+    }
+
     @Override
     public final M build() {
         Parameter parameter = first( method.getSourceParameters() );

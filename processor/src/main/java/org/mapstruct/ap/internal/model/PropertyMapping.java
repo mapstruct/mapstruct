@@ -485,8 +485,7 @@ public class PropertyMapping extends ModelElement {
                 boolean includeSourceNullCheck = !rhs.isSourceReferenceParameter();
                 if ( includeSourceNullCheck ) {
                     // JSpecify: source @NonNull means no null check needed
-                    if ( rhs.getSourceNullability().isNonNullable()
-                            && rhs.getSourceNullability().getCause() == Nullability.NullabilityCause.JSPECIFY )  {
+                    if ( !rhs.needsParameterNullCheck() && isSourceJSpecifyNonNull() ) {
                         includeSourceNullCheck = false;
                     }
                 }
@@ -654,8 +653,7 @@ public class PropertyMapping extends ModelElement {
             }
 
             // JSpecify: source @NonNull means the value is guaranteed non-null, skip all checks
-            if ( rhs.getSourceNullability().isNonNullable()
-                    && rhs.getSourceNullability().getCause() == Nullability.NullabilityCause.JSPECIFY ) {
+            if ( isSourceJSpecifyNonNull() ) {
                 ctx.getMessager().note( 2,
                     Message.PROPERTYMAPPING_JSPECIFY_SKIP_NULL_CHECK_NON_NULL_SOURCE,
                     targetPropertyName
@@ -686,6 +684,18 @@ public class PropertyMapping extends ModelElement {
             return false;
         }
 
+        /**
+         * The nullability of the source property decides whether the source can be {@code null}.
+         * The nullability of an assignment (e.g. a mapping method) only describes its result.
+         *
+         * @return {@code true} if the source property is non-null according to JSpecify
+         */
+        private boolean isSourceJSpecifyNonNull() {
+            Nullability sourceNullability = rightHandSide.getSourceNullability();
+            return sourceNullability.isNonNullable()
+                && sourceNullability.getCause() == Nullability.NullabilityCause.JSPECIFY;
+        }
+
         private boolean hasDefaultValueOrDefaultExpression() {
             return defaultValue != null || defaultJavaExpression != null;
         }
@@ -696,7 +706,13 @@ public class PropertyMapping extends ModelElement {
 
             String adderIteratorName = sourcePropertyName == null ? targetPropertyName : sourcePropertyName;
             if ( result.getSourceType().isIterableType() ) {
-                result = new AdderWrapper( result, method.getThrownTypes(), isFieldAssignment(), adderIteratorName );
+                result = new AdderWrapper(
+                    result,
+                    method.getThrownTypes(),
+                    isFieldAssignment(),
+                    adderIteratorName,
+                    targetWriteAccessor.getNullability().isNullable()
+                );
             }
             else if ( result.getSourceType().isStreamType() ) {
                 result = new StreamAdderWrapper(

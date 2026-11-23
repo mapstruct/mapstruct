@@ -123,7 +123,7 @@ public class MethodReference extends ModelElement implements Assignment {
         this.sourceNullability = method.getReturnTypeNullability();
     }
 
-    private MethodReference(NullSafe2StepMappingMethod method) {
+    private MethodReference(NullSafe2StepMappingMethod method, List<ParameterBinding> parameterBindings) {
         this.sourceParameters = Parameter.getSourceParameters( method.getParameters() );
         this.returnType = method.getReturnType();
         this.declaringMapper = null;
@@ -133,7 +133,7 @@ public class MethodReference extends ModelElement implements Assignment {
         this.thrownTypes = method.getThrownTypes();
         this.definingType = null;
         this.isUpdateMethod = false;
-        this.parameterBindings = ParameterBinding.fromParameters( method.getParameters() );
+        this.parameterBindings = parameterBindings;
         this.isStatic = false;
         this.name = method.getName();
         this.isConstructor = false;
@@ -506,8 +506,9 @@ public class MethodReference extends ModelElement implements Assignment {
         return new MethodReference( method, contextParam );
     }
 
-    public static MethodReference forNullSafe2StepMethod( NullSafe2StepMappingMethod nullSafe2StepMappingMethod) {
-        return new MethodReference( nullSafe2StepMappingMethod );
+    public static MethodReference forNullSafe2StepMethod(NullSafe2StepMappingMethod nullSafe2StepMappingMethod,
+                                                         List<ParameterBinding> parameterBindings) {
+        return new MethodReference( nullSafe2StepMappingMethod, parameterBindings );
     }
 
     public static MethodReference forForgedMethod(Method method, List<ParameterBinding> parameterBindings) {
