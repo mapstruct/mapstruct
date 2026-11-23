@@ -38,9 +38,7 @@ public class JSpecifyNullableElementArrayMapperImpl implements JSpecifyNullableE
         NullMarkedTargetBean[][] nullMarkedTargetBeanArrayTmp = new NullMarkedTargetBean[sourceBeans.length][];
         int i = 0;
         for ( NullMarkedSourceBean[] nullMarkedSourceBeanArray : sourceBeans ) {
-            if ( nullMarkedSourceBeanArray != null ) {
-                nullMarkedTargetBeanArrayTmp[i] = map( nullMarkedSourceBeanArray );
-            }
+            nullMarkedTargetBeanArrayTmp[i] = map( nullMarkedSourceBeanArray );
             i++;
         }
 

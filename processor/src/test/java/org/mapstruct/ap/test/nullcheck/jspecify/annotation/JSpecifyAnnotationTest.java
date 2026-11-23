@@ -166,4 +166,10 @@ public class JSpecifyAnnotationTest {
     void checkClassScopeMethodAnnotationsInDisabledJSpecifyMode() {
         generatedSource.addComparisonToFixtureFor( JSpecifyAnnotationClassScopeMethodMapper.class, "disabled" );
     }
+
+    @ProcessorTest
+    @WithClasses( JSpecifyAnnotationArrayMapper.class )
+    void checkArrayScopeMethodAnnotations() {
+        generatedSource.addComparisonToFixtureFor( JSpecifyAnnotationArrayMapper.class );
+    }
 }

@@ -194,25 +194,28 @@ public class NullabilityResolver {
      * @return the nullability of the direct component type, or {@code null} if the type is not an array
      */
     private Nullability getComponentTypeJSpecifyNullability(TypeMirror typeMirror, Element outerElement) {
-        if ( typeMirror.getKind() != TypeKind.ARRAY ) {
-            return null;
-        }
-        TypeMirror componentType = ( (ArrayType) typeMirror ).getComponentType();
-        Optional<Nullability> primitiveNullability = Nullability.getPrimitiveNullability( componentType );
-        if ( primitiveNullability.isPresent() ) {
-            return primitiveNullability.get();
-        }
-        Nullability nestedComponentTypeNullability = getComponentTypeJSpecifyNullability( componentType, outerElement );
-        if ( jSpecifyEnabled ) {
-            JSpecifyNullability nullabilityFromAnnotationMirrors =
-                    getNullabilityFromAnnotationMirrors( componentType.getAnnotationMirrors() );
-            if ( nullabilityFromAnnotationMirrors == JSpecifyNullability.UNKNOWN ) {
-                nullabilityFromAnnotationMirrors = resolveElementScope( outerElement ).toJSpecifyNullability();
+        Nullability componentTypeNullability = null;
+        while ( typeMirror.getKind() == TypeKind.ARRAY ) {
+            typeMirror = ( (ArrayType) typeMirror ).getComponentType();
+            Optional<Nullability> primitiveNullability = Nullability.getPrimitiveNullability( typeMirror );
+            if ( primitiveNullability.isPresent() ) {
+                componentTypeNullability = primitiveNullability.get();
             }
-            return nullabilityFromAnnotationMirrors.toNullability( nestedComponentTypeNullability );
+            else if ( jSpecifyEnabled ) {
+                JSpecifyNullability nullabilityFromAnnotationMirrors =
+                        getNullabilityFromAnnotationMirrors( typeMirror.getAnnotationMirrors() );
+                if ( nullabilityFromAnnotationMirrors == JSpecifyNullability.UNKNOWN ) {
+                    nullabilityFromAnnotationMirrors = resolveElementScope( outerElement ).toJSpecifyNullability();
+                }
+                componentTypeNullability = nullabilityFromAnnotationMirrors
+                        .toNullability( componentTypeNullability );
+            }
+            else {
+                componentTypeNullability = new Nullability( Nullability.NullabilityState.NULLABLE,
+                        Nullability.NullabilityCause.DEFAULT, componentTypeNullability );
+            }
         }
-        return new Nullability( Nullability.NullabilityState.NULLABLE,
-                Nullability.NullabilityCause.DEFAULT, nestedComponentTypeNullability );
+        return componentTypeNullability;
     }
 
     /**
