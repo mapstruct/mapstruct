@@ -24,7 +24,7 @@ import org.mapstruct.Mapper;
  * By convention, a single instance of each mapper is retrieved from the factory and exposed on the mapper interface
  * type by declaring a member named {@code INSTANCE} like this:
  *
- * <pre>
+ * <pre><code class='java'>
  * &#064;Mapper
  * public interface CustomerMapper {
  *
@@ -32,7 +32,7 @@ import org.mapstruct.Mapper;
  *
  *     // mapping methods...
  * }
- * </pre>
+ * </code></pre>
  *
  * @author Gunnar Morling
  */

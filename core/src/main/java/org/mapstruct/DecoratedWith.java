@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * <p>
  * For the examples below, consider the following mapper declaration:
  *
- * <pre>
+ * <pre><code class='java'>
  * &#64;Mapper(componentModel = "...")
  * &#64;DecoratedWith(PersonMapperDecorator.class)
  * public interface PersonMapper {
@@ -37,7 +37,7 @@ import java.lang.annotation.Target;
  *
  *     AddressDto addressToAddressDto(Address address); // not touched by the decorator
  * }
- * </pre>
+ * </code></pre>
  *
  * <h3>1. Component model 'default'</h3>
  * <h4>Referencing the original mapper in the decorator</h4>
@@ -46,7 +46,7 @@ import java.lang.annotation.Target;
  * generated implementations of all the mapper methods will be passed to this constructor. A typical implementation will
  * store the passed delegate in a field of the decorator and make use of it in the decorator methods:
  *
- * <pre>
+ * <pre><code class='java'>
  * public abstract class PersonMapperDecorator implements PersonMapper {
  *
  *     private PersonMapper delegate;
@@ -63,7 +63,7 @@ import java.lang.annotation.Target;
  *         return dto;
  *     }
  * }
- * </pre>
+ * </code></pre>
  *
  * <h4>Using the decorated mapper</h4>
  * <p>
@@ -76,7 +76,7 @@ import java.lang.annotation.Target;
  * {@code @org.springframework.beans.factory.annotation.Qualifier("delegate")}. To autowire that bean in your decorator,
  * add that qualifier annotation as well:
  *
- * <pre>
+ * <pre><code class='java'>
  * public abstract class PersonMapperDecorator implements PersonMapper {
  *
  *     &#64;Autowired
@@ -91,17 +91,17 @@ import java.lang.annotation.Target;
  *         return dto;
  *     }
  * }
- * </pre>
+ * </code></pre>
  *
  * <h4>Using the decorated mapper in the decorator</h4>
  * <p>
  * The generated class that extends the decorator is annotated with Spring's {@code @Primary} annotation. To autowire
  * the decorated mapper in the application, nothing special needs to be done:
  *
- * <pre>
+ * <pre><code class='java'>
  * &#64;Autowired
  * private PersonMapper personMapper; // injects the decorator, with the injected original mapper
- * </pre>
+ * </code></pre>
  *
  * <h3>3. Component model 'jsr330' or 'jakarta'</h3>
  * <h4>Referencing the original mapper</h4>
@@ -112,7 +112,7 @@ import java.lang.annotation.Target;
  * using a decorator, the class name of the mapper implementation ends with an underscore). To inject that bean in your
  * decorator, add the same annotation to the delegate field (e.g. by copy/pasting it from the generated class):
  *
- * <pre>
+ * <pre><code class='java'>
  * public abstract class PersonMapperDecorator implements PersonMapper {
  *
  *     &#64;Inject
@@ -127,7 +127,7 @@ import java.lang.annotation.Target;
  *         return dto;
  *     }
  * }
- * </pre>
+ * </code></pre>
  *
  * <h4>Using the decorated mapper in the decorator</h4>
  * <p>
@@ -135,11 +135,11 @@ import java.lang.annotation.Target;
  * decorated mappers, the parameterless {@code @javax.inject.Named} annotation must be added to select the
  * <em>decorator</em> to be injected:
  *
- * <pre>
+ * <pre><code class='java'>
  * &#64;Inject
  * &#64;javax.inject.Named
  * private PersonMapper personMapper; // injects the decorator, with the injected original mapper
- * </pre>
+ * </code></pre>
  *
  * @author Gunnar Morling
  */

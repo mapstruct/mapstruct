@@ -29,8 +29,7 @@ import java.lang.annotation.Target;
  * <strong>Example:</strong> Using a factory method for entities to check whether the entity already exists in the
  * EntityManager and then returns the managed instance:
  *
- * <pre>
- * <code>
+ * <pre><code class='java'>
  * &#64;ApplicationScoped // CDI component model
  * public class ReferenceMapper {
  *
@@ -43,8 +42,7 @@ import java.lang.annotation.Target;
  *         return entity != null ? entity : type.newInstance();
  *     }
  * }
- * </code>
- * </pre>
+ * </code></pre>
  * <p>
  * If there are two factory methods, both serving the same type, one with no parameters and one taking sources as input,
  * then the one with the source parameters is favored. If there are multiple such factories, an ambiguity error is

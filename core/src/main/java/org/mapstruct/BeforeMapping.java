@@ -49,8 +49,7 @@ import java.lang.annotation.Target;
  * <p>
  * Example:
  *
- * <pre>
- * <code>
+ * <pre><code class='java'>
  * &#64;BeforeMapping
  * public void calledWithoutArgs() {
  *     // ...
@@ -86,8 +85,7 @@ import java.lang.annotation.Target;
  *
  *     return targetDto;
  * }
- * </code>
- * </pre>
+ * </code></pre>
  *
  * @author Andreas Gudian
  * @see AfterMapping

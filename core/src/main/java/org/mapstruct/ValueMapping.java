@@ -20,16 +20,17 @@ import java.lang.annotation.Target;
  * </ol>
  * <b>Example 1:</b>
  *
- * <pre><code>
+ * <pre><code class='java'>
  * public enum OrderType { RETAIL, B2B, C2C, EXTRA, STANDARD, NORMAL }
  *
  * public enum ExternalOrderType { RETAIL, B2B, SPECIAL, DEFAULT }
  *
- * &#64;ValueMapping(target = "SPECIAL", source = "EXTRA"),
- * &#64;ValueMapping(target = "DEFAULT", source = "STANDARD"),
+ * &#64;ValueMapping(target = "SPECIAL", source = "EXTRA")
+ * &#64;ValueMapping(target = "DEFAULT", source = "STANDARD")
  * &#64;ValueMapping(target = "DEFAULT", source = "NORMAL")
  * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
- * </code>
+ * </code></pre>
+ * <pre>
  * Mapping result:
  * +---------------------+----------------------------+
  * | OrderType           | ExternalOrderType          |
@@ -45,12 +46,13 @@ import java.lang.annotation.Target;
  *
  * <b>Example 2:</b>
  *
- * <pre><code>
- * &#64;ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" ),
- * &#64;ValueMapping( source = "STANDARD", target = MappingConstants.NULL ),
+ * <pre><code class='java'>
+ * &#64;ValueMapping( source = MappingConstants.NULL, target = "DEFAULT" )
+ * &#64;ValueMapping( source = "STANDARD", target = MappingConstants.NULL )
  * &#64;ValueMapping( source = MappingConstants.ANY_REMAINING, target = "SPECIAL" )
  * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
- * </code>
+ * </code></pre>
+ * <pre>
  * Mapping result:
  * +---------------------+----------------------------+
  * | OrderType           | ExternalOrderType          |
@@ -70,15 +72,14 @@ import java.lang.annotation.Target;
  * {@link java.lang.IllegalStateException} will be thrown. This compile-time error can be avoided by
  * using {@link MappingConstants#THROW_EXCEPTION} for {@link ValueMapping#target()}. It will result an
  * {@link java.lang.IllegalArgumentException} at runtime.
- * <pre><code>
- * &#64;ValueMapping( source = "STANDARD", target = "DEFAULT" ),
+ * <pre><code class='java'>
+ * &#64;ValueMapping( source = "STANDARD", target = "DEFAULT" )
  * &#64;ValueMapping( source = "C2C", target = MappingConstants.THROW_EXCEPTION )
  * ExternalOrderType orderTypeToExternalOrderType(OrderType orderType);
- * </code>
- * Mapping result:
- * {@link java.lang.IllegalArgumentException} with the error message:
- * Unexpected enum constant: C2C
- * </pre>
+ * </code></pre>
+ * <p>
+ * Mapping result: {@link java.lang.IllegalArgumentException} with the error message
+ * {@code Unexpected enum constant: C2C}.
  *
  * @author Sjaak Derksen
  */

@@ -33,12 +33,12 @@ import org.mapstruct.ap.internal.model.source.Method;
  * <p>
  * <b>Example (see Issue3849Test):</b>
  *
- * <pre>{@code
- * @AfterMapping
- * default void afterMapping(Parent source, @MappingTarget ParentDto target) { ... }
- * @AfterMapping
- * default void afterMapping(Parent source, @MappingTarget ChildDto target) { ... }
- * }</pre>
+ * <pre><code class='java'>
+ * &#64;AfterMapping
+ * default void afterMapping(Parent source, &#64;MappingTarget ParentDto target) { ... }
+ * &#64;AfterMapping
+ * default void afterMapping(Parent source, &#64;MappingTarget ChildDto target) { ... }
+ * </code></pre>
  * When mapping a Child to a ChildDto,
  * only the method with ChildDto is selected, even though both methods match by signature
  * except for the target type's inheritance relationship.

@@ -20,8 +20,7 @@ import java.lang.annotation.Target;
  * Example (both methods of {@code Titles} are capable to convert a string, but the ambiguity is resolved by applying
  * the qualifiers in {@code @Mapping}:
  *
- * <pre>
- * <code>
+ * <pre><code class='java'>
  * &#64;Named("TitleTranslator")
  * public class Titles {
  *
@@ -43,14 +42,11 @@ import java.lang.annotation.Target;
  *    GermanRelease toGerman( OriginalRelease movies );
  *
  * }
- * </code>
- * </pre>
+ * </code></pre>
  *
  * The following implementation of {@code MovieMapper} will be generated:
  *
- * <pre>
- * <code>
- *
+ * <pre><code class='java'>
  * public class MovieMapperImpl implements MovieMapper {
  *     private final Titles titles = new Titles();
  *
@@ -67,8 +63,7 @@ import java.lang.annotation.Target;
  *         return germanRelease;
  *     }
  * }
- * </code>
- * </pre>
+ * </code></pre>
  *
  * @author Sjaak Derksen
  * @see org.mapstruct.Mapping#qualifiedByName()

@@ -22,7 +22,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  * </p>
  * Marking a class as `Lazy`:
  *
- * <pre><code>
+ * <pre><code class='java'>
  * &#64;AnnotateWith( value = Lazy.class )
  * &#64;Mapper
  * public interface FooMapper {
@@ -32,7 +32,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  *
  * The following code would be generated:
  *
- * <pre><code>
+ * <pre><code class='java'>
  * &#64;Lazy
  * public class FooMapperImpl implements FooMapper {
  *     // mapper code
@@ -40,7 +40,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  * </code></pre>
  * Setting the profile on the generated implementation:
  *
- * <pre><code>
+ * <pre><code class='java'>
  * &#64;AnnotateWith( value = Profile.class, elements = @AnnotateWith.Element( strings = "prod" ) )
  * &#64;Mapper
  * public interface FooMapper {
@@ -50,7 +50,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  *
  * The following code would be generated:
  *
- * <pre><code>
+ * <pre><code class='java'>
  * &#64;Profile( value = "prod" )
  * public class FooMapperImpl implements FooMapper {
  *     // mapper code

@@ -25,8 +25,7 @@ import java.lang.annotation.Target;
  * A typical use case is annotating an update method so it inherits all mappings from a corresponding "standard" mapping
  * method:
  *
- * <pre>
- * <code>
+ * <pre><code class='java'>
  * &#64;Mappings({
  *     &#64;Mapping(target="make", source="brand"),
  *     &#64;Mapping(target="seatCount", source="numberOfSeats")
@@ -35,8 +34,7 @@ import java.lang.annotation.Target;
  *
  * &#64;InheritConfiguration
  * void updateCarDto(Car car, &#64;MappingTarget CarDto carDto);
- * </code>
- * </pre>
+ * </code></pre>
  *
  * @author Sjaak Derksen
  */
