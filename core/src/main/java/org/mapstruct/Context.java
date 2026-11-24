@@ -30,8 +30,7 @@ import java.lang.annotation.Target;
  * <strong>Example 1:</strong> Using {@code @Context} parameters for passing data down to hand-written property mapping
  * methods and {@code @}{@link BeforeMapping} methods:
  *
- * <pre>
- * <code>
+ * <pre><code class='java'>
  * // multiple &#64;Context parameters can be added
  * public abstract CarDto toCar(Car car, &#64;Context VehicleRegistration context, &#64;Context Locale localeToUse);
  *
@@ -66,14 +65,12 @@ import java.lang.annotation.Target;
  *
  *     return carDto;
  * }
- * </code>
- * </pre>
+ * </code></pre>
  * <p>
  * <strong>Example 2:</strong> Using an {@code @Context} parameter with a type that provides its own {@code @}
  * {@link BeforeMapping} methods to handle cycles in Graph structures:
  *
- * <pre>
- * <code>
+ * <pre><code class='java'>
  * // type of the context parameter
  * public class CyclicGraphContext {
  *     private Map&lt;Object, Object&gt; knownInstances = new IdentityHashMap&lt;&gt;();
@@ -121,14 +118,12 @@ import java.lang.annotation.Target;
  *
  *     return nodeDto;
  * }
- * </code>
- * </pre>
+ * </code></pre>
  * <p>
  * <strong>Example 3:</strong> Using {@code @Context} parameters for creating an entity object by calling an
  * {@code @}{@link ObjectFactory} methods:
  *
- * <pre>
- * <code>
+ * <pre><code class='java'>
  * // type of the context parameter
  * public class ContextObjectFactory {
  *     &#64;PersistenceContext(unitName = "my-unit")
@@ -169,8 +164,7 @@ import java.lang.annotation.Target;
  *       return valve;
  *   }
  * }
- * </code>
- * </pre>
+ * </code></pre>
  * @author Andreas Gudian
  * @since 1.2
  */

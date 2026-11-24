@@ -249,7 +249,7 @@ public @interface Mapping {
      * <p>
      * Currently, Java is the only supported "expression language" and expressions must be given in form of Java
      * expressions using the following format: {@code java(<EXPRESSION>)}. For instance the mapping:
-     * <pre><code>
+     * <pre><code class='java'>
      * &#64;Mapping(
      *     target = "someProp",
      *     expression = "java(new TimeAndFormat( s.getTime(), s.getFormat() ))"
@@ -276,7 +276,7 @@ public @interface Mapping {
      * <p>
      * Currently, Java is the only supported "expression language" and expressions must be given in form of Java
      * expressions using the following format: {@code java(<EXPRESSION>)}. For instance the mapping:
-     * <pre><code>
+     * <pre><code class='java'>
      * &#64;Mapping(
      *     target = "someProp",
      *     defaultExpression = "java(new TimeAndFormat( s.getTime(), s.getFormat() ))"
@@ -384,7 +384,7 @@ public @interface Mapping {
      * <p>
      * Currently, Java is the only supported "expression language" and expressions must be given in form of Java
      * expressions using the following format: {@code java(<EXPRESSION>)}. For instance the mapping:
-     * <pre><code>
+     * <pre><code class='java'>
      * &#64;Mapping(
      *     target = "someProp",
      *     conditionExpression = "java(s.getAge() &#60; 18)"
@@ -392,7 +392,7 @@ public @interface Mapping {
      * </code></pre>
      * <p>
      * will cause the following target property assignment to be generated:
-     * <pre><code>
+     * <pre><code class='java'>
      *     if (s.getAge() &#60; 18) {
      *         targetBean.setSomeProp( s.getSomeProp() );
      *     }

@@ -35,10 +35,10 @@ import static org.mapstruct.ap.internal.util.Collections.last;
  * It contains the source parameter, and all individual (nested) property entries. So consider the following
  * mapping method:
  *
- * <pre>
+ * <pre><code class='java'>
  * &#64;Mapping(target = "propC", source = "in.propA.propB")
  * TypeB mappingMethod(TypeA in);
- * </pre>
+ * </code></pre>
  *
  * Then:
  * <ul>
