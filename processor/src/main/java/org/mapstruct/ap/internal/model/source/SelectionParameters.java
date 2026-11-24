@@ -63,6 +63,32 @@ public class SelectionParameters {
         );
     }
 
+    /**
+     * Returns new selection parameters without the condition qualifiers.
+     * <p>
+     * Condition qualifiers are only used for selecting presence check methods. They have no influence on the
+     * selection of mapping or lifecycle methods.
+     *
+     * @param selectionParameters the selection parameters that need to be copied, can be {@code null}
+     *
+     * @return the selection parameters based on the given ones without the condition qualifiers, or
+     * {@link #empty()} if the given ones are {@code null}
+     */
+    public static SelectionParameters withoutConditionQualifiers(SelectionParameters selectionParameters) {
+        if ( selectionParameters == null ) {
+            return EMPTY;
+        }
+        return new SelectionParameters(
+            selectionParameters.qualifiers,
+            selectionParameters.qualifyingNames,
+            Collections.emptyList(),
+            Collections.emptyList(),
+            selectionParameters.resultType,
+            selectionParameters.typeUtils,
+            selectionParameters.sourceRHS
+        );
+    }
+
     public SelectionParameters(List<TypeMirror> qualifiers, List<String> qualifyingNames, TypeMirror resultType,
         TypeUtils typeUtils) {
         this(
