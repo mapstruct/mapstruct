@@ -956,7 +956,7 @@ public class PropertyMapping extends ModelElement {
             Supplier<MappingMethod> mappingMethodCreator = () -> builder
                 .mappingContext( ctx )
                 .method( methodRef )
-                .selectionParameters( selectionParameters )
+                .selectionParameters( SelectionParameters.withoutConditionQualifiers( selectionParameters ) )
                 .callingContextTargetPropertyName( targetPropertyName )
                 .positionHint( positionHint )
                 .build();
